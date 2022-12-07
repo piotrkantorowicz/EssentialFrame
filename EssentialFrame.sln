@@ -1,0 +1,190 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{F93BC7CB-AA9F-4C66-9D9E-58A73782BF8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3C50C075-9467-44B8-BC6A-65EA8C951ECB}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\essential-frame-cache-deploy.yml = .github\workflows\essential-frame-cache-deploy.yml
+		.github\workflows\essential-frame-cache.yml = .github\workflows\essential-frame-cache.yml
+		.github\workflows\essential-frame-core-deploy.yml = .github\workflows\essential-frame-core-deploy.yml
+		.github\workflows\essential-frame-core.yml = .github\workflows\essential-frame-core.yml
+		.github\workflows\essential-frame-cqrs-autofac-deploy.yml = .github\workflows\essential-frame-cqrs-autofac-deploy.yml
+		.github\workflows\essential-frame-cqrs-autofac.yml = .github\workflows\essential-frame-cqrs-autofac.yml
+		.github\workflows\essential-frame-cqrs-deploy.yml = .github\workflows\essential-frame-cqrs-deploy.yml
+		.github\workflows\essential-frame-cqrs-errors-deploy.yml = .github\workflows\essential-frame-cqrs-errors-deploy.yml
+		.github\workflows\essential-frame-cqrs-errors-handling-deploy.yml = .github\workflows\essential-frame-cqrs-errors-handling-deploy.yml
+		.github\workflows\essential-frame-cqrs-errors-handling.yml = .github\workflows\essential-frame-cqrs-errors-handling.yml
+		.github\workflows\essential-frame-cqrs-errors.yml = .github\workflows\essential-frame-cqrs-errors.yml
+		.github\workflows\essential-frame-cqrs-logging-autofac-deploy.yml = .github\workflows\essential-frame-cqrs-logging-autofac-deploy.yml
+		.github\workflows\essential-frame-cqrs-logging-autofac.yml = .github\workflows\essential-frame-cqrs-logging-autofac.yml
+		.github\workflows\essential-frame-cqrs-logging-deploy.yml = .github\workflows\essential-frame-cqrs-logging-deploy.yml
+		.github\workflows\essential-frame-cqrs-logging.yml = .github\workflows\essential-frame-cqrs-logging.yml
+		.github\workflows\essential-frame-cqrs-validations-deploy.yml = .github\workflows\essential-frame-cqrs-validations-deploy.yml
+		.github\workflows\essential-frame-cqrs-validations.yml = .github\workflows\essential-frame-cqrs-validations.yml
+		.github\workflows\essential-frame-cqrs.yml = .github\workflows\essential-frame-cqrs.yml
+		.github\workflows\essential-frame-domain-deploy.yml = .github\workflows\essential-frame-domain-deploy.yml
+		.github\workflows\essential-frame-domain.yml = .github\workflows\essential-frame-domain.yml
+		.github\workflows\essential-frame-identity-deploy.yml = .github\workflows\essential-frame-identity-deploy.yml
+		.github\workflows\essential-frame-identity.yml = .github\workflows\essential-frame-identity.yml
+		.github\workflows\essential-frame-inbox-deploy.yml = .github\workflows\essential-frame-inbox-deploy.yml
+		.github\workflows\essential-frame-inbox.yml = .github\workflows\essential-frame-inbox.yml
+		.github\workflows\essential-frame-outbox-deploy.yml = .github\workflows\essential-frame-outbox-deploy.yml
+		.github\workflows\essential-frame-outbox.yml = .github\workflows\essential-frame-outbox.yml
+		.github\workflows\essential-frame-serialization-deploy.yml = .github\workflows\essential-frame-serialization-deploy.yml
+		.github\workflows\essential-frame-serialization.yml = .github\workflows\essential-frame-serialization.yml
+		.github\workflows\essential-frame-snapshots-deploy.yml = .github\workflows\essential-frame-snapshots-deploy.yml
+		.github\workflows\essential-frame-snapshots.yml = .github\workflows\essential-frame-snapshots.yml
+		.github\workflows\essential-frame-validations-autofac-deploy.yml = .github\workflows\essential-frame-validations-autofac-deploy.yml
+		.github\workflows\essential-frame-validations-autofac.yml = .github\workflows\essential-frame-validations-autofac.yml
+		.github\workflows\essential-frame-cqrs-commands-deploy.yml = .github\workflows\essential-frame-cqrs-commands-deploy.yml
+		.github\workflows\essential-frame-cqrs-commands.yml = .github\workflows\essential-frame-cqrs-commands.yml
+		.github\workflows\essential-frame-cqrs-queries-deploy.yml = .github\workflows\essential-frame-cqrs-queries-deploy.yml
+		.github\workflows\essential-frame-cqrs-queries.yml = .github\workflows\essential-frame-cqrs-queries.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Commands", "src\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj", "{F00B2431-40BD-4C22-B56F-B61680E4D2CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Queries", "src\EssentialFrame.Cqrs.Queries\EssentialFrame.Cqrs.Queries.csproj", "{FCB7417A-F5F8-4219-88D5-0684BB1138F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Serialization", "src\EssentialFrame.Serialization\EssentialFrame.Serialization.csproj", "{7FDA040D-3DEB-4F16-B56B-3287A836352F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Domain", "src\EssentialFrame.Domain\EssentialFrame.Domain.csproj", "{5764B297-28A2-4ACA-AEBD-4CFF86DBFE4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Snapshots", "src\EssentialFrame.Snapshots\EssentialFrame.Snapshots.csproj", "{ACCBE826-24DD-49D1-AF9E-18477CFDDEFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cache", "src\EssentialFrame.Cache\EssentialFrame.Cache.csproj", "{C5235EAD-6B2A-4A7A-8232-227B7ABF93D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Identity", "src\EssentialFrame.Identity\EssentialFrame.Identity.csproj", "{F08A3D17-A1CE-4848-96B8-4695B14D0DAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Outbox", "src\EssentialFrame.Outbox\EssentialFrame.Outbox.csproj", "{4507B9E6-9368-4CF2-BED4-FBF4E22FF6A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Inbox", "src\EssentialFrame.Inbox\EssentialFrame.Inbox.csproj", "{49B091B2-6DE1-422B-93D6-4E886D529831}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Core", "src\EssentialFrame.Core\EssentialFrame.Core.csproj", "{DDC2DA58-924E-43B1-87EB-ABDC8EB74621}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs", "src\EssentialFrame.Cqrs\EssentialFrame.Cqrs.csproj", "{45971847-B388-48C7-B650-ECB2DF232DDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Errors", "src\EssentialFrame.Cqrs.Errors\EssentialFrame.Cqrs.Errors.csproj", "{A3FEAD54-2ED4-465F-BF57-8EE713C6AE7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Validations", "src\EssentialFrame.Cqrs.Validations\EssentialFrame.Cqrs.Validations.csproj", "{95BF4186-11A4-4F60-948F-9D535D8C0368}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Logging", "src\EssentialFrame.Cqrs.Logging\EssentialFrame.Cqrs.Logging.csproj", "{8897D552-A4B5-4731-AE9E-2E9496C7B83D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Autofac", "src\EssentialFrame.Cqrs.Autofac\EssentialFrame.Cqrs.Autofac.csproj", "{6BC2D861-1E31-4719-B9DA-E82A103D0946}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Logging.Autofac", "src\EssentialFrame.Cqrs.Logging.Autofac\EssentialFrame.Cqrs.Logging.Autofac.csproj", "{B4DBB114-273C-4E3B-BF0C-E8C80AAF5205}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Validations.Autofac", "src\EssentialFrame.Cqrs.Validations.Autofac\EssentialFrame.Cqrs.Validations.Autofac.csproj", "{9A5868B4-5193-4D3C-BE34-1B38DC5A637B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Errors.Handling", "src\EssentialFrame.Cqrs.Errors.Handling\EssentialFrame.Cqrs.Errors.Handling.csproj", "{ACAD8F3C-6C14-4422-8145-033D32CD4F70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.CommandStore", "src\EssentialFrame.Cqrs.CommandStore\EssentialFrame.Cqrs.CommandStore.csproj", "{9667B290-6224-4985-A448-B5381087EE96}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3C50C075-9467-44B8-BC6A-65EA8C951ECB} = {F93BC7CB-AA9F-4C66-9D9E-58A73782BF8E}
+		{F00B2431-40BD-4C22-B56F-B61680E4D2CC} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{FCB7417A-F5F8-4219-88D5-0684BB1138F0} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{7FDA040D-3DEB-4F16-B56B-3287A836352F} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{5764B297-28A2-4ACA-AEBD-4CFF86DBFE4A} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{ACCBE826-24DD-49D1-AF9E-18477CFDDEFD} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{C5235EAD-6B2A-4A7A-8232-227B7ABF93D5} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{F08A3D17-A1CE-4848-96B8-4695B14D0DAF} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{4507B9E6-9368-4CF2-BED4-FBF4E22FF6A6} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{49B091B2-6DE1-422B-93D6-4E886D529831} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{DDC2DA58-924E-43B1-87EB-ABDC8EB74621} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{45971847-B388-48C7-B650-ECB2DF232DDB} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{A3FEAD54-2ED4-465F-BF57-8EE713C6AE7A} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{95BF4186-11A4-4F60-948F-9D535D8C0368} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{8897D552-A4B5-4731-AE9E-2E9496C7B83D} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{6BC2D861-1E31-4719-B9DA-E82A103D0946} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{B4DBB114-273C-4E3B-BF0C-E8C80AAF5205} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{9A5868B4-5193-4D3C-BE34-1B38DC5A637B} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{ACAD8F3C-6C14-4422-8145-033D32CD4F70} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+		{9667B290-6224-4985-A448-B5381087EE96} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F00B2431-40BD-4C22-B56F-B61680E4D2CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F00B2431-40BD-4C22-B56F-B61680E4D2CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F00B2431-40BD-4C22-B56F-B61680E4D2CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F00B2431-40BD-4C22-B56F-B61680E4D2CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCB7417A-F5F8-4219-88D5-0684BB1138F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCB7417A-F5F8-4219-88D5-0684BB1138F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCB7417A-F5F8-4219-88D5-0684BB1138F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCB7417A-F5F8-4219-88D5-0684BB1138F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FDA040D-3DEB-4F16-B56B-3287A836352F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FDA040D-3DEB-4F16-B56B-3287A836352F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FDA040D-3DEB-4F16-B56B-3287A836352F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FDA040D-3DEB-4F16-B56B-3287A836352F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5764B297-28A2-4ACA-AEBD-4CFF86DBFE4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5764B297-28A2-4ACA-AEBD-4CFF86DBFE4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5764B297-28A2-4ACA-AEBD-4CFF86DBFE4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5764B297-28A2-4ACA-AEBD-4CFF86DBFE4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACCBE826-24DD-49D1-AF9E-18477CFDDEFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACCBE826-24DD-49D1-AF9E-18477CFDDEFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACCBE826-24DD-49D1-AF9E-18477CFDDEFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACCBE826-24DD-49D1-AF9E-18477CFDDEFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5235EAD-6B2A-4A7A-8232-227B7ABF93D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5235EAD-6B2A-4A7A-8232-227B7ABF93D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5235EAD-6B2A-4A7A-8232-227B7ABF93D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5235EAD-6B2A-4A7A-8232-227B7ABF93D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F08A3D17-A1CE-4848-96B8-4695B14D0DAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F08A3D17-A1CE-4848-96B8-4695B14D0DAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F08A3D17-A1CE-4848-96B8-4695B14D0DAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F08A3D17-A1CE-4848-96B8-4695B14D0DAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4507B9E6-9368-4CF2-BED4-FBF4E22FF6A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4507B9E6-9368-4CF2-BED4-FBF4E22FF6A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4507B9E6-9368-4CF2-BED4-FBF4E22FF6A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4507B9E6-9368-4CF2-BED4-FBF4E22FF6A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B091B2-6DE1-422B-93D6-4E886D529831}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B091B2-6DE1-422B-93D6-4E886D529831}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B091B2-6DE1-422B-93D6-4E886D529831}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B091B2-6DE1-422B-93D6-4E886D529831}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDC2DA58-924E-43B1-87EB-ABDC8EB74621}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDC2DA58-924E-43B1-87EB-ABDC8EB74621}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDC2DA58-924E-43B1-87EB-ABDC8EB74621}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDC2DA58-924E-43B1-87EB-ABDC8EB74621}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45971847-B388-48C7-B650-ECB2DF232DDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45971847-B388-48C7-B650-ECB2DF232DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45971847-B388-48C7-B650-ECB2DF232DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45971847-B388-48C7-B650-ECB2DF232DDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3FEAD54-2ED4-465F-BF57-8EE713C6AE7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3FEAD54-2ED4-465F-BF57-8EE713C6AE7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3FEAD54-2ED4-465F-BF57-8EE713C6AE7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3FEAD54-2ED4-465F-BF57-8EE713C6AE7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95BF4186-11A4-4F60-948F-9D535D8C0368}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95BF4186-11A4-4F60-948F-9D535D8C0368}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95BF4186-11A4-4F60-948F-9D535D8C0368}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95BF4186-11A4-4F60-948F-9D535D8C0368}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8897D552-A4B5-4731-AE9E-2E9496C7B83D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8897D552-A4B5-4731-AE9E-2E9496C7B83D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8897D552-A4B5-4731-AE9E-2E9496C7B83D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8897D552-A4B5-4731-AE9E-2E9496C7B83D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BC2D861-1E31-4719-B9DA-E82A103D0946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BC2D861-1E31-4719-B9DA-E82A103D0946}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BC2D861-1E31-4719-B9DA-E82A103D0946}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BC2D861-1E31-4719-B9DA-E82A103D0946}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4DBB114-273C-4E3B-BF0C-E8C80AAF5205}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4DBB114-273C-4E3B-BF0C-E8C80AAF5205}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4DBB114-273C-4E3B-BF0C-E8C80AAF5205}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4DBB114-273C-4E3B-BF0C-E8C80AAF5205}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A5868B4-5193-4D3C-BE34-1B38DC5A637B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A5868B4-5193-4D3C-BE34-1B38DC5A637B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A5868B4-5193-4D3C-BE34-1B38DC5A637B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A5868B4-5193-4D3C-BE34-1B38DC5A637B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACAD8F3C-6C14-4422-8145-033D32CD4F70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACAD8F3C-6C14-4422-8145-033D32CD4F70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACAD8F3C-6C14-4422-8145-033D32CD4F70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACAD8F3C-6C14-4422-8145-033D32CD4F70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9667B290-6224-4985-A448-B5381087EE96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9667B290-6224-4985-A448-B5381087EE96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9667B290-6224-4985-A448-B5381087EE96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9667B290-6224-4985-A448-B5381087EE96}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,39 @@
+name: Build package - EssentialFrame.Serialization
+
+on:
+  push:
+    branches:
+      - main
+
+    paths:
+      - src/api/EssentialFrame.Serialization/EssentialFrame.Serialization.csproj
+
+jobs:
+  build-and-push-package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ "7.0.x" ]
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.ACTION_GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+          source-url: https://nuget.pkg.github.com/piotrkantorowicz/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.ACTION_GITHUB_TOKEN}}
+
+      - name: Restore
+        run: dotnet restore src/api/EssentialFrame.Serialization/EssentialFrame.Serialization.csproj
+      - name: Build
+        run: dotnet build src/api/EssentialFrame.Serialization/EssentialFrame.Serialization.csproj --configuration Release --no-restore
+      - name: Pack
+        run: dotnet pack --no-build --configuration Release src/api/EssentialFrame.Serialization/EssentialFrame.Serialization.csproj
+      - name: Push
+        run: dotnet nuget push src/api/EssentialFrame.Serialization/bin/Release/*.nupkg --skip-duplicate --no-symbols
