@@ -1,20 +1,32 @@
-using EssentialFrame.Cqrs.Commands.Core;
+using EssentialFrame.Cqrs.Commands.Interfaces;
 
 namespace EssentialFrame.Cqrs.Interfaces;
 
 public interface ICommandDispatcher
 {
-    ICommandResult Send<T>(T command)
-        where T : class, ICommand;
+    ICommandResult Send<TCommand>(TCommand command)
+        where TCommand : class, ICommand;
 
-    Task<ICommandResult> SendAsync<T>(T command, CancellationToken cancellationToken = default)
-        where T : class, ICommand;
+    ICommandResult SendAndStore<TCommand>(TCommand command)
+        where TCommand : class, ICommand;
 
-    ICommandResult Schedule<T>(T command, DateTimeOffset at)
-        where T : class, ICommand;
+    void Schedule<TCommand>(TCommand command, DateTimeOffset at)
+        where TCommand : class, ICommand;
 
-    Task<ICommandResult> ScheduleAsync<T>(T command,
-                                          DateTimeOffset at,
-                                          CancellationToken cancellationToken = default)
-        where T : class, ICommand;
+    void CancelSending<TCommand>(TCommand command)
+        where TCommand : class, ICommand;
+
+    Task<ICommandResult> SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
+        where TCommand : class, ICommand;
+
+    Task<ICommandResult> SendAndStoreAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
+        where TCommand : class, ICommand;
+
+    Task ScheduleAsync<TCommand>(TCommand command,
+                                 DateTimeOffset at,
+                                 CancellationToken cancellationToken = default)
+        where TCommand : class, ICommand;
+
+    Task CancelSendingAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
+        where TCommand : class, ICommand;
 }

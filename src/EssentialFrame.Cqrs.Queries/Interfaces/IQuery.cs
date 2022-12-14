@@ -6,7 +6,11 @@ public interface IQuery
 
     Guid IdentityTenant { get; }
 
-    Guid IdentityUser { get; }
+    Guid TenantIdentity { get; }
+
+    Guid UserIdentity { get; }
+
+    string ServiceIdentity { get; }
 }
 
 public interface IQuery<TResult> : IQuery

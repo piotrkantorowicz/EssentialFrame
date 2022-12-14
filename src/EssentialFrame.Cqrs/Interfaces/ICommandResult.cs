@@ -1,10 +1,10 @@
-using EssentialFrame.Cqrs.Errors.Core;
+using EssentialFrame.Cqrs.Commands.Errors.Interfaces;
 
 namespace EssentialFrame.Cqrs.Interfaces;
 
 public interface ICommandResult
 {
-    bool Ok { get; }
+    bool IsSuccess { get; }
 
     object Data { get; }
 

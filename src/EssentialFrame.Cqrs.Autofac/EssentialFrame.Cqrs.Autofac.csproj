@@ -21,12 +21,13 @@
 
         <!-- Packaging -->
         <PackageId>EssentialFrame.Cqrs.Autofac</PackageId>
-        <PackageDescription>Cqrs dependency injection using autofac.</PackageDescription>
+        <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
     </PropertyGroup>
 
 
     <ItemGroup>
+        <ProjectReference Include="..\EssentialFrame.Cqrs.Commands.Store\EssentialFrame.Cqrs.Commands.Store.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Cqrs\EssentialFrame.Cqrs.csproj"/>
     </ItemGroup>
 

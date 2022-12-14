@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Domain.Core;
+﻿using EssentialFrame.Core.Extensions;
+using EssentialFrame.Domain.Core;
 using EssentialFrame.Domain.Exceptions;
 
 namespace EssentialFrame.Domain.Events;
@@ -16,7 +17,7 @@ public class EventQueue : IEventQueue
 
     public void Publish(IEvent @event)
     {
-        var name = @event.GetType().FullName;
+        var name = @event.GetTypeFullName();
 
         if (_overriders.TryGetValue((name, @event.IdentityTenant), out var customization))
         {

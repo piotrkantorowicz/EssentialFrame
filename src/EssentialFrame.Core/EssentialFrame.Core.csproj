@@ -21,7 +21,7 @@
 
         <!-- Packaging -->
         <PackageId>EssentialFrame.Core</PackageId>
-        <PackageDescription>Core frameworks classes pack.</PackageDescription>
+        <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
     </PropertyGroup>
 

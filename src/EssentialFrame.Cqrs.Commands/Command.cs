@@ -1,63 +1,57 @@
-﻿using EssentialFrame.Cqrs.Commands.Core;
+﻿using EssentialFrame.Cqrs.Commands.Interfaces;
 using EssentialFrame.Identity;
 
 namespace EssentialFrame.Cqrs.Commands;
 
-public class Command : ICommand
+public record Command() : ICommand
 {
-    public Command() => CommandIdentifier = Guid.NewGuid();
-
     public Command(IIdentity identity)
         : this()
     {
-        var tenant = identity.Tenant.Identifier;
-        var user = identity.User.Identifier;
+        var tenantIdentity = identity.Tenant.Identifier;
+        var userIdentity = identity.User.Identifier;
+        var serviceIdentity = identity.Service.GetFullIdentifier();
 
-        IdentityTenant = Guid.Empty == IdentityTenant ? tenant : IdentityTenant;
-        IdentityUser = Guid.Empty == IdentityUser ? user : IdentityUser;
+        TenantIdentity = Guid.Empty == TenantIdentity ? tenantIdentity : TenantIdentity;
+        UserIdentity = Guid.Empty == UserIdentity ? userIdentity : UserIdentity;
+
+        ServiceIdentity = string.IsNullOrEmpty(ServiceIdentity)
+            ? serviceIdentity
+            : ServiceIdentity;
     }
 
     public Command(Guid aggregateIdentifier,
                    Guid commandIdentifier,
                    IIdentity identity)
+        : this(identity)
     {
         AggregateIdentifier = aggregateIdentifier;
         CommandIdentifier = commandIdentifier;
-
-        var tenant = identity.Tenant.Identifier;
-        var user = identity.User.Identifier;
-
-        IdentityTenant = Guid.Empty == IdentityTenant ? tenant : IdentityTenant;
-        IdentityUser = Guid.Empty == IdentityUser ? user : IdentityUser;
     }
 
     public Command(Guid aggregateIdentifier,
                    Guid commandIdentifier,
                    IIdentity identity,
                    int? expectedVersion = null)
+        : this(aggregateIdentifier,
+               commandIdentifier,
+               identity)
     {
-        AggregateIdentifier = aggregateIdentifier;
-        CommandIdentifier = commandIdentifier;
-
         if (expectedVersion is not null)
         {
             ExpectedVersion = expectedVersion;
         }
-
-        var tenant = identity.Tenant.Identifier;
-        var user = identity.User.Identifier;
-
-        IdentityTenant = Guid.Empty == IdentityTenant ? tenant : IdentityTenant;
-        IdentityUser = Guid.Empty == IdentityUser ? user : IdentityUser;
     }
 
     public Guid AggregateIdentifier { get; }
 
     public int? ExpectedVersion { get; }
 
-    public Guid IdentityTenant { get; }
+    public string ServiceIdentity { get; }
 
-    public Guid IdentityUser { get; }
+    public Guid TenantIdentity { get; }
 
-    public Guid CommandIdentifier { get; }
+    public Guid UserIdentity { get; }
+
+    public Guid CommandIdentifier { get; } = Guid.NewGuid();
 }

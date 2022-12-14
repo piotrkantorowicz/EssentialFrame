@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Domain.Core;
+﻿using EssentialFrame.Core.Extensions;
+using EssentialFrame.Domain.Core;
 using EssentialFrame.Serialization;
 
 namespace EssentialFrame.Domain.Events;
@@ -40,8 +41,8 @@ public static class EventExtensions
                              AggregateIdentifier = aggregateIdentifier,
                              AggregateVersion = version,
                              EventTime = @event.EventTime,
-                             EventClass = @event.GetType().AssemblyQualifiedName,
-                             EventType = @event.GetType().Name,
+                             EventClass = @event.GetClassName(),
+                             EventType = @event.GetTypeFullName(),
                              EventData = data,
                              IdentityTenant = Guid.Empty == @event.IdentityTenant ? tenant : @event.IdentityTenant,
                              IdentityUser = Guid.Empty == @event.IdentityUser ? user : @event.IdentityUser

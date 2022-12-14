@@ -1,4 +1,4 @@
-using EssentialFrame.Cqrs.Errors.Core;
+using EssentialFrame.Cqrs.Queries.Errors.Interfaces;
 
 namespace EssentialFrame.Cqrs.Interfaces;
 

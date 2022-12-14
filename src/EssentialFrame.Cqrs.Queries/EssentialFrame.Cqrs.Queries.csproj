@@ -21,9 +21,8 @@
 
         <!-- Packaging -->
         <PackageId>EssentialFrame.Cqrs.Queries</PackageId>
-        <PackageDescription>Queries base classes pack.</PackageDescription>
+        <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
-        <RootNamespace>EssentialFrame.Cqrs.Queries</RootNamespace>
     </PropertyGroup>
 
 </Project>

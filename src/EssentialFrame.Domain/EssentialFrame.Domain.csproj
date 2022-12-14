@@ -21,11 +21,12 @@
 
         <!-- Packaging -->
         <PackageId>EssentialFrame.Domain</PackageId>
-        <PackageDescription>Domain base classes pack, includes aggregates, entities, value objects etc.</PackageDescription>
+        <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\EssentialFrame.Core\EssentialFrame.Core.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Serialization\EssentialFrame.Serialization.csproj"/>
     </ItemGroup>
 

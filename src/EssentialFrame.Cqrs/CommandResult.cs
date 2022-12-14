@@ -1,4 +1,4 @@
-using EssentialFrame.Cqrs.Errors.Core;
+using EssentialFrame.Cqrs.Commands.Errors.Interfaces;
 using EssentialFrame.Cqrs.Interfaces;
 
 namespace EssentialFrame.Cqrs;
@@ -9,7 +9,7 @@ public sealed class CommandResult : ICommandResult
     {
     }
 
-    public bool Ok { get; private init; }
+    public bool IsSuccess { get; private init; }
 
     public ICommandError ErrorDetails { get; private init; }
 
@@ -18,20 +18,20 @@ public sealed class CommandResult : ICommandResult
     public static CommandResult Success() =>
         new()
         {
-            Ok = true
+            IsSuccess = true
         };
 
     public static CommandResult Success(object data) =>
         new()
         {
-            Ok = true,
+            IsSuccess = true,
             Data = data
         };
 
     public static CommandResult Fail(ICommandError commandError) =>
         new()
         {
-            Ok = false,
+            IsSuccess = false,
             ErrorDetails = commandError
         };
 }

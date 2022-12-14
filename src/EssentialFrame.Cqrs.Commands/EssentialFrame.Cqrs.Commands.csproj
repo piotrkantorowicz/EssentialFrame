@@ -21,15 +21,14 @@
 
         <!-- Packaging -->
         <PackageId>EssentialFrame.Cqrs.Commands</PackageId>
-        <PackageDescription>Commands base classes pack.</PackageDescription>
+        <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
-        <RootNamespace>EssentialFrame.Cqrs.Commands</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\EssentialFrame.Core\EssentialFrame.Core.csproj" />
-        <ProjectReference Include="..\EssentialFrame.Identity\EssentialFrame.Identity.csproj" />
-        <ProjectReference Include="..\EssentialFrame.Serialization\EssentialFrame.Serialization.csproj" />
+        <ProjectReference Include="..\EssentialFrame.Core\EssentialFrame.Core.csproj"/>
+        <ProjectReference Include="..\EssentialFrame.Identity\EssentialFrame.Identity.csproj"/>
+        <ProjectReference Include="..\EssentialFrame.Serialization\EssentialFrame.Serialization.csproj"/>
     </ItemGroup>
 
 </Project>
