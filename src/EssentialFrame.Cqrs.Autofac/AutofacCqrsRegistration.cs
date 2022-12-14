@@ -19,6 +19,14 @@ public static class AutofacCqrsRegistration
                         .AsClosedTypesOf(typeof(IQueryHandler<,>))
                         .InstancePerLifetimeScope();
 
+        containerBuilder.RegisterAssemblyTypes(assemblies)
+                        .AsClosedTypesOf(typeof(IAsyncCommandHandler<>))
+                        .InstancePerLifetimeScope();
+
+        containerBuilder.RegisterAssemblyTypes(assemblies)
+                        .AsClosedTypesOf(typeof(IAsyncQueryHandler<,>))
+                        .InstancePerLifetimeScope();
+
         containerBuilder.RegisterType<AutofacCommandExecutor>()
                         .As<ICommandExecutor>()
                         .InstancePerLifetimeScope();

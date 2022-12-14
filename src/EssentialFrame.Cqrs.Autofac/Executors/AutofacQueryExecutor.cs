@@ -1,20 +1,19 @@
 using Autofac;
+using Autofac.Core;
 using EssentialFrame.Core.Extensions;
-using EssentialFrame.Cqrs.Autofac.Exceptions;
-using EssentialFrame.Cqrs.Executors;
 using EssentialFrame.Cqrs.Interfaces;
 using EssentialFrame.Cqrs.Queries.Interfaces;
 
 namespace EssentialFrame.Cqrs.Autofac.Executors;
 
-internal sealed class AutofacQueryExecutor : QueryExecutorBase
+internal sealed class AutofacQueryExecutor : IQueryExecutor
 {
     private readonly ILifetimeScope _lifetimeScope;
 
     public AutofacQueryExecutor(ILifetimeScope lifetimeScope) =>
         _lifetimeScope = lifetimeScope ?? throw new ArgumentNullException(nameof(lifetimeScope));
 
-    public override TResult Fetch<TResult>(IQuery<TResult> query)
+    public TResult Fetch<TResult>(IQuery<TResult> query)
     {
         using var scope = _lifetimeScope.BeginLifetimeScope();
 
@@ -23,7 +22,9 @@ internal sealed class AutofacQueryExecutor : QueryExecutorBase
 
         if (!isHandlerFound)
         {
-            throw new HandlerNotFoundException(query.GetTypeFullName());
+            throw new
+                DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
+                                              "Most likely it is not properly registered in container.");
         }
 
         var handlerMethod = handlerType
@@ -31,7 +32,9 @@ internal sealed class AutofacQueryExecutor : QueryExecutorBase
 
         if (handlerMethod is null)
         {
-            throw new HandlerHandleMethodNotFoundException(query.GetTypeFullName());
+            throw new
+                MissingMethodException($"Handler method for command or query: ({query.GetTypeFullName()}) hasn't been found. " +
+                                       "It occurred, because likely handler hasn't has method implementation.");
         }
 
         return (TResult)handlerMethod.Invoke(queryHandler,
@@ -41,8 +44,25 @@ internal sealed class AutofacQueryExecutor : QueryExecutorBase
                                              });
     }
 
-    public override async Task<TResult> FetchAsync<TResult>(IQuery<TResult> query,
-                                                            CancellationToken cancellationToken = default)
+    public TResult Fetch<TQuery, TResult>(TQuery query)
+        where TQuery : class, IQuery<TResult>
+        where TResult : class, IQueryResult<TResult>
+    {
+        using var scope = _lifetimeScope.BeginLifetimeScope();
+
+        var isHandlerFound = scope.TryResolve<IQueryHandler<TQuery, TResult>>(out var queryHandler);
+
+        if (!isHandlerFound)
+        {
+            throw new
+                DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
+                                              "Most likely it is not properly registered in container.");
+        }
+
+        return queryHandler.Handle(query);
+    }
+
+    public async Task<TResult> FetchAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default)
     {
         await using var scope = _lifetimeScope.BeginLifetimeScope();
 
@@ -51,7 +71,9 @@ internal sealed class AutofacQueryExecutor : QueryExecutorBase
 
         if (!isHandlerFound)
         {
-            throw new HandlerNotFoundException(query.GetTypeFullName());
+            throw new
+                DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
+                                              "Most likely it is not properly registered in container.");
         }
 
         var handlerMethod = handlerType
@@ -59,7 +81,9 @@ internal sealed class AutofacQueryExecutor : QueryExecutorBase
 
         if (handlerMethod is null)
         {
-            throw new HandlerHandleMethodNotFoundException(query.GetTypeFullName());
+            throw new
+                MissingMethodException($"Handler method for command or query: ({query.GetTypeFullName()}) hasn't been found. " +
+                                       "It occurred, because likely handler hasn't has method implementation.");
         }
 
         return await (handlerMethod.Invoke(queryHandler,
@@ -70,17 +94,21 @@ internal sealed class AutofacQueryExecutor : QueryExecutorBase
                                            }) as Task<TResult>)!;
     }
 
-    protected override THandler FindHandler<TQuery, TResult, THandler>(TQuery query)
+    public async Task<TResult> FetchAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default)
+        where TQuery : class, IQuery<TResult>
+        where TResult : class, IQueryResult<TResult>
     {
-        using var scope = _lifetimeScope.BeginLifetimeScope();
+        await using var scope = _lifetimeScope.BeginLifetimeScope();
 
-        var isHandlerFound = scope.TryResolve(out THandler queryHandler);
+        var isHandlerFound = scope.TryResolve<IAsyncQueryHandler<TQuery, TResult>>(out var queryHandler);
 
         if (!isHandlerFound)
         {
-            throw new HandlerNotFoundException(query.GetTypeFullName());
+            throw new
+                DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
+                                              "Most likely it is not properly registered in container.");
         }
 
-        return queryHandler;
+        return await queryHandler.HandleAsync(query, cancellationToken);
     }
 }
