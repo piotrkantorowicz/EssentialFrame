@@ -31,7 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\EssentialFrame.Cqrs.Errors.Handling\EssentialFrame.Cqrs.Errors.Handling.csproj"/>
+        <ProjectReference Include="..\EssentialFrame.Cqrs.Errors.Handling\EssentialFrame.Cqrs.Errors.Handling.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Cqrs.Queries.Errors\EssentialFrame.Cqrs.Queries.Errors.csproj"/>
     </ItemGroup>
 
