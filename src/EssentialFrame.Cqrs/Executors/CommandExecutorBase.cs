@@ -2,13 +2,13 @@ using EssentialFrame.Cqrs.Commands.Interfaces;
 using EssentialFrame.Cqrs.Commands.Store;
 using EssentialFrame.Cqrs.Interfaces;
 
-namespace EssentialFrame.Cqrs.Dispatchers;
+namespace EssentialFrame.Cqrs.Executors;
 
-public abstract class CommandDispatcherBase : ICommandDispatcher
+public abstract class CommandExecutorBase : ICommandExecutor
 {
     private readonly ICommandStore _commandStore;
 
-    protected CommandDispatcherBase(ICommandStore commandStore) =>
+    protected CommandExecutorBase(ICommandStore commandStore) =>
         _commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
 
     public virtual ICommandResult Send<TCommand>(TCommand command)
@@ -88,5 +88,5 @@ public abstract class CommandDispatcherBase : ICommandDispatcher
 
     protected abstract THandler FindHandler<TCommand, THandler>(TCommand command)
         where TCommand : class, ICommand
-        where THandler : class, IHandler;
+        where THandler : class, ICommandHandler;
 }

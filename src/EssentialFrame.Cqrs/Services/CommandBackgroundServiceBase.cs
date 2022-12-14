@@ -12,7 +12,7 @@ public abstract class CommandBackgroundServiceBase : BackgroundService
     protected CommandBackgroundServiceBase(int timeInterval) => _timeInterval = timeInterval;
 
     protected async Task ProcessUnsentCommands(ICommandStore commandStore,
-                                               ICommandDispatcher commandDispatcher,
+                                               ICommandExecutor commandExecutor,
                                                CancellationToken stoppingToken)
     {
         if (commandStore == null)
@@ -20,9 +20,9 @@ public abstract class CommandBackgroundServiceBase : BackgroundService
             throw new ArgumentNullException(nameof(commandStore));
         }
 
-        if (commandDispatcher == null)
+        if (commandExecutor == null)
         {
-            throw new ArgumentNullException(nameof(commandDispatcher));
+            throw new ArgumentNullException(nameof(commandExecutor));
         }
 
         while (!stoppingToken.IsCancellationRequested)
@@ -33,7 +33,7 @@ public abstract class CommandBackgroundServiceBase : BackgroundService
             {
                 foreach (var unSendCommand in commandsPossibleToSend)
                 {
-                    await commandDispatcher.SendAsync(unSendCommand, stoppingToken);
+                    await commandExecutor.SendAsync(unSendCommand, stoppingToken);
                 }
             }
 

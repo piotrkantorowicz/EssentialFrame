@@ -19,7 +19,7 @@ public class AutofacCommandBackgroundService : CommandBackgroundServiceBase
         await using var scope = _lifetimeScope.BeginLifetimeScope();
 
         var commandStore = scope.Resolve<ICommandStore>();
-        var commandDispatcher = scope.Resolve<ICommandDispatcher>();
+        var commandDispatcher = scope.Resolve<ICommandExecutor>();
 
         await ProcessUnsentCommands(commandStore,
                                     commandDispatcher,

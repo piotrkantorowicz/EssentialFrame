@@ -1,19 +1,20 @@
 using Autofac;
 using EssentialFrame.Core.Extensions;
 using EssentialFrame.Cqrs.Autofac.Exceptions;
+using EssentialFrame.Cqrs.Executors;
 using EssentialFrame.Cqrs.Interfaces;
 using EssentialFrame.Cqrs.Queries.Interfaces;
 
-namespace EssentialFrame.Cqrs.Autofac.Dispatchers;
+namespace EssentialFrame.Cqrs.Autofac.Executors;
 
-internal sealed class AutofacQueryDispatcher : IQueryDispatcher
+internal sealed class AutofacQueryExecutor : QueryExecutorBase
 {
     private readonly ILifetimeScope _lifetimeScope;
 
-    public AutofacQueryDispatcher(ILifetimeScope lifetimeScope) =>
+    public AutofacQueryExecutor(ILifetimeScope lifetimeScope) =>
         _lifetimeScope = lifetimeScope ?? throw new ArgumentNullException(nameof(lifetimeScope));
 
-    public TResult Fetch<TResult>(IQuery<TResult> query)
+    public override TResult Fetch<TResult>(IQuery<TResult> query)
     {
         using var scope = _lifetimeScope.BeginLifetimeScope();
 
@@ -40,22 +41,8 @@ internal sealed class AutofacQueryDispatcher : IQueryDispatcher
                                              });
     }
 
-    public TResult Fetch<TQuery, TResult>(TQuery query)
-        where TQuery : class, IQuery<TResult> where TResult : IQueryResult<TResult>
-    {
-        using var scope = _lifetimeScope.BeginLifetimeScope();
-
-        var isHandlerFound = scope.TryResolve<IQueryHandler<TQuery, TResult>>(out var queryHandler);
-
-        if (!isHandlerFound)
-        {
-            throw new HandlerNotFoundException(query.GetTypeFullName());
-        }
-
-        return queryHandler.Handle(query);
-    }
-
-    public async Task<TResult> FetchAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default)
+    public override async Task<TResult> FetchAsync<TResult>(IQuery<TResult> query,
+                                                            CancellationToken cancellationToken = default)
     {
         await using var scope = _lifetimeScope.BeginLifetimeScope();
 
@@ -83,19 +70,17 @@ internal sealed class AutofacQueryDispatcher : IQueryDispatcher
                                            }) as Task<TResult>)!;
     }
 
-    public async Task<TResult> FetchAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default)
-        where TQuery : class, IQuery<TResult>
-        where TResult : IQueryResult<TResult>
+    protected override THandler FindHandler<TQuery, TResult, THandler>(TQuery query)
     {
-        await using var scope = _lifetimeScope.BeginLifetimeScope();
+        using var scope = _lifetimeScope.BeginLifetimeScope();
 
-        var isHandlerFound = scope.TryResolve<IAsyncQueryHandler<TQuery, TResult>>(out var queryHandler);
+        var isHandlerFound = scope.TryResolve(out THandler queryHandler);
 
         if (!isHandlerFound)
         {
             throw new HandlerNotFoundException(query.GetTypeFullName());
         }
 
-        return await queryHandler.HandleAsync(query, cancellationToken);
+        return queryHandler;
     }
 }

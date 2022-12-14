@@ -2,7 +2,7 @@ using EssentialFrame.Cqrs.Commands.Interfaces;
 
 namespace EssentialFrame.Cqrs.Interfaces;
 
-public interface ICommandDispatcher
+public interface ICommandExecutor
 {
     ICommandResult Send<TCommand>(TCommand command)
         where TCommand : class, ICommand;

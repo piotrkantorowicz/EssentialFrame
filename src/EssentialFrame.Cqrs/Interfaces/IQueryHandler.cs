@@ -2,8 +2,18 @@ using EssentialFrame.Cqrs.Queries.Interfaces;
 
 namespace EssentialFrame.Cqrs.Interfaces;
 
-public interface IQueryHandler<in TQuery, out TResult> : IHandler
+public interface IAsyncQueryHandler<in TQuery, TResult> : IQueryHandler
+    where TQuery : class, IQuery<TResult>
+{
+    Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken = default);
+}
+
+public interface IQueryHandler<in TQuery, out TResult> : IQueryHandler
     where TQuery : class, IQuery<TResult>
 {
     TResult Handle(TQuery query);
+}
+
+public interface IQueryHandler : IHandler
+{
 }

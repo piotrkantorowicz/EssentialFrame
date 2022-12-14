@@ -1,6 +1,6 @@
 using System.Reflection;
 using Autofac;
-using EssentialFrame.Cqrs.Autofac.Dispatchers;
+using EssentialFrame.Cqrs.Autofac.Executors;
 using EssentialFrame.Cqrs.Autofac.Services;
 using EssentialFrame.Cqrs.Interfaces;
 
@@ -19,12 +19,12 @@ public static class AutofacCqrsRegistration
                         .AsClosedTypesOf(typeof(IQueryHandler<,>))
                         .InstancePerLifetimeScope();
 
-        containerBuilder.RegisterType<AutofacCommandDispatcher>()
-                        .As<ICommandDispatcher>()
+        containerBuilder.RegisterType<AutofacCommandExecutor>()
+                        .As<ICommandExecutor>()
                         .InstancePerLifetimeScope();
 
-        containerBuilder.RegisterType<AutofacQueryDispatcher>()
-                        .As<IQueryDispatcher>()
+        containerBuilder.RegisterType<AutofacQueryExecutor>()
+                        .As<IQueryExecutor>()
                         .InstancePerLifetimeScope();
 
         containerBuilder.RegisterType<AutofacCommandBackgroundService>()
