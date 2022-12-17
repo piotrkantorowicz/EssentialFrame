@@ -5,10 +5,13 @@ namespace EssentialFrame.BackgroundTasks;
 
 public abstract class BackgroundService : IHostedService, IBackgroundService, IDisposable
 {
-    private Task _executingTask;
     private readonly CancellationTokenSource _stoppingCts = new();
+    private Task _executingTask;
 
-    protected abstract Task ExecuteAsync(CancellationToken stoppingToken);
+    public virtual void Dispose()
+    {
+        _stoppingCts.Cancel();
+    }
 
     public virtual Task StartAsync(CancellationToken cancellationToken)
     {
@@ -41,8 +44,6 @@ public abstract class BackgroundService : IHostedService, IBackgroundService, ID
         }
     }
 
-    public virtual void Dispose()
-    {
-        _stoppingCts.Cancel();
-    }
+    protected abstract Task ExecuteAsync(CancellationToken stoppingToken);
 }
+

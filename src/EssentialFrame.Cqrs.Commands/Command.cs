@@ -3,9 +3,9 @@ using EssentialFrame.Identity;
 
 namespace EssentialFrame.Cqrs.Commands;
 
-public record Command() : ICommand
+public abstract record Command() : ICommand
 {
-    public Command(IIdentity identity)
+    protected Command(IIdentity identity)
         : this()
     {
         var tenantIdentity = identity.Tenant.Identifier;
@@ -20,19 +20,19 @@ public record Command() : ICommand
             : ServiceIdentity;
     }
 
-    public Command(Guid aggregateIdentifier,
-                   Guid commandIdentifier,
-                   IIdentity identity)
+    protected Command(Guid aggregateIdentifier,
+                      Guid commandIdentifier,
+                      IIdentity identity)
         : this(identity)
     {
         AggregateIdentifier = aggregateIdentifier;
         CommandIdentifier = commandIdentifier;
     }
 
-    public Command(Guid aggregateIdentifier,
-                   Guid commandIdentifier,
-                   IIdentity identity,
-                   int? expectedVersion = null)
+    protected Command(Guid aggregateIdentifier,
+                      Guid commandIdentifier,
+                      IIdentity identity,
+                      int? expectedVersion = null)
         : this(aggregateIdentifier,
                commandIdentifier,
                identity)
@@ -55,3 +55,4 @@ public record Command() : ICommand
 
     public Guid CommandIdentifier { get; } = Guid.NewGuid();
 }
+

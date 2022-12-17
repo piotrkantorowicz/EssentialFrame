@@ -9,7 +9,7 @@
         <Copyright>Copyright © 2022 Piotr Kantorowicz</Copyright>
         <Authors>Piotr Kantorowicz</Authors>
         <Company>Piotr Kantorowicz</Company>
-        <Product>EssentialFrame.Cqrs</Product>
+        <Product>EssentialFrame.Cqrs.Commands.BackgroundProcessing</Product>
 
         <!-- Frameworks and language features -->
         <TargetFramework>net7.0</TargetFramework>
@@ -20,19 +20,16 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <!-- Packaging -->
-        <PackageId>EssentialFrame.Cqrs</PackageId>
+        <PackageId>EssentialFrame.Cqrs.Commands.BackgroundProcessing</PackageId>
         <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
+        <RootNamespace>EssentialFrame.Cqrs.Commands.BackgroundProcessing</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\EssentialFrame.BackgroundTasks\EssentialFrame.BackgroundTasks.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Cqrs.Commands.Errors\EssentialFrame.Cqrs.Commands.Errors.csproj"/>
+        <ProjectReference Include="..\EssentialFrame.Core\EssentialFrame.Core.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Cqrs.Commands.Store\EssentialFrame.Cqrs.Commands.Store.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Cqrs.Errors\EssentialFrame.Cqrs.Errors.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Cqrs.Queries.Errors\EssentialFrame.Cqrs.Queries.Errors.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Cqrs.Queries\EssentialFrame.Cqrs.Queries.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
 using System.Reflection;
 using Autofac;
+using EssentialFrame.Cqrs.Commands.Interfaces;
 using EssentialFrame.Cqrs.Commands.Validations.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Validations.Decorators;
-using EssentialFrame.Cqrs.Interfaces;
 
 namespace EssentialFrame.Cqrs.Commands.Validations.Autofac;
 
@@ -24,3 +24,4 @@ public static class CqrsValidationsRegistration
         return containerBuilder;
     }
 }
+

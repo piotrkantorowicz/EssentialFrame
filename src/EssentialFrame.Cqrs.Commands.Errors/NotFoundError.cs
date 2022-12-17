@@ -21,3 +21,4 @@ public class NotFoundError : ICommandError
 
     public string ResourceId { get; }
 }
+

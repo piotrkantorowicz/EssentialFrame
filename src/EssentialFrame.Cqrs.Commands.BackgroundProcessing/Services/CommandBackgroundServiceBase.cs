@@ -1,9 +1,9 @@
 using EssentialFrame.BackgroundTasks;
 using EssentialFrame.Core;
+using EssentialFrame.Cqrs.Commands.Interfaces;
 using EssentialFrame.Cqrs.Commands.Store;
-using EssentialFrame.Cqrs.Interfaces;
 
-namespace EssentialFrame.Cqrs.Services;
+namespace EssentialFrame.Cqrs.Commands.BackgroundProcessing.Services;
 
 public abstract class CommandBackgroundServiceBase : BackgroundService
 {
@@ -41,3 +41,4 @@ public abstract class CommandBackgroundServiceBase : BackgroundService
         }
     }
 }
+

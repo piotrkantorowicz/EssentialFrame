@@ -1,7 +1,7 @@
-using EssentialFrame.Cqrs.Interfaces;
 using EssentialFrame.Cqrs.Queries.Errors.Interfaces;
+using EssentialFrame.Cqrs.Queries.Interfaces;
 
-namespace EssentialFrame.Cqrs;
+namespace EssentialFrame.Cqrs.Queries;
 
 public sealed class QueryResult<T> : IQueryResult<T>
 {
@@ -29,3 +29,4 @@ public sealed class QueryResult<T> : IQueryResult<T>
             ErrorDetails = queryError
         };
 }
+

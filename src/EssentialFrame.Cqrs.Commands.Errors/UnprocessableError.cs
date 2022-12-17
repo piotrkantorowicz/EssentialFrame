@@ -8,3 +8,4 @@ public class UnprocessableError : ICommandError
 
     public string Message { get; }
 }
+

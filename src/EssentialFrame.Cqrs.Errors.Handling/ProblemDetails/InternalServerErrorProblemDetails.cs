@@ -12,3 +12,4 @@ public sealed class InternalServerErrorProblemDetails : BaseProblemDetails
 
     public string Detail { get; }
 }
+

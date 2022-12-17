@@ -15,3 +15,4 @@ internal class MissingDefaultConstructorException : Exception
     {
     }
 }
+

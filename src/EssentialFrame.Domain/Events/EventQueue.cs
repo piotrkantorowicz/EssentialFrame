@@ -62,3 +62,4 @@ public class EventQueue : IEventQueue
         _overriders.Add((name, tenant), command => action((T)command));
     }
 }
+

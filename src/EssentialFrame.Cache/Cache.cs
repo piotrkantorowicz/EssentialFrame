@@ -279,3 +279,4 @@ public class Cache : Cache<string, object>
 
     public static Cache Global => Lazy.Value;
 }
+

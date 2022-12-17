@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using EssentialFrame.Core.Extensions;
 using EssentialFrame.Cqrs.Commands.Interfaces;
-using EssentialFrame.Cqrs.Interfaces;
 using EssentialFrame.Serialization;
 using Microsoft.Extensions.Logging;
 
@@ -90,3 +89,4 @@ public sealed class LoggingCommandHandlerDecorator<TCommand> : ICommandHandler<T
         return commandResponse;
     }
 }
+

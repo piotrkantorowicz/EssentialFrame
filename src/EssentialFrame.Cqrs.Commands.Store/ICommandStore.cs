@@ -38,3 +38,4 @@ public interface ICommandStore
                                 bool isSuccess,
                                 CancellationToken cancellationToken = default);
 }
+

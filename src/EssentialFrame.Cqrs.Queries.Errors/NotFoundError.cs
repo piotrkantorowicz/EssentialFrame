@@ -21,3 +21,4 @@ public class NotFoundError : IQueryError
 
     public string ResourceId { get; }
 }
+

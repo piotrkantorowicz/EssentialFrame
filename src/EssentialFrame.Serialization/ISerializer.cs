@@ -8,3 +8,4 @@ public interface ISerializer
 
     string Serialize(object command, string[] exclusions);
 }
+

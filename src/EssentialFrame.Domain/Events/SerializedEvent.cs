@@ -22,3 +22,4 @@ public class SerializedEvent : IEvent
 
     public DateTimeOffset EventTime { get; set; }
 }
+

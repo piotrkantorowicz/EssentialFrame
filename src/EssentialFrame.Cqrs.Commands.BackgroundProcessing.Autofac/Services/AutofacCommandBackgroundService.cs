@@ -1,9 +1,9 @@
 using Autofac;
+using EssentialFrame.Cqrs.Commands.BackgroundProcessing.Services;
+using EssentialFrame.Cqrs.Commands.Interfaces;
 using EssentialFrame.Cqrs.Commands.Store;
-using EssentialFrame.Cqrs.Interfaces;
-using EssentialFrame.Cqrs.Services;
 
-namespace EssentialFrame.Cqrs.Autofac.Services;
+namespace EssentialFrame.Cqrs.Commands.BackgroundProcessing.Autofac.Services;
 
 public class AutofacCommandBackgroundService : CommandBackgroundServiceBase
 {
@@ -26,3 +26,4 @@ public class AutofacCommandBackgroundService : CommandBackgroundServiceBase
                                     stoppingToken);
     }
 }
+

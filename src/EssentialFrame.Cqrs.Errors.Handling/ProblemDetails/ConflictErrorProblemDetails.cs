@@ -42,3 +42,4 @@ public sealed class ConflictErrorProblemDetails : BaseProblemDetails
 
     public string ConflictedResourceId { get; }
 }
+

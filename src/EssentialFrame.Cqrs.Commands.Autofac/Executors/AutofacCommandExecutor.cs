@@ -3,9 +3,8 @@ using Autofac.Core;
 using EssentialFrame.Core.Extensions;
 using EssentialFrame.Cqrs.Commands.Interfaces;
 using EssentialFrame.Cqrs.Commands.Store;
-using EssentialFrame.Cqrs.Interfaces;
 
-namespace EssentialFrame.Cqrs.Autofac.Executors;
+namespace EssentialFrame.Cqrs.Commands.Autofac.Executors;
 
 internal sealed class AutofacCommandExecutor : ICommandExecutor
 {
@@ -147,3 +146,4 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor
                                           "Most likely it is not properly registered in container.");
     }
 }
+

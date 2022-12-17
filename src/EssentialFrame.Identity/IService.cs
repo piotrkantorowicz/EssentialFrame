@@ -8,3 +8,4 @@ public interface IService
 
     public string GetFullIdentifier();
 }
+

@@ -25,3 +25,4 @@ public sealed class NotFoundProblemDetails : BaseProblemDetails
 
     public string ResourceId { get; }
 }
+

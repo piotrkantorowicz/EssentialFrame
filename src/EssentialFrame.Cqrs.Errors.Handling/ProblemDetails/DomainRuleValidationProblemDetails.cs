@@ -20,3 +20,4 @@ public sealed class DomainRuleValidationProblemDetails : BaseProblemDetails
 
     public IDictionary<string, string> AdditionalDetails { get; }
 }
+

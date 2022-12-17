@@ -16,3 +16,4 @@ public interface IEventRepository
     T Unbox<T>(Guid aggregate)
         where T : AggregateRoot;
 }
+

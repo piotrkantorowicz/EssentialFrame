@@ -27,3 +27,4 @@ public class OutboxMessage
 
     public DateTime? ProcessedDate { get; }
 }
+

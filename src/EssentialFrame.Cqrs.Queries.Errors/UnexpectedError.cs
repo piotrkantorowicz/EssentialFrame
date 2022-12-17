@@ -16,3 +16,4 @@ public class UnexpectedError : IQueryError
 
     public string ExceptionDetails => Exception.ToString();
 }
+

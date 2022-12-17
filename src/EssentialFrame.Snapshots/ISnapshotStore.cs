@@ -10,3 +10,4 @@ public interface ISnapshotStore
 
     Snapshot Unbox(Guid id);
 }
+

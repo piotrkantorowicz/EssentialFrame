@@ -6,3 +6,4 @@ public class ForbiddenError : IQueryError
 {
     public string Message => "Access to requested resource is forbidden";
 }
+

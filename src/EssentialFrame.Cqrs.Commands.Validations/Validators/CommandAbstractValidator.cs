@@ -28,3 +28,4 @@ public abstract class CommandAbstractValidator<TCommand> : ICommandValidator<TCo
         _rules.Add(rule);
     }
 }
+

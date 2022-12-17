@@ -1,6 +1,6 @@
 using EssentialFrame.Cqrs.Commands.Errors.Interfaces;
 
-namespace EssentialFrame.Cqrs.Interfaces;
+namespace EssentialFrame.Cqrs.Commands.Interfaces;
 
 public interface ICommandResult
 {
@@ -10,3 +10,4 @@ public interface ICommandResult
 
     ICommandError ErrorDetails { get; }
 }
+

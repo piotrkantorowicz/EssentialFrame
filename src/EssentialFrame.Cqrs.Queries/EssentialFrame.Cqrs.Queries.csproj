@@ -25,4 +25,8 @@
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\EssentialFrame.Cqrs.Queries.Errors\EssentialFrame.Cqrs.Queries.Errors.csproj"/>
+    </ItemGroup>
+
 </Project>

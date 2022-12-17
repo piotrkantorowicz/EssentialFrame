@@ -1,7 +1,7 @@
 using EssentialFrame.Cqrs.Commands.Errors.Interfaces;
-using EssentialFrame.Cqrs.Interfaces;
+using EssentialFrame.Cqrs.Commands.Interfaces;
 
-namespace EssentialFrame.Cqrs;
+namespace EssentialFrame.Cqrs.Commands;
 
 public sealed class CommandResult : ICommandResult
 {
@@ -35,3 +35,4 @@ public sealed class CommandResult : ICommandResult
             ErrorDetails = commandError
         };
 }
+

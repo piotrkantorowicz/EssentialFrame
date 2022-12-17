@@ -1,6 +1,4 @@
-using EssentialFrame.Cqrs.Queries.Interfaces;
-
-namespace EssentialFrame.Cqrs.Interfaces;
+namespace EssentialFrame.Cqrs.Queries.Interfaces;
 
 public interface IQueryExecutor
 {
@@ -16,3 +14,4 @@ public interface IQueryExecutor
         where TQuery : class, IQuery<TResult>
         where TResult : class, IQueryResult<TResult>;
 }
+

@@ -12,3 +12,4 @@ public sealed class UnprocessableEntityProblemDetails : BaseProblemDetails
 
     public string Detail { get; }
 }
+

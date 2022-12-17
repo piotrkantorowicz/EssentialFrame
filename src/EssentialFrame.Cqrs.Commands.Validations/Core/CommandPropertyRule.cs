@@ -47,3 +47,4 @@ internal sealed class CommandPropertyRule<TCommand, TProperty> : ICommandPropert
                                                             (command, prop) => expression(command, prop));
     }
 }
+

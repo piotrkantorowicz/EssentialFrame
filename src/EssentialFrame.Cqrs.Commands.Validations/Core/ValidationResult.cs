@@ -42,3 +42,4 @@ public sealed class ValidationResult
         return string.Join(separator, _errors.Select(failure => failure.ErrorMessage));
     }
 }
+

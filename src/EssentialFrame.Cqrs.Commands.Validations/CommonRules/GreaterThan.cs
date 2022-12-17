@@ -43,3 +43,4 @@ public sealed class GreaterOrEqualThan : AbstractValidationRule
 
     public override string ErrorMessage => $"{PropertyName} have to be greater than or equal to {_maxValue}.";
 }
+

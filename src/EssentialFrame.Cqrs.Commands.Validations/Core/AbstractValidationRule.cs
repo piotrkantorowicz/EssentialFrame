@@ -12,3 +12,4 @@ public abstract class AbstractValidationRule : IValidationRule
 
     public string PropertyName { get; protected init; }
 }
+

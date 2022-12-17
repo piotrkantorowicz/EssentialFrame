@@ -10,3 +10,4 @@ public interface IEventQueue
     void Override<T>(Action<T> action, Guid tenant)
         where T : IEvent;
 }
+

@@ -8,3 +8,4 @@ public class Snapshot
 
     public string AggregateState { get; set; }
 }
+

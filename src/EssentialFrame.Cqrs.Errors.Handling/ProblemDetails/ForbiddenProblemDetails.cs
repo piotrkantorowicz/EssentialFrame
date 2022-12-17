@@ -12,3 +12,4 @@ public sealed class ForbiddenProblemDetails : BaseProblemDetails
 
     public string Detail { get; }
 }
+

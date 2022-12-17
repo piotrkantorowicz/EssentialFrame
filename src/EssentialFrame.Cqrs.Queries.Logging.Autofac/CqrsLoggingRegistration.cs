@@ -1,6 +1,6 @@
 using System.Reflection;
 using Autofac;
-using EssentialFrame.Cqrs.Interfaces;
+using EssentialFrame.Cqrs.Queries.Interfaces;
 using EssentialFrame.Cqrs.Queries.Logging.Decorators;
 
 namespace EssentialFrame.Cqrs.Queries.Logging.Autofac;
@@ -19,3 +19,4 @@ public static class CqrsLoggingRegistration
         return containerBuilder;
     }
 }
+

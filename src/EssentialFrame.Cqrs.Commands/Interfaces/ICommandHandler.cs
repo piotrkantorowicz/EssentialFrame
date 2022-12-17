@@ -1,6 +1,4 @@
-using EssentialFrame.Cqrs.Commands.Interfaces;
-
-namespace EssentialFrame.Cqrs.Interfaces;
+namespace EssentialFrame.Cqrs.Commands.Interfaces;
 
 public interface IAsyncCommandHandler<in TCommand> : ICommandHandler
     where TCommand : class, ICommand
@@ -14,6 +12,7 @@ public interface ICommandHandler<in TCommand> : ICommandHandler
     ICommandResult Handle(TCommand command);
 }
 
-public interface ICommandHandler : IHandler
+public interface ICommandHandler
 {
 }
+

@@ -12,3 +12,4 @@ public interface IUser
 
     int Key { get; }
 }
+

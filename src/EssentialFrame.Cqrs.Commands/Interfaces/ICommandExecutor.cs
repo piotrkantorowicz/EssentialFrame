@@ -1,6 +1,4 @@
-using EssentialFrame.Cqrs.Commands.Interfaces;
-
-namespace EssentialFrame.Cqrs.Interfaces;
+namespace EssentialFrame.Cqrs.Commands.Interfaces;
 
 public interface ICommandExecutor
 {
@@ -30,3 +28,4 @@ public interface ICommandExecutor
     Task CancelSendingAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
         where TCommand : class, ICommand;
 }
+

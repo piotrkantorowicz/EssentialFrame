@@ -1,10 +1,9 @@
 using Autofac;
 using Autofac.Core;
 using EssentialFrame.Core.Extensions;
-using EssentialFrame.Cqrs.Interfaces;
 using EssentialFrame.Cqrs.Queries.Interfaces;
 
-namespace EssentialFrame.Cqrs.Autofac.Executors;
+namespace EssentialFrame.Cqrs.Queries.Autofac.Executors;
 
 internal sealed class AutofacQueryExecutor : IQueryExecutor
 {
@@ -112,3 +111,4 @@ internal sealed class AutofacQueryExecutor : IQueryExecutor
         return await queryHandler.HandleAsync(query, cancellationToken);
     }
 }
+

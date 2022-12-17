@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using EssentialFrame.Core.Extensions;
-using EssentialFrame.Cqrs.Interfaces;
 using EssentialFrame.Cqrs.Queries.Interfaces;
 using EssentialFrame.Serialization;
 using Microsoft.Extensions.Logging;
@@ -89,3 +88,4 @@ public sealed class LoggingQueryHandlerDecorator<TQuery, TResult> : IQueryHandle
         return queryResponse;
     }
 }
+

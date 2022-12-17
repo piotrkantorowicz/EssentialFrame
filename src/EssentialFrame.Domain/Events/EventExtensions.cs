@@ -54,3 +54,4 @@ public static class EventExtensions
         return serialized;
     }
 }
+

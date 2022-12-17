@@ -16,3 +16,4 @@ public class UnexpectedError : ICommandError
 
     public string ExceptionDetails => Exception.ToString();
 }
+

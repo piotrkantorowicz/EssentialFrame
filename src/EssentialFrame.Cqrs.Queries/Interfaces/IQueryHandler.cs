@@ -1,6 +1,4 @@
-using EssentialFrame.Cqrs.Queries.Interfaces;
-
-namespace EssentialFrame.Cqrs.Interfaces;
+namespace EssentialFrame.Cqrs.Queries.Interfaces;
 
 public interface IAsyncQueryHandler<in TQuery, TResult> : IQueryHandler
     where TQuery : class, IQuery<TResult>
@@ -14,6 +12,7 @@ public interface IQueryHandler<in TQuery, out TResult> : IQueryHandler
     TResult Handle(TQuery query);
 }
 
-public interface IQueryHandler : IHandler
+public interface IQueryHandler
 {
 }
+

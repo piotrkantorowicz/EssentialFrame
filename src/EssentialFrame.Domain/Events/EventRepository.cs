@@ -54,3 +54,4 @@ public class EventRepository : IEventRepository
         return aggregate;
     }
 }
+

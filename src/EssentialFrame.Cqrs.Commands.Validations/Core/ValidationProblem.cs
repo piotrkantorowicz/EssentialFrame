@@ -26,3 +26,4 @@ public sealed class ValidationProblem
 
     public override string ToString() => ErrorMessage;
 }
+

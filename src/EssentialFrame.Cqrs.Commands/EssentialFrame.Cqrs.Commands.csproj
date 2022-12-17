@@ -26,9 +26,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\EssentialFrame.Core\EssentialFrame.Core.csproj"/>
+        <ProjectReference Include="..\EssentialFrame.Cqrs.Commands.Errors\EssentialFrame.Cqrs.Commands.Errors.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Identity\EssentialFrame.Identity.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Serialization\EssentialFrame.Serialization.csproj"/>
     </ItemGroup>
 
 </Project>

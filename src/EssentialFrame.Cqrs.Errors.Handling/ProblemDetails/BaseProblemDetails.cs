@@ -10,3 +10,4 @@ public class BaseProblemDetails
 
     public string Title { get; init; }
 }
+

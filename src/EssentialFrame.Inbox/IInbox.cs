@@ -6,3 +6,4 @@ public interface IInbox
 
     void Save();
 }
+
