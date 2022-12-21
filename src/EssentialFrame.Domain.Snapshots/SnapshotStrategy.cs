@@ -1,6 +1,6 @@
 ﻿using EssentialFrame.Domain.Aggregates;
 
-namespace EssentialFrame.Snapshots;
+namespace EssentialFrame.Domain.Snapshots;
 
 public class SnapshotStrategy : ISnapshotStrategy
 {

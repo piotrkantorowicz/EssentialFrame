@@ -9,7 +9,7 @@
         <Copyright>Copyright © 2022 Piotr Kantorowicz</Copyright>
         <Authors>Piotr Kantorowicz</Authors>
         <Company>Piotr Kantorowicz</Company>
-        <Product>EssentialFrame.Snapshots</Product>
+        <Product>EssentialFrame.Domain.Snapshots</Product>
 
         <!-- Frameworks and language features -->
         <TargetFramework>net7.0</TargetFramework>
@@ -20,7 +20,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <!-- Packaging -->
-        <PackageId>EssentialFrame.Snapshots</PackageId>
+        <PackageId>EssentialFrame.Domain.Snapshots</PackageId>
         <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
     </PropertyGroup>

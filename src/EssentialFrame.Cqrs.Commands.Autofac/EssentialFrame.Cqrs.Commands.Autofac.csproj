@@ -23,7 +23,6 @@
         <PackageId>EssentialFrame.Cqrs.Commands.Autofac</PackageId>
         <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
-        <RootNamespace>EssentialFrame.Cqrs.Commands.Autofac</RootNamespace>
     </PropertyGroup>
 
 

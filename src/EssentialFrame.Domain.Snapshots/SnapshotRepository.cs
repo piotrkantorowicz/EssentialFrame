@@ -2,7 +2,7 @@
 using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.Domain.Core;
 
-namespace EssentialFrame.Snapshots;
+namespace EssentialFrame.Domain.Snapshots;
 
 public class SnapshotRepository : IEventRepository
 {

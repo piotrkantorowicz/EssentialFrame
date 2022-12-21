@@ -52,7 +52,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Serializatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Domain", "src\EssentialFrame.Domain\EssentialFrame.Domain.csproj", "{5764B297-28A2-4ACA-AEBD-4CFF86DBFE4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Snapshots", "src\EssentialFrame.Snapshots\EssentialFrame.Snapshots.csproj", "{ACCBE826-24DD-49D1-AF9E-18477CFDDEFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Domain.Snapshots", "src\EssentialFrame.Domain.Snapshots\EssentialFrame.Domain.Snapshots.csproj", "{ACCBE826-24DD-49D1-AF9E-18477CFDDEFD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cache", "src\EssentialFrame.Cache\EssentialFrame.Cache.csproj", "{C5235EAD-6B2A-4A7A-8232-227B7ABF93D5}"
 EndProject
