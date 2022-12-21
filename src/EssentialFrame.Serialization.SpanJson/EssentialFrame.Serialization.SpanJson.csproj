@@ -9,7 +9,7 @@
         <Copyright>Copyright © 2022 Piotr Kantorowicz</Copyright>
         <Authors>Piotr Kantorowicz</Authors>
         <Company>Piotr Kantorowicz</Company>
-        <Product>EssentialFrame.Cqrs.Queries</Product>
+        <Product>EssentialFrame.Serialization.SpanJson</Product>
 
         <!-- Frameworks and language features -->
         <TargetFramework>net7.0</TargetFramework>
@@ -20,14 +20,18 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <!-- Packaging -->
-        <PackageId>EssentialFrame.Cqrs.Queries</PackageId>
+        <PackageId>EssentialFrame.Serialization.SpanJson</PackageId>
         <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\EssentialFrame.Cqrs.Queries.Errors\EssentialFrame.Cqrs.Queries.Errors.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Identity\EssentialFrame.Identity.csproj"/>
+        <ProjectReference Include="..\EssentialFrame.Core\EssentialFrame.Core.csproj"/>
+        <ProjectReference Include="..\EssentialFrame.Serialization\EssentialFrame.Serialization.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="SpanJson" Version="4.0.0"/>
     </ItemGroup>
 
 </Project>

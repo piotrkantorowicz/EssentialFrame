@@ -6,7 +6,7 @@ using EssentialFrame.Cqrs.Commands.Validations.Decorators;
 
 namespace EssentialFrame.Cqrs.Commands.Validations.Autofac;
 
-public static class CqrsValidationsRegistration
+public static class AutofacRegistration
 {
     public static ContainerBuilder AddCqrsValidation(this ContainerBuilder containerBuilder,
                                                      Assembly[] assemblies)

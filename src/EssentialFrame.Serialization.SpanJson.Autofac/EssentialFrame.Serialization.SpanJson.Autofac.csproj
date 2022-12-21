@@ -9,7 +9,7 @@
         <Copyright>Copyright © 2022 Piotr Kantorowicz</Copyright>
         <Authors>Piotr Kantorowicz</Authors>
         <Company>Piotr Kantorowicz</Company>
-        <Product>EssentialFrame.Cqrs.Queries</Product>
+        <Product>EssentialFrame.Serialization.SpanJson.Autofac</Product>
 
         <!-- Frameworks and language features -->
         <TargetFramework>net7.0</TargetFramework>
@@ -20,14 +20,17 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <!-- Packaging -->
-        <PackageId>EssentialFrame.Cqrs.Queries</PackageId>
+        <PackageId>EssentialFrame.Serialization.SpanJson.Autofac</PackageId>
         <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\EssentialFrame.Cqrs.Queries.Errors\EssentialFrame.Cqrs.Queries.Errors.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Identity\EssentialFrame.Identity.csproj"/>
+        <PackageReference Include="Autofac" Version="6.5.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\EssentialFrame.Serialization.SpanJson\EssentialFrame.Serialization.SpanJson.csproj"/>
     </ItemGroup>
 
 </Project>

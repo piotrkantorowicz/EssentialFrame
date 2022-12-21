@@ -14,3 +14,13 @@ public interface IQueryResult<out TData> : IQueryResult
     TData Data { get; }
 }
 
+public interface IPagedQueryResult<out TData> : IQueryResult<TData>
+{
+    public int? Page { get; }
+
+    public int? ResultsPerPage { get; }
+
+    public int? TotalPages { get; }
+
+    public long? TotalResults { get; }
+}

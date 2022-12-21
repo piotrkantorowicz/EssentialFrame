@@ -26,15 +26,7 @@ public static class EventExtensions
                                             Guid tenant,
                                             Guid user)
     {
-        var data = serializer.Serialize(@event,
-                                        new[]
-                                        {
-                                            "AggregateIdentifier",
-                                            "AggregateVersion",
-                                            "EventTime",
-                                            "IdentityTenant",
-                                            "IdentityUser"
-                                        });
+        var data = serializer.Serialize(@event);
 
         var serialized = new SerializedEvent
                          {

@@ -4,8 +4,6 @@ public interface IQuery
 {
     Guid QueryIdentifier { get; }
 
-    Guid IdentityTenant { get; }
-
     Guid TenantIdentity { get; }
 
     Guid UserIdentity { get; }

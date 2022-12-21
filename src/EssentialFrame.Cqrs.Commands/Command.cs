@@ -3,21 +3,18 @@ using EssentialFrame.Identity;
 
 namespace EssentialFrame.Cqrs.Commands;
 
-public abstract record Command() : ICommand
+public abstract class Command : ICommand
 {
+    protected Command()
+    {
+    }
+    
     protected Command(IIdentity identity)
         : this()
     {
-        var tenantIdentity = identity.Tenant.Identifier;
-        var userIdentity = identity.User.Identifier;
-        var serviceIdentity = identity.Service.GetFullIdentifier();
-
-        TenantIdentity = Guid.Empty == TenantIdentity ? tenantIdentity : TenantIdentity;
-        UserIdentity = Guid.Empty == UserIdentity ? userIdentity : UserIdentity;
-
-        ServiceIdentity = string.IsNullOrEmpty(ServiceIdentity)
-            ? serviceIdentity
-            : ServiceIdentity;
+        TenantIdentity = identity.Tenant.Identifier;
+        UserIdentity = identity.User.Identifier;
+        ServiceIdentity = identity.Service.GetFullIdentifier();
     }
 
     protected Command(Guid aggregateIdentifier,
