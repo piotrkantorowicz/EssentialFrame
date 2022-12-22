@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\EssentialFrame.Core\EssentialFrame.Core.csproj"/>
+        <ProjectReference Include="..\EssentialFrame\EssentialFrame.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Cqrs.Queries\EssentialFrame.Cqrs.Queries.csproj"/>
     </ItemGroup>
 

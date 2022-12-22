@@ -1,5 +1,5 @@
+using EssentialFrame.Core.Identity;
 using EssentialFrame.Cqrs.Queries.Interfaces;
-using EssentialFrame.Identity;
 
 namespace EssentialFrame.Cqrs.Queries;
 
@@ -50,3 +50,6 @@ public abstract class PagedQuery<T> : SortOrderQuery<T>, IPagedQuery
 
     public int ResultsPerPage { get; }
 }
+
+
+

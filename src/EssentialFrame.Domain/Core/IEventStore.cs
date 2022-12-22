@@ -20,3 +20,6 @@ public interface IEventStore
     void Box(Guid aggregate);
 }
 
+
+
+

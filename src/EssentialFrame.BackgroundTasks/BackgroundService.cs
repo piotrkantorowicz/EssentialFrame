@@ -47,3 +47,6 @@ public abstract class BackgroundService : IHostedService, IBackgroundService, ID
     protected abstract Task ExecuteAsync(CancellationToken stoppingToken);
 }
 
+
+
+

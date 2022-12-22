@@ -28,3 +28,6 @@ public class InboxMessage
     public DateTime? ProcessedDate { get; }
 }
 
+
+
+

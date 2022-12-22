@@ -16,3 +16,6 @@ public interface IQueryHandler
 {
 }
 
+
+
+

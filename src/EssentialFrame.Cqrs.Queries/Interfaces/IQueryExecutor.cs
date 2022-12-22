@@ -15,3 +15,6 @@ public interface IQueryExecutor
         where TResult : class, IQueryResult<TResult>;
 }
 
+
+
+

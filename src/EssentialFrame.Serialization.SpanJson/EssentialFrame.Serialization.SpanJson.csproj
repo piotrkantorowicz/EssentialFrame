@@ -26,7 +26,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\EssentialFrame.Core\EssentialFrame.Core.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Serialization\EssentialFrame.Serialization.csproj"/>
     </ItemGroup>
 

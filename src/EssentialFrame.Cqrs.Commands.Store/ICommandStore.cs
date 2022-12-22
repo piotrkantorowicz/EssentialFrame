@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Cqrs.Commands.Interfaces;
+﻿using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Store.Models;
 
 namespace EssentialFrame.Cqrs.Commands.Store;
@@ -11,11 +11,11 @@ public interface ICommandStore
 
     CommandData Get(Guid commandIdentifier);
 
-    Task<ICommand> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken = default);
+    Task<CommandData> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken = default);
 
-    IReadOnlyCollection<ICommand> GetPossibleToSend(DateTimeOffset at);
+    IReadOnlyCollection<CommandData> GetPossibleToSend(DateTimeOffset at);
 
-    Task<IReadOnlyCollection<ICommand>>
+    Task<IReadOnlyCollection<CommandData>>
         GetPossibleToSendAsync(DateTimeOffset at, CancellationToken cancellationToken = default);
 
     void StartExecution(ICommand command);
@@ -37,5 +37,12 @@ public interface ICommandStore
     Task CompleteExecutionAsync(Guid commandIdentifier,
                                 bool isSuccess,
                                 CancellationToken cancellationToken = default);
+
+    ICommand ConvertToCommand(CommandData commandData);
+
+    CommandData ConvertToCommandData(ICommand command);
 }
+
+
+
 

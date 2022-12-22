@@ -1,7 +1,7 @@
 using Autofac;
 using Autofac.Core;
 using EssentialFrame.Core.Extensions;
-using EssentialFrame.Cqrs.Commands.Interfaces;
+using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Store;
 
 namespace EssentialFrame.Cqrs.Commands.Autofac.Executors;
@@ -20,6 +20,16 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor
         var handler = FindHandler<TCommand, ICommandHandler<TCommand>>(command, scope);
 
         return handler.Handle(command);
+    }
+
+    public async Task<ICommandResult> SendAsync<TCommand>(TCommand command,
+                                                          CancellationToken cancellationToken = default)
+        where TCommand : class, ICommand
+    {
+        await using var scope = _lifetimeScope.BeginLifetimeScope();
+        var handler = FindHandler<TCommand, IAsyncCommandHandler<TCommand>>(command, scope);
+
+        return await handler.HandleAsync(command, cancellationToken);
     }
 
     public ICommandResult SendAndStore<TCommand>(TCommand command)
@@ -54,16 +64,6 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor
         var commandStore = GetCommandStore(scope);
 
         commandStore.CancelExecution(command.CommandIdentifier);
-    }
-
-    public async Task<ICommandResult> SendAsync<TCommand>(TCommand command,
-                                                          CancellationToken cancellationToken = default)
-        where TCommand : class, ICommand
-    {
-        await using var scope = _lifetimeScope.BeginLifetimeScope();
-        var handler = FindHandler<TCommand, IAsyncCommandHandler<TCommand>>(command, scope);
-
-        return await handler.HandleAsync(command, cancellationToken);
     }
 
     public async Task<ICommandResult> SendAndStoreAsync<TCommand>(TCommand command,
@@ -146,4 +146,7 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor
                                           "Most likely it is not properly registered in container.");
     }
 }
+
+
+
 

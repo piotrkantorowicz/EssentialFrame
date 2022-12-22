@@ -26,6 +26,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\EssentialFrame.Cache.MemoryCache\EssentialFrame.Cache.MemoryCache.csproj"/>
+        <ProjectReference Include="..\EssentialFrame.Cache\EssentialFrame.Cache.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Core\EssentialFrame.Core.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Serialization\EssentialFrame.Serialization.csproj"/>
     </ItemGroup>

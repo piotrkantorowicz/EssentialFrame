@@ -31,6 +31,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\EssentialFrame.Serialization.SpanJson\EssentialFrame.Serialization.SpanJson.csproj"/>
+        <ProjectReference Include="..\EssentialFrame\EssentialFrame.csproj"/>
     </ItemGroup>
 
 </Project>

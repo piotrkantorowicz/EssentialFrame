@@ -50,7 +50,7 @@ public abstract class AggregateRoot
                 change.EventTime = DateTimeOffset.UtcNow;
             }
 
-            AggregateVersion = AggregateVersion + changes.Length;
+            AggregateVersion += changes.Length;
 
             _changes.Clear();
 
@@ -82,18 +82,17 @@ public abstract class AggregateRoot
         lock (_changes)
         {
             ApplyEvent(change);
+
             _changes.Add(change);
         }
     }
 
     protected virtual void ApplyEvent(IEvent change)
     {
-        if (State == null)
-        {
-            State = CreateState();
-        }
-
+        State ??= CreateState();
         State.Apply(change);
     }
 }
+
+
 

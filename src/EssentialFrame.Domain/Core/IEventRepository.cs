@@ -17,3 +17,6 @@ public interface IEventRepository
         where T : AggregateRoot;
 }
 
+
+
+

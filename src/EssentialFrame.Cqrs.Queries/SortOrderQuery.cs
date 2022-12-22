@@ -1,5 +1,5 @@
+using EssentialFrame.Core.Identity;
 using EssentialFrame.Cqrs.Queries.Interfaces;
-using EssentialFrame.Identity;
 
 namespace EssentialFrame.Cqrs.Queries;
 
@@ -17,3 +17,6 @@ public abstract class SortOrderQuery<T> : Query<T>, ISortOrderQuery
 
     public SortOrder[] SortOrders { get; }
 }
+
+
+

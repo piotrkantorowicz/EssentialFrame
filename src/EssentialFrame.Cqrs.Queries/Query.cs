@@ -1,5 +1,5 @@
+using EssentialFrame.Core.Identity;
 using EssentialFrame.Cqrs.Queries.Interfaces;
-using EssentialFrame.Identity;
 
 namespace EssentialFrame.Cqrs.Queries;
 
@@ -25,3 +25,6 @@ public abstract class Query<T> : IQuery<T>
 
     public string ServiceIdentity { get; }
 }
+
+
+

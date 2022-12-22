@@ -24,3 +24,6 @@ public interface ICache<TK, T> : IDisposable
     void Clear();
 }
 
+
+
+

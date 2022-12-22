@@ -13,3 +13,4 @@ public class SerializedAggregate
     public Guid TenantIdentifier { get; set; }
 }
 
+
