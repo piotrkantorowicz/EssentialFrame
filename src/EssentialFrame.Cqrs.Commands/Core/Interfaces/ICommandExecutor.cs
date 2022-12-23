@@ -7,6 +7,12 @@ public interface ICommandExecutor
 
     Task<ICommandResult> SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
         where TCommand : class, ICommand;
+
+    ICommandResult SendAndStore<TCommand>(TCommand command)
+        where TCommand : class, ICommand;
+
+    Task<ICommandResult> SendAndStoreAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
+        where TCommand : class, ICommand;
 }
 
 

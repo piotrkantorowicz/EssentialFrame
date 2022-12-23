@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.Core;
+﻿using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
 
 namespace EssentialFrame.Domain.Aggregates;
@@ -39,15 +39,9 @@ public abstract class AggregateRoot
                     throw new MissingAggregateIdentifierException(GetType(), change.GetType());
                 }
 
-                if (change.AggregateIdentifier == Guid.Empty)
-                {
-                    change.AggregateIdentifier = AggregateIdentifier;
-                }
-
                 i++;
 
-                change.AggregateVersion = AggregateVersion + i;
-                change.EventTime = DateTimeOffset.UtcNow;
+                change.AdjustToAggregate(AggregateIdentifier, AggregateVersion + i);
             }
 
             AggregateVersion += changes.Length;
@@ -93,6 +87,3 @@ public abstract class AggregateRoot
         State.Apply(change);
     }
 }
-
-
-

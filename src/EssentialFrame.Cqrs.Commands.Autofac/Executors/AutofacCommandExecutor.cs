@@ -2,11 +2,10 @@ using Autofac;
 using Autofac.Core;
 using EssentialFrame.Core.Extensions;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
-using EssentialFrame.Cqrs.Commands.Store;
 
 namespace EssentialFrame.Cqrs.Commands.Autofac.Executors;
 
-internal sealed class AutofacCommandExecutor : ICommandExecutor
+internal sealed class AutofacCommandExecutor : ICommandExecutor, ICommandScheduler
 {
     private readonly ILifetimeScope _lifetimeScope;
 
@@ -36,7 +35,7 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor
         where TCommand : class, ICommand
     {
         using var scope = _lifetimeScope.BeginLifetimeScope();
-        var commandStore = GetCommandStore(scope);
+        var commandStore = GetCommandsRepository(scope);
 
         commandStore.StartExecution(command);
 
@@ -48,30 +47,12 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor
         return commandResult;
     }
 
-    public void Schedule<TCommand>(TCommand command, DateTimeOffset at)
-        where TCommand : class, ICommand
-    {
-        using var scope = _lifetimeScope.BeginLifetimeScope();
-        var commandStore = GetCommandStore(scope);
-
-        commandStore.ScheduleExecution(command, at);
-    }
-
-    public void CancelSending<TCommand>(TCommand command)
-        where TCommand : class, ICommand
-    {
-        using var scope = _lifetimeScope.BeginLifetimeScope();
-        var commandStore = GetCommandStore(scope);
-
-        commandStore.CancelExecution(command.CommandIdentifier);
-    }
-
     public async Task<ICommandResult> SendAndStoreAsync<TCommand>(TCommand command,
                                                                   CancellationToken cancellationToken = default)
         where TCommand : class, ICommand
     {
         await using var scope = _lifetimeScope.BeginLifetimeScope();
-        var commandStore = GetCommandStore(scope);
+        var commandStore = GetCommandsRepository(scope);
 
         await commandStore.StartExecutionAsync(command, cancellationToken);
 
@@ -85,41 +66,59 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor
         return commandResult;
     }
 
+    public void Schedule<TCommand>(TCommand command, DateTimeOffset at)
+        where TCommand : class, ICommand
+    {
+        using var scope = _lifetimeScope.BeginLifetimeScope();
+        var commandStore = GetCommandsRepository(scope);
+
+        commandStore.ScheduleExecution(command, at);
+    }
+
+    public void CancelFromSchedule<TCommand>(TCommand command)
+        where TCommand : class, ICommand
+    {
+        using var scope = _lifetimeScope.BeginLifetimeScope();
+        var commandStore = GetCommandsRepository(scope);
+
+        commandStore.CancelExecution(command.CommandIdentifier);
+    }
+
     public async Task ScheduleAsync<TCommand>(TCommand command,
                                               DateTimeOffset at,
                                               CancellationToken cancellationToken = default)
         where TCommand : class, ICommand
     {
         await using var scope = _lifetimeScope.BeginLifetimeScope();
-        var commandStore = GetCommandStore(scope);
+        var commandStore = GetCommandsRepository(scope);
 
         await commandStore.ScheduleExecutionAsync(command,
                                                   at,
                                                   cancellationToken);
     }
 
-    public async Task CancelSendingAsync<TCommand>(TCommand command,
-                                                   CancellationToken cancellationToken = default)
+    public async Task CancelFromScheduleAsync<TCommand>(TCommand command,
+                                                        CancellationToken cancellationToken = default)
         where TCommand : class, ICommand
     {
         await using var scope = _lifetimeScope.BeginLifetimeScope();
-        var commandStore = GetCommandStore(scope);
+        var commandStore = GetCommandsRepository(scope);
 
         await commandStore.CancelExecutionAsync(command.CommandIdentifier, cancellationToken);
     }
 
-    private static ICommandStore GetCommandStore(IComponentContext lifetimeScope)
+    private static ICommandRepository GetCommandsRepository(IComponentContext lifetimeScope)
     {
-        var isCommandStoreResolved = lifetimeScope.TryResolve(out ICommandStore commandStore);
+        var isCommandsRepositoryResolved = lifetimeScope.TryResolve(out ICommandRepository commandsRepository);
 
-        if (!isCommandStoreResolved)
+        if (!isCommandsRepositoryResolved)
         {
             throw new
-                DependencyResolutionException($"Unable to resolve {commandStore.GetTypeFullName()}. " +
+                DependencyResolutionException($"Unable to resolve {commandsRepository.GetTypeFullName()}. " +
                                               "Most likely it is not properly registered in container.");
         }
 
-        return commandStore;
+        return commandsRepository;
     }
 
     private static THandler FindHandler<TCommand, THandler>(TCommand command, IComponentContext lifetimeScope)
@@ -146,7 +145,3 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor
                                           "Most likely it is not properly registered in container.");
     }
 }
-
-
-
-

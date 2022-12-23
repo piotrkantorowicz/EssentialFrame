@@ -29,16 +29,10 @@ public abstract class Command : ICommand
     protected Command(Guid aggregateIdentifier,
                       Guid commandIdentifier,
                       IIdentity identity,
-                      int? expectedVersion = null)
+                      int expectedVersion)
         : this(aggregateIdentifier,
                commandIdentifier,
-               identity)
-    {
-        if (expectedVersion is not null)
-        {
-            ExpectedVersion = expectedVersion;
-        }
-    }
+               identity) => ExpectedVersion = expectedVersion;
 
     public Guid AggregateIdentifier { get; }
 
@@ -52,8 +46,3 @@ public abstract class Command : ICommand
 
     public Guid CommandIdentifier { get; } = Guid.NewGuid();
 }
-
-
-
-
-

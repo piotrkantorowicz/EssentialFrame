@@ -9,7 +9,7 @@
         <Copyright>Copyright © 2022 Piotr Kantorowicz</Copyright>
         <Authors>Piotr Kantorowicz</Authors>
         <Company>Piotr Kantorowicz</Company>
-        <Product>EssentialFrame.Cqrs.Commands.Autofac</Product>
+        <Product>EssentialFrame.Domain.EventsSourcing</Product>
 
         <!-- Frameworks and language features -->
         <TargetFramework>net7.0</TargetFramework>
@@ -20,19 +20,13 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <!-- Packaging -->
-        <PackageId>EssentialFrame.Cqrs.Commands.Autofac</PackageId>
+        <PackageId>EssentialFrame.Domain.EventsSourcing</PackageId>
         <PackageDescription>TODO: prepare good description.</PackageDescription>
         <RepositoryUrl>TODO: Add repository url</RepositoryUrl>
     </PropertyGroup>
 
-
     <ItemGroup>
-        <ProjectReference Include="..\EssentialFrame\EssentialFrame.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Autofac" Version="6.5.0"/>
+        <ProjectReference Include="..\EssentialFrame.Domain\EssentialFrame.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

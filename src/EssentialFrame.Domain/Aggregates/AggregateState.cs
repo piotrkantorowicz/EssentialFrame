@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.Core;
+﻿using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
 
 namespace EssentialFrame.Domain.Aggregates;
@@ -28,7 +28,3 @@ public abstract class AggregateState
                     });
     }
 }
-
-
-
-

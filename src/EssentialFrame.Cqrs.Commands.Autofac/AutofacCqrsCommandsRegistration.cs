@@ -1,6 +1,8 @@
 using System.Reflection;
 using Autofac;
 using EssentialFrame.Cqrs.Commands.Autofac.Executors;
+using EssentialFrame.Cqrs.Commands.Autofac.Services;
+using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Logging.Decorators;
 using EssentialFrame.Cqrs.Commands.Validations.Core.Interfaces;
@@ -10,6 +12,18 @@ namespace EssentialFrame.Cqrs.Commands.Autofac;
 
 internal static class AutofacCqrsCommandsRegistration
 {
+    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddCommandsInfrastructure(
+        this IEssentialFrameBuilder<ContainerBuilder, IContainer> essentialFrameBuilder)
+    {
+        var containerBuilder = essentialFrameBuilder.Builder;
+
+        containerBuilder.RegisterType<CommandRepository>()
+                        .As<ICommandRepository>()
+                        .InstancePerLifetimeScope();
+
+        return essentialFrameBuilder;
+    }
+
     public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddCommandsHandlers(
         this IEssentialFrameBuilder<ContainerBuilder, IContainer> essentialFrameBuilder,
         Assembly[] assemblies)
@@ -27,7 +41,7 @@ internal static class AutofacCqrsCommandsRegistration
         return essentialFrameBuilder;
     }
 
-    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddInMemoryCommandsExecutors(
+    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddCommandsExecutor(
         this IEssentialFrameBuilder<ContainerBuilder, IContainer> essentialFrameBuilder)
     {
         var containerBuilder = essentialFrameBuilder.Builder;
@@ -35,6 +49,31 @@ internal static class AutofacCqrsCommandsRegistration
         containerBuilder.RegisterType<AutofacCommandExecutor>()
                         .As<ICommandExecutor>()
                         .InstancePerLifetimeScope();
+
+        return essentialFrameBuilder;
+    }
+
+    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddCommandsScheduler(
+        this IEssentialFrameBuilder<ContainerBuilder, IContainer> essentialFrameBuilder)
+    {
+        var containerBuilder = essentialFrameBuilder.Builder;
+
+        containerBuilder.RegisterType<AutofacCommandExecutor>()
+                        .As<ICommandScheduler>()
+                        .InstancePerLifetimeScope();
+
+        return essentialFrameBuilder;
+    }
+
+    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddCommandsBackgroundProcessor(
+        this IEssentialFrameBuilder<ContainerBuilder, IContainer> essentialFrameBuilder,
+        int interval)
+    {
+        var containerBuilder = essentialFrameBuilder.Builder;
+
+        containerBuilder.Register(ctx => new AutofacCommandBackgroundService(ctx.Resolve<ILifetimeScope>(), interval))
+                        .AsImplementedInterfaces()
+                        .SingleInstance();
 
         return essentialFrameBuilder;
     }
