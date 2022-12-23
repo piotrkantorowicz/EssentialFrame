@@ -16,6 +16,3 @@ public class SpanJsonSerializer : ISerializer
 
     public string Serialize<T>(T value) => JsonSerializer.Generic.Utf16.Serialize(value);
 }
-
-
-

@@ -9,9 +9,7 @@ internal static class AutofacMemoryCacheRegistration
     {
         var containerBuilder = essentialFrameBuilder.Builder;
 
-        containerBuilder.RegisterGeneric(typeof(GuidCache<>))
-                        .As(typeof(ICache<,>))
-                        .SingleInstance();
+        containerBuilder.RegisterGeneric(typeof(GuidCache<>)).As(typeof(ICache<,>)).SingleInstance();
 
         return essentialFrameBuilder;
     }

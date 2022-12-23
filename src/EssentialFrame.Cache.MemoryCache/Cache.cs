@@ -102,9 +102,7 @@ public class Cache<TK, T> : ICache<TK, T>
 
         try
         {
-            var removers = (from k in _cache.Keys
-                where pattern(k)
-                select k).ToList();
+            var removers = (from k in _cache.Keys where pattern(k) select k).ToList();
 
             foreach (var workKey in removers)
             {
@@ -264,4 +262,3 @@ public class Cache<TK, T> : ICache<TK, T>
         Remove((TK)state);
     }
 }
-

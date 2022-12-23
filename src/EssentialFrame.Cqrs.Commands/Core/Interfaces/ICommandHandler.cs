@@ -15,8 +15,3 @@ public interface ICommandHandler<in TCommand> : ICommandHandler
 public interface ICommandHandler
 {
 }
-
-
-
-
-

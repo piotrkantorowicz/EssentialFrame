@@ -31,10 +31,8 @@ public sealed class ValidationResult
 
     public IDictionary<string, string[]> ToDictionary()
     {
-        return Errors
-               .GroupBy(x => x.PropertyName)
-               .ToDictionary(g => g.Key,
-                             g => g.Select(x => x.ErrorMessage).ToArray());
+        return Errors.GroupBy(x => x.PropertyName)
+                     .ToDictionary(g => g.Key, g => g.Select(x => x.ErrorMessage).ToArray());
     }
 
     private string ToString(string separator)
@@ -42,8 +40,3 @@ public sealed class ValidationResult
         return string.Join(separator, _errors.Select(failure => failure.ErrorMessage));
     }
 }
-
-
-
-
-

@@ -24,6 +24,3 @@ public interface IPagedQueryResult<out TData> : IQueryResult<TData>
 
     public long? TotalResults { get; }
 }
-
-
-

@@ -10,7 +10,3 @@ internal static class LoggingUtils
 
     internal static EventId UnexpectedException { get; } = new(2006, "UnexpectedException");
 }
-
-
-
-

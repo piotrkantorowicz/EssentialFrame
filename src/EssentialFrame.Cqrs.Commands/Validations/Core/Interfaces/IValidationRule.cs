@@ -8,8 +8,3 @@ public interface IValidationRule
 
     string ErrorMessage { get; }
 }
-
-
-
-
-

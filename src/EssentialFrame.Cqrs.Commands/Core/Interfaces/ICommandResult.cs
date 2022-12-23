@@ -10,8 +10,3 @@ public interface ICommandResult
 
     ICommandError ErrorDetails { get; }
 }
-
-
-
-
-

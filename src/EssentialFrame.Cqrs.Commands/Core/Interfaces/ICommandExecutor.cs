@@ -14,5 +14,3 @@ public interface ICommandExecutor
     Task<ICommandResult> SendAndStoreAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
         where TCommand : class, ICommand;
 }
-
-

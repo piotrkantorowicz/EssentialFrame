@@ -17,6 +17,3 @@ public abstract class SortOrderQuery<T> : Query<T>, ISortOrderQuery
 
     public SortOrder[] SortOrders { get; }
 }
-
-
-

@@ -14,9 +14,9 @@ public class SnapshotRepository : ISnapshotRepository
     private readonly ICache<Guid, AggregateRoot> _cache;
     private readonly IEventRepository _eventRepository;
     private readonly IEventStore _eventStore;
+    private readonly ISerializer _serializer;
     private readonly ISnapshotStore _snapshotStore;
     private readonly ISnapshotStrategy _snapshotStrategy;
-    private readonly ISerializer _serializer;
 
     public SnapshotRepository(IEventStore eventStore,
                               IEventRepository eventRepository,
@@ -51,10 +51,9 @@ public class SnapshotRepository : ISnapshotRepository
             return _eventRepository.Get<T>(aggregateId);
         }
 
-        var events = _eventStore
-                     .Get(aggregateId, snapshotVersion)
-                     .Select(e => _eventRepository.ConvertToEvent(e))
-                     .Where(desc => desc.AggregateVersion > snapshotVersion);
+        var events = _eventStore.Get(aggregateId, snapshotVersion)
+                                .Select(e => _eventRepository.ConvertToEvent(e))
+                                .Where(desc => desc.AggregateVersion > snapshotVersion);
 
         aggregate.Rehydrate(events);
 
@@ -83,9 +82,8 @@ public class SnapshotRepository : ISnapshotRepository
                                                    snapshotVersion,
                                                    cancellationToken);
 
-        var events = allEvents
-                     .Select(e => _eventRepository.ConvertToEvent(e))
-                     .Where(desc => desc.AggregateVersion > snapshotVersion);
+        var events = allEvents.Select(e => _eventRepository.ConvertToEvent(e))
+                              .Where(desc => desc.AggregateVersion > snapshotVersion);
 
         aggregate.Rehydrate(events);
 
@@ -156,8 +154,7 @@ public class SnapshotRepository : ISnapshotRepository
         aggregate.AggregateVersion = 1;
 
         aggregate.State =
-            _serializer.Deserialize<AggregateState>(snapshot.AggregateState,
-                                                    aggregate.CreateState().GetType());
+            _serializer.Deserialize<AggregateState>(snapshot.AggregateState, aggregate.CreateState().GetType());
 
         return aggregate;
     }
@@ -172,8 +169,7 @@ public class SnapshotRepository : ISnapshotRepository
         aggregate.AggregateVersion = 1;
 
         aggregate.State =
-            _serializer.Deserialize<AggregateState>(snapshot.AggregateState,
-                                                    aggregate.CreateState().GetType());
+            _serializer.Deserialize<AggregateState>(snapshot.AggregateState, aggregate.CreateState().GetType());
 
         return aggregate;
     }
@@ -212,8 +208,7 @@ public class SnapshotRepository : ISnapshotRepository
         aggregate.AggregateVersion = snapshot.AggregateVersion;
 
         aggregate.State =
-            _serializer.Deserialize<AggregateState>(snapshot.AggregateState,
-                                                    aggregate.CreateState().GetType());
+            _serializer.Deserialize<AggregateState>(snapshot.AggregateState, aggregate.CreateState().GetType());
 
         return snapshot.AggregateVersion;
     }

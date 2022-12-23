@@ -89,8 +89,3 @@ public sealed class LoggingCommandHandlerDecorator<TCommand> : ICommandHandler<T
         return commandResponse;
     }
 }
-
-
-
-
-

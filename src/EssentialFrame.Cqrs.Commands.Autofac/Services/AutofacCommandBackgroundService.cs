@@ -8,8 +8,7 @@ internal sealed class AutofacCommandBackgroundService : CommandBackgroundService
 {
     private readonly ILifetimeScope _lifetimeScope;
 
-    public AutofacCommandBackgroundService(ILifetimeScope lifetimeScope,
-                                           int timeInterval)
+    public AutofacCommandBackgroundService(ILifetimeScope lifetimeScope, int timeInterval)
         : base(timeInterval) =>
         _lifetimeScope = lifetimeScope ?? throw new ArgumentNullException(nameof(lifetimeScope));
 

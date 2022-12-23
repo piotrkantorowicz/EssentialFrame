@@ -8,7 +8,3 @@ public static class TypeExtensions
 
     public static string GetClassName(this object @object) => @object.GetType().AssemblyQualifiedName;
 }
-
-
-
-

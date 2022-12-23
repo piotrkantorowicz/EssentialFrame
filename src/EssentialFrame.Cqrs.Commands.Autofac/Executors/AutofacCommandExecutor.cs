@@ -97,8 +97,7 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor, ICommandSchedul
                                                   cancellationToken);
     }
 
-    public async Task CancelFromScheduleAsync<TCommand>(TCommand command,
-                                                        CancellationToken cancellationToken = default)
+    public async Task CancelFromScheduleAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
         where TCommand : class, ICommand
     {
         await using var scope = _lifetimeScope.BeginLifetimeScope();
@@ -113,20 +112,17 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor, ICommandSchedul
 
         if (!isCommandsRepositoryResolved)
         {
-            throw new
-                DependencyResolutionException($"Unable to resolve {commandsRepository.GetTypeFullName()}. " +
-                                              "Most likely it is not properly registered in container.");
+            throw new DependencyResolutionException($"Unable to resolve {commandsRepository.GetTypeFullName()}. " +
+                                                    "Most likely it is not properly registered in container.");
         }
 
         return commandsRepository;
     }
 
     private static THandler FindHandler<TCommand, THandler>(TCommand command, IComponentContext lifetimeScope)
-        where TCommand : class, ICommand
-        where THandler : class, ICommandHandler
+        where TCommand : class, ICommand where THandler : class, ICommandHandler
     {
-        var isTenantHandlerFound =
-            lifetimeScope.TryResolveKeyed(command.TenantIdentity, out THandler commandHandler);
+        var isTenantHandlerFound = lifetimeScope.TryResolveKeyed(command.TenantIdentity, out THandler commandHandler);
 
         if (isTenantHandlerFound)
         {
@@ -140,8 +136,7 @@ internal sealed class AutofacCommandExecutor : ICommandExecutor, ICommandSchedul
             return commandHandler;
         }
 
-        throw new
-            DependencyResolutionException($"Unable to resolve {command.GetTypeFullName()}. " +
-                                          "Most likely it is not properly registered in container.");
+        throw new DependencyResolutionException($"Unable to resolve {command.GetTypeFullName()}. " +
+                                                "Most likely it is not properly registered in container.");
     }
 }

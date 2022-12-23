@@ -50,6 +50,3 @@ public abstract class PagedQuery<T> : SortOrderQuery<T>, IPagedQuery
 
     public int ResultsPerPage { get; }
 }
-
-
-

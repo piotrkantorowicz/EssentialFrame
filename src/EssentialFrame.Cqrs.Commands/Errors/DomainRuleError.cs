@@ -19,8 +19,3 @@ public class DomainRuleError : ICommandError
 
     public IDictionary<string, string> Parameters { get; }
 }
-
-
-
-
-

@@ -20,8 +20,3 @@ public class DbError : ICommandError
 
     public string Details { get; }
 }
-
-
-
-
-

@@ -29,7 +29,3 @@ public sealed class QueryResult<T> : IQueryResult<T>
             ErrorDetails = queryError
         };
 }
-
-
-
-

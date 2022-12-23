@@ -35,8 +35,3 @@ public sealed class CommandResult : ICommandResult
             ErrorDetails = commandError
         };
 }
-
-
-
-
-

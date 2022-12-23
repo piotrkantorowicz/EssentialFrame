@@ -29,17 +29,13 @@ public sealed class ValidationCommandHandlerDecorator<TCommand> : ICommandHandle
     {
         try
         {
-            var failures = _validators
-                           .Select(x => x.Validate(command))
-                           .Where(x => !x.IsValid)
-                           .ToList();
+            var failures = _validators.Select(x => x.Validate(command)).Where(x => !x.IsValid).ToList();
 
             if (failures.Any())
             {
-                var errors = failures
-                             .SelectMany(x => x.Errors)
-                             .Select(x => new KeyValuePair<string, string>(x.PropertyName, x.ErrorMessage))
-                             .ToList();
+                var errors = failures.SelectMany(x => x.Errors)
+                                     .Select(x => new KeyValuePair<string, string>(x.PropertyName, x.ErrorMessage))
+                                     .ToList();
 
                 _logger.LogWarning(LoggingUtils.ValidationFailed,
                                    "Validation failed for {Command}: {ValidationErrors}",
@@ -69,8 +65,3 @@ public sealed class ValidationCommandHandlerDecorator<TCommand> : ICommandHandle
         return _decorated.Handle(command);
     }
 }
-
-
-
-
-

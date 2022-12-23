@@ -89,8 +89,3 @@ public class LoggingAsyncCommandHandlerDecorator<TCommand> : IAsyncCommandHandle
         return commandResponse;
     }
 }
-
-
-
-
-

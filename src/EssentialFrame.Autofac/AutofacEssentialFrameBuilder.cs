@@ -22,3 +22,5 @@ public sealed class AutofacEssentialFrameBuilder : IEssentialFrameBuilder<Contai
         return _container;
     }
 }
+
+

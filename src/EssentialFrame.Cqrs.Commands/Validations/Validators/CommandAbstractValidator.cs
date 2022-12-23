@@ -12,10 +12,9 @@ public abstract class CommandAbstractValidator<TCommand> : ICommandValidator<TCo
 
     public ValidationResult Validate(TCommand command)
     {
-        var validationProblems = _rules
-                                 .Select(rule => rule.Validate(command))
-                                 .Where(validationProblem => validationProblem != null)
-                                 .ToList();
+        var validationProblems = _rules.Select(rule => rule.Validate(command))
+                                       .Where(validationProblem => validationProblem != null)
+                                       .ToList();
 
         return new ValidationResult(validationProblems);
     }
@@ -28,8 +27,3 @@ public abstract class CommandAbstractValidator<TCommand> : ICommandValidator<TCo
         _rules.Add(rule);
     }
 }
-
-
-
-
-

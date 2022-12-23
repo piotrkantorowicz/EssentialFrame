@@ -8,5 +8,3 @@ public interface IIdentity
 
     IService Service { get; }
 }
-
-

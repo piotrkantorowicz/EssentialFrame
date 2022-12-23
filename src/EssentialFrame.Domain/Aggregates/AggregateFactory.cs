@@ -33,7 +33,3 @@ public static class AggregateFactory<T>
         }
     }
 }
-
-
-
-

@@ -4,8 +4,3 @@ public interface ICommandValidator<in TCommand>
 {
     ValidationResult Validate(TCommand command);
 }
-
-
-
-
-

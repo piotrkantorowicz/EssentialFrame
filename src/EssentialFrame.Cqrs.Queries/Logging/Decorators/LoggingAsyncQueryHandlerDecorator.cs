@@ -7,8 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace EssentialFrame.Cqrs.Queries.Logging.Decorators;
 
 public class LoggingAsyncQueryHandlerDecorator<TQuery, TResult> : IAsyncQueryHandler<TQuery, TResult>
-    where TQuery : class, IQuery<TResult>
-    where TResult : IQueryResult<TResult>
+    where TQuery : class, IQuery<TResult> where TResult : IQueryResult<TResult>
 {
     private readonly IAsyncQueryHandler<TQuery, TResult> _decorated;
     private readonly ILogger<LoggingAsyncQueryHandlerDecorator<TQuery, TResult>> _logger;
@@ -88,7 +87,3 @@ public class LoggingAsyncQueryHandlerDecorator<TQuery, TResult> : IAsyncQueryHan
         return queryResponse;
     }
 }
-
-
-
-

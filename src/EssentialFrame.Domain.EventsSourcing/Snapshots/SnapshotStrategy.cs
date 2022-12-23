@@ -25,7 +25,3 @@ public class SnapshotStrategy : ISnapshotStrategy
         return false;
     }
 }
-
-
-
-

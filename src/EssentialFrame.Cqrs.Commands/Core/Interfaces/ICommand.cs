@@ -14,8 +14,3 @@ public interface ICommand
 
     string ServiceIdentity { get; }
 }
-
-
-
-
-

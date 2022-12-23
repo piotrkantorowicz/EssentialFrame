@@ -38,8 +38,3 @@ public class ConflictError : ICommandError
 
     public string ConflictedResourceId { get; }
 }
-
-
-
-
-

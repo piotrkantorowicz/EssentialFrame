@@ -6,7 +6,3 @@ public interface ISnapshotStrategy
 {
     bool ShouldTakeSnapShot(AggregateRoot aggregate);
 }
-
-
-
-

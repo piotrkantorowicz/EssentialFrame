@@ -116,21 +116,15 @@ public sealed class CommandRepository : ICommandRepository
     }
 
     public IReadOnlyCollection<ICommand> GetPossibleToSend(DateTimeOffset at) =>
-        _commandStore
-            .GetPossibleToSend(at)
-            .Select(ConvertToEvent)
-            .ToList()
-            .AsReadOnly();
+        _commandStore.GetPossibleToSend(at).Select(ConvertToEvent).ToList().AsReadOnly();
 
-    public async Task<IReadOnlyCollection<ICommand>>
-        GetPossibleToSendAsync(DateTimeOffset at, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<ICommand>> GetPossibleToSendAsync(
+        DateTimeOffset at,
+        CancellationToken cancellationToken = default)
     {
         var possibleCommandsDataToSend = await _commandStore.GetPossibleToSendAsync(at, cancellationToken);
 
-        var possibleCommandsToSend = possibleCommandsDataToSend
-                                     .Select(ConvertToEvent)
-                                     .ToList()
-                                     .AsReadOnly();
+        var possibleCommandsToSend = possibleCommandsDataToSend.Select(ConvertToEvent).ToList().AsReadOnly();
 
         return possibleCommandsToSend;
     }

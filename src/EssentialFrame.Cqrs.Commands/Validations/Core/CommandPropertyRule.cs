@@ -7,8 +7,7 @@ namespace EssentialFrame.Cqrs.Commands.Validations.Core;
 
 internal sealed class CommandPropertyRule<TCommand, TProperty> : ICommandPropertyRule<TCommand>
 {
-    private CommandPropertyRule(MemberInfo member,
-                                Func<TCommand, TProperty, IValidationRule> ruleExpression)
+    private CommandPropertyRule(MemberInfo member, Func<TCommand, TProperty, IValidationRule> ruleExpression)
     {
         Member = member;
         RuleExpression = ruleExpression;
@@ -20,10 +19,7 @@ internal sealed class CommandPropertyRule<TCommand, TProperty> : ICommandPropert
 
     public ValidationProblem Validate(TCommand commandContext)
     {
-        var property = commandContext
-                       .GetType()
-                       .GetProperty(Member.Name)
-                       ?.GetValue(commandContext, null);
+        var property = commandContext.GetType().GetProperty(Member.Name)?.GetValue(commandContext, null);
 
         if (property is not TProperty commandProperty)
         {
@@ -43,12 +39,6 @@ internal sealed class CommandPropertyRule<TCommand, TProperty> : ICommandPropert
         var member = propertyExpression.GetMember();
         var expression = ruleExpression.Compile();
 
-        return new CommandPropertyRule<TCommand, TProperty>(member,
-                                                            (command, prop) => expression(command, prop));
+        return new CommandPropertyRule<TCommand, TProperty>(member, (command, prop) => expression(command, prop));
     }
 }
-
-
-
-
-

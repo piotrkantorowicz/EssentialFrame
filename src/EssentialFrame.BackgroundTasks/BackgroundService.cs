@@ -38,15 +38,9 @@ public abstract class BackgroundService : IHostedService, IBackgroundService, ID
         }
         finally
         {
-            await Task.WhenAny(_executingTask,
-                               Task.Delay(Timeout.Infinite,
-                                          cancellationToken));
+            await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite, cancellationToken));
         }
     }
 
     protected abstract Task ExecuteAsync(CancellationToken stoppingToken);
 }
-
-
-
-

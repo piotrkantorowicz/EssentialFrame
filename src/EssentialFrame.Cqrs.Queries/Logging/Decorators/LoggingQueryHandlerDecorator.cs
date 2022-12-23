@@ -7,8 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace EssentialFrame.Cqrs.Queries.Logging.Decorators;
 
 public sealed class LoggingQueryHandlerDecorator<TQuery, TResult> : IQueryHandler<TQuery, TResult>
-    where TQuery : class, IQuery<TResult>
-    where TResult : IQueryResult<TResult>
+    where TQuery : class, IQuery<TResult> where TResult : IQueryResult<TResult>
 {
     private readonly IQueryHandler<TQuery, TResult> _decorated;
     private readonly ILogger<LoggingQueryHandlerDecorator<TQuery, TResult>> _logger;
@@ -88,7 +87,3 @@ public sealed class LoggingQueryHandlerDecorator<TQuery, TResult> : IQueryHandle
         return queryResponse;
     }
 }
-
-
-
-

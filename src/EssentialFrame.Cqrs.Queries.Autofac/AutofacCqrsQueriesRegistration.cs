@@ -30,9 +30,7 @@ internal static class AutofacCqrsQueriesRegistration
     {
         var containerBuilder = essentialFrameBuilder.Builder;
 
-        containerBuilder.RegisterType<AutofacQueryExecutor>()
-                        .As<IQueryExecutor>()
-                        .InstancePerLifetimeScope();
+        containerBuilder.RegisterType<AutofacQueryExecutor>().As<IQueryExecutor>().InstancePerLifetimeScope();
 
         return essentialFrameBuilder;
     }
@@ -45,8 +43,7 @@ internal static class AutofacCqrsQueriesRegistration
         containerBuilder.RegisterGenericDecorator(typeof(LoggingAsyncQueryHandlerDecorator<,>),
                                                   typeof(IAsyncQueryHandler<,>));
 
-        containerBuilder.RegisterGenericDecorator(typeof(LoggingQueryHandlerDecorator<,>),
-                                                  typeof(IQueryHandler<,>));
+        containerBuilder.RegisterGenericDecorator(typeof(LoggingQueryHandlerDecorator<,>), typeof(IQueryHandler<,>));
 
         return essentialFrameBuilder;
     }

@@ -53,7 +53,3 @@ public abstract class ValueObject
 
     public static bool operator !=(ValueObject a, ValueObject b) => !(a == b);
 }
-
-
-
-

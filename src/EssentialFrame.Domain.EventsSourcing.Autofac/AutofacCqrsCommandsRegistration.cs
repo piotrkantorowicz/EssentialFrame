@@ -13,21 +13,13 @@ internal static class AutofacCqrsCommandsRegistration
     {
         var containerBuilder = essentialFrameBuilder.Builder;
 
-        containerBuilder.RegisterType<EventRepository>()
-                        .As<IEventRepository>()
-                        .InstancePerLifetimeScope();
+        containerBuilder.RegisterType<EventRepository>().As<IEventRepository>().InstancePerLifetimeScope();
 
-        containerBuilder.RegisterType<SnapshotRepository>()
-                        .As<ISnapshotRepository>()
-                        .InstancePerLifetimeScope();
+        containerBuilder.RegisterType<SnapshotRepository>().As<ISnapshotRepository>().InstancePerLifetimeScope();
 
-        containerBuilder.RegisterType<SnapshotStrategy>()
-                        .As<ISnapshotStrategy>()
-                        .InstancePerLifetimeScope();
+        containerBuilder.RegisterType<SnapshotStrategy>().As<ISnapshotStrategy>().InstancePerLifetimeScope();
 
-        containerBuilder.RegisterType<SnapshotStrategy>()
-                        .As<ISnapshotStrategy>()
-                        .InstancePerLifetimeScope();
+        containerBuilder.RegisterType<SnapshotStrategy>().As<ISnapshotStrategy>().InstancePerLifetimeScope();
 
         return essentialFrameBuilder;
     }

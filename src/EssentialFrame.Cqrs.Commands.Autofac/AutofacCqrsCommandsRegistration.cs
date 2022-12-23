@@ -17,9 +17,7 @@ internal static class AutofacCqrsCommandsRegistration
     {
         var containerBuilder = essentialFrameBuilder.Builder;
 
-        containerBuilder.RegisterType<CommandRepository>()
-                        .As<ICommandRepository>()
-                        .InstancePerLifetimeScope();
+        containerBuilder.RegisterType<CommandRepository>().As<ICommandRepository>().InstancePerLifetimeScope();
 
         return essentialFrameBuilder;
     }
@@ -46,9 +44,7 @@ internal static class AutofacCqrsCommandsRegistration
     {
         var containerBuilder = essentialFrameBuilder.Builder;
 
-        containerBuilder.RegisterType<AutofacCommandExecutor>()
-                        .As<ICommandExecutor>()
-                        .InstancePerLifetimeScope();
+        containerBuilder.RegisterType<AutofacCommandExecutor>().As<ICommandExecutor>().InstancePerLifetimeScope();
 
         return essentialFrameBuilder;
     }
@@ -58,9 +54,7 @@ internal static class AutofacCqrsCommandsRegistration
     {
         var containerBuilder = essentialFrameBuilder.Builder;
 
-        containerBuilder.RegisterType<AutofacCommandExecutor>()
-                        .As<ICommandScheduler>()
-                        .InstancePerLifetimeScope();
+        containerBuilder.RegisterType<AutofacCommandExecutor>().As<ICommandScheduler>().InstancePerLifetimeScope();
 
         return essentialFrameBuilder;
     }
@@ -86,8 +80,7 @@ internal static class AutofacCqrsCommandsRegistration
         containerBuilder.RegisterGenericDecorator(typeof(LoggingAsyncCommandHandlerDecorator<>),
                                                   typeof(IAsyncCommandHandler<>));
 
-        containerBuilder.RegisterGenericDecorator(typeof(LoggingCommandHandlerDecorator<>),
-                                                  typeof(ICommandHandler<>));
+        containerBuilder.RegisterGenericDecorator(typeof(LoggingCommandHandlerDecorator<>), typeof(ICommandHandler<>));
 
         return essentialFrameBuilder;
     }

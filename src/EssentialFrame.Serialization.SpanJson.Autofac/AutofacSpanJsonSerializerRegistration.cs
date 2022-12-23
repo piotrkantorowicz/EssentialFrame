@@ -9,9 +9,7 @@ internal static class AutofacSpanJsonSerializerRegistration
     {
         var containerBuilder = essentialFrameBuilder.Builder;
 
-        containerBuilder.RegisterType<SpanJsonSerializer>()
-                        .As<ISerializer>()
-                        .InstancePerLifetimeScope();
+        containerBuilder.RegisterType<SpanJsonSerializer>().As<ISerializer>().InstancePerLifetimeScope();
 
         return essentialFrameBuilder;
     }

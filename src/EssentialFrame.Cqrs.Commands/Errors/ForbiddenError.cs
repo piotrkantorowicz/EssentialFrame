@@ -6,8 +6,3 @@ public class ForbiddenError : ICommandError
 {
     public string Message => "Access to requested resource is forbidden";
 }
-
-
-
-
-

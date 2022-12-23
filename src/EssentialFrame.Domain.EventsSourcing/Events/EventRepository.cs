@@ -8,8 +8,8 @@ namespace EssentialFrame.Domain.EventsSourcing.Events;
 
 public sealed class EventRepository : IEventRepository
 {
-    private readonly IEventStore _store;
     private readonly ISerializer _serializer;
+    private readonly IEventStore _store;
 
     public EventRepository(IEventStore store, ISerializer serializer)
     {
@@ -18,12 +18,10 @@ public sealed class EventRepository : IEventRepository
     }
 
     public T Get<T>(Guid aggregate)
-        where T : AggregateRoot
-        => Rehydrate<T>(aggregate);
+        where T : AggregateRoot => Rehydrate<T>(aggregate);
 
     public Task<T> GetAsync<T>(Guid aggregate, CancellationToken cancellationToken = default)
-        where T : AggregateRoot
-        => RehydrateAsync<T>(aggregate, cancellationToken);
+        where T : AggregateRoot => RehydrateAsync<T>(aggregate, cancellationToken);
 
     public IEvent[] Save<T>(T aggregate, int? version)
         where T : AggregateRoot
@@ -34,8 +32,7 @@ public sealed class EventRepository : IEventRepository
             throw new ConcurrencyException(aggregate.AggregateIdentifier);
         }
 
-        var events = aggregate
-            .FlushUncommittedChanges();
+        var events = aggregate.FlushUncommittedChanges();
 
         var eventData = events.Select(e => new EventData(e));
 
@@ -110,9 +107,7 @@ public sealed class EventRepository : IEventRepository
     private T RehydrateInternal<T>(Guid id, IEnumerable<EventData> eventsData)
         where T : AggregateRoot
     {
-        var events = eventsData
-                     .Select(ConvertToEvent)
-                     .ToList();
+        var events = eventsData.Select(ConvertToEvent).ToList();
 
         if (!events.Any())
         {

@@ -21,13 +21,11 @@ internal sealed class AutofacQueryExecutor : IQueryExecutor
 
         if (!isHandlerFound)
         {
-            throw new
-                DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
-                                              "Most likely it is not properly registered in container.");
+            throw new DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
+                                                    "Most likely it is not properly registered in container.");
         }
 
-        var handlerMethod = handlerType
-            .GetMethod(nameof(IQueryHandler<IQuery<TResult>, TResult>.Handle));
+        var handlerMethod = handlerType.GetMethod(nameof(IQueryHandler<IQuery<TResult>, TResult>.Handle));
 
         if (handlerMethod is null)
         {
@@ -44,8 +42,7 @@ internal sealed class AutofacQueryExecutor : IQueryExecutor
     }
 
     public TResult Fetch<TQuery, TResult>(TQuery query)
-        where TQuery : class, IQuery<TResult>
-        where TResult : class, IQueryResult<TResult>
+        where TQuery : class, IQuery<TResult> where TResult : class, IQueryResult<TResult>
     {
         using var scope = _lifetimeScope.BeginLifetimeScope();
 
@@ -53,9 +50,8 @@ internal sealed class AutofacQueryExecutor : IQueryExecutor
 
         if (!isHandlerFound)
         {
-            throw new
-                DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
-                                              "Most likely it is not properly registered in container.");
+            throw new DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
+                                                    "Most likely it is not properly registered in container.");
         }
 
         return queryHandler.Handle(query);
@@ -70,13 +66,11 @@ internal sealed class AutofacQueryExecutor : IQueryExecutor
 
         if (!isHandlerFound)
         {
-            throw new
-                DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
-                                              "Most likely it is not properly registered in container.");
+            throw new DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
+                                                    "Most likely it is not properly registered in container.");
         }
 
-        var handlerMethod = handlerType
-            .GetMethod(nameof(IAsyncQueryHandler<IQuery<TResult>, TResult>.HandleAsync));
+        var handlerMethod = handlerType.GetMethod(nameof(IAsyncQueryHandler<IQuery<TResult>, TResult>.HandleAsync));
 
         if (handlerMethod is null)
         {
@@ -94,8 +88,7 @@ internal sealed class AutofacQueryExecutor : IQueryExecutor
     }
 
     public async Task<TResult> FetchAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default)
-        where TQuery : class, IQuery<TResult>
-        where TResult : class, IQueryResult<TResult>
+        where TQuery : class, IQuery<TResult> where TResult : class, IQueryResult<TResult>
     {
         await using var scope = _lifetimeScope.BeginLifetimeScope();
 
@@ -103,15 +96,10 @@ internal sealed class AutofacQueryExecutor : IQueryExecutor
 
         if (!isHandlerFound)
         {
-            throw new
-                DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
-                                              "Most likely it is not properly registered in container.");
+            throw new DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
+                                                    "Most likely it is not properly registered in container.");
         }
 
         return await queryHandler.HandleAsync(query, cancellationToken);
     }
 }
-
-
-
-

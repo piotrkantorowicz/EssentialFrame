@@ -45,6 +45,3 @@ public sealed class PagedQueryResult<T> : IPagedQueryResult<T>
             ErrorDetails = queryError
         };
 }
-
-
-

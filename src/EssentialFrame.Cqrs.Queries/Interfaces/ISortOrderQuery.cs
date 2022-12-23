@@ -4,6 +4,3 @@ public interface ISortOrderQuery
 {
     SortOrder[] SortOrders { get; }
 }
-
-
-

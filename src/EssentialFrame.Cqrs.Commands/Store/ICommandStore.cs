@@ -14,8 +14,8 @@ public interface ICommandStore
 
     IReadOnlyCollection<CommandData> GetPossibleToSend(DateTimeOffset at);
 
-    Task<IReadOnlyCollection<CommandData>>
-        GetPossibleToSendAsync(DateTimeOffset at, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<CommandData>> GetPossibleToSendAsync(DateTimeOffset at,
+                                                                  CancellationToken cancellationToken = default);
 
     void Save(CommandData commandData, bool isNew);
 
@@ -23,7 +23,3 @@ public interface ICommandStore
                    bool isNew,
                    CancellationToken cancellationToken = default);
 }
-
-
-
-

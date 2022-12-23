@@ -7,7 +7,3 @@ internal static class CommandExecutionStatuses
     public const string ExecutedSuccessfully = "ExecutedSuccessfully";
     public const string ExecutedWithErrors = "ExecutedWithErrors";
 }
-
-
-
-

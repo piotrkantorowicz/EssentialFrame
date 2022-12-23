@@ -15,7 +15,3 @@ public interface IQueryHandler<in TQuery, out TResult> : IQueryHandler
 public interface IQueryHandler
 {
 }
-
-
-
-

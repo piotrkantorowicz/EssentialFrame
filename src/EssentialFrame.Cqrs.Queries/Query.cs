@@ -12,8 +12,7 @@ public abstract class Query<T> : IQuery<T>
         ServiceIdentity = identity.Service.GetFullIdentifier();
     }
 
-    protected Query(Guid queryIdentifier,
-                    IIdentity identity)
+    protected Query(Guid queryIdentifier, IIdentity identity)
         : this(identity) =>
         QueryIdentifier = queryIdentifier;
 
@@ -25,6 +24,3 @@ public abstract class Query<T> : IQuery<T>
 
     public string ServiceIdentity { get; }
 }
-
-
-
