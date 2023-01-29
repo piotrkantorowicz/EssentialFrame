@@ -1,7 +1,7 @@
 name: Build and tests on pull request - EssentialFrame
 
 on:
-  push:
+  pull_request:
     branches: [ 'stage*',dev,main ]
 
 jobs:
