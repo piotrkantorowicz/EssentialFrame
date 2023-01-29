@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - stage*
 
 jobs:
   build-and-push-package:
