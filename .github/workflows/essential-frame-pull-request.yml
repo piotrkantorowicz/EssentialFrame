@@ -32,7 +32,7 @@ jobs:
         run: dotnet build
 
       - name: Tests
-        run: dotnet tests --logger "trx;LogFilePrefix=Tests.trx" --results-directory "TestResults-$DOTNET_VERSION"
+        run: dotnet test --logger "trx;LogFilePrefix=Tests.trx" --results-directory "TestResults-$DOTNET_VERSION"
 
       - name: Upload test results
         uses: actions/upload-artifact@v2
