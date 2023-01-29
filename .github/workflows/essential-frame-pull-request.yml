@@ -2,10 +2,7 @@ name: Build and tests on pull request - EssentialFrame
 
 on:
   push:
-    branches:
-      - main
-      - dev
-      - stage*
+    branches: [ 'stage*',dev,main ]
 
 jobs:
   build-and-push-package:
