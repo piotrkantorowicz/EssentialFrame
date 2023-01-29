@@ -1,29 +1,34 @@
 ﻿using EssentialFrame.Identity;
 using EssentialFrame.Time;
 
-namespace EssentialFrame.Domain.Events.Events;
+namespace EssentialFrame.Domain.Events;
 
-public abstract class DomainEvent : IDomainEvent
+public abstract class DomainEventBase : IDomainEvent
 {
-    protected DomainEvent()
+    protected DomainEventBase()
     {
     }
 
-    protected DomainEvent(IIdentity identity) : this()
+    protected DomainEventBase(IIdentity identity) : this()
     {
         TenantIdentity = identity.Tenant.Identifier;
         UserIdentity = identity.User.Identifier;
         ServiceIdentity = identity.Service.GetFullIdentifier();
     }
 
-    protected DomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity) : this(identity)
+    protected DomainEventBase(Guid aggregateIdentifier, IIdentity identity) : this(identity)
+    {
+        AggregateIdentifier = aggregateIdentifier;
+    }
+
+    protected DomainEventBase(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity) : this(identity)
     {
         AggregateIdentifier = aggregateIdentifier;
         EventIdentifier = eventIdentifier;
     }
 
-    protected DomainEvent(Guid aggregateIdentifier, Guid commandIdentifier, IIdentity identity, int expectedVersion) : this(
-        aggregateIdentifier, commandIdentifier, identity)
+    protected DomainEventBase(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity, int expectedVersion) :
+        this(aggregateIdentifier, eventIdentifier, identity)
     {
         AggregateVersion = expectedVersion;
     }

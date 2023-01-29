@@ -8,5 +8,7 @@ public interface IService
 
     public string Name { get; }
 
+    public string Version { get; }
+
     public string GetFullIdentifier();
 }
