@@ -68,8 +68,8 @@ public class LoggingAsyncCommandHandlerDecorator<TCommand> : IAsyncCommandHandle
             {
                 stopwatch.Stop();
 
-                _logger.LogError(LoggingUtils.UnexpectedException, ex,
-                    "[END] {CommandName}: {ExecutionTime}[ms]", commandName, stopwatch.ElapsedMilliseconds);
+                _logger.LogError(LoggingUtils.UnexpectedException, ex, "[END] {CommandName}: {ExecutionTime}[ms]",
+                    commandName, stopwatch.ElapsedMilliseconds);
 
                 throw;
             }

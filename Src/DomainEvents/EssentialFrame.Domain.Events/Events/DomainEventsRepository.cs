@@ -1,6 +1,7 @@
 ﻿using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.Domain.Events.Events.Interfaces;
 using EssentialFrame.Domain.Events.Exceptions;
+using EssentialFrame.Domain.Factories;
 using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Events;
@@ -65,7 +66,8 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
 
         if (@event is string serializedEvent)
         {
-            IDomainEvent deserialized = _serializer.Deserialize<IDomainEvent>(serializedEvent, Type.GetType(domainEventDao.EventClass));
+            IDomainEvent deserialized =
+                _serializer.Deserialize<IDomainEvent>(serializedEvent, Type.GetType(domainEventDao.EventClass));
 
             if (deserialized is null)
             {
@@ -105,7 +107,7 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
             throw new AggregateNotFoundException(typeof(T), id);
         }
 
-        T aggregate = AggregateFactory<T>.CreateAggregate();
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(id, 0);
         aggregate.Rehydrate(events);
 
         return aggregate;

@@ -2,9 +2,16 @@
 
 public class Snapshot
 {
-    public virtual Guid AggregateIdentifier { get; set; }
+    public Snapshot(Guid aggregateIdentifier, int aggregateVersion, object aggregateState)
+    {
+        AggregateIdentifier = aggregateIdentifier;
+        AggregateVersion = aggregateVersion;
+        AggregateState = aggregateState;
+    }
 
-    public virtual int AggregateVersion { get; set; }
+    public virtual Guid AggregateIdentifier { get; }
 
-    public virtual string AggregateState { get; set; }
+    public virtual int AggregateVersion { get; }
+
+    public virtual object AggregateState { get; }
 }

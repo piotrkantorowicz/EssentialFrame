@@ -3,6 +3,7 @@ using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.Domain.Events.Events;
 using EssentialFrame.Domain.Events.Events.Interfaces;
 using EssentialFrame.Domain.Events.Snapshots.Interfaces;
+using EssentialFrame.Domain.Factories;
 using EssentialFrame.Domain.Snapshots;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
@@ -18,11 +19,13 @@ public class SnapshotRepository : ISnapshotRepository
     private readonly ISnapshotStore _snapshotStore;
     private readonly ISnapshotStrategy _snapshotStrategy;
 
-    public SnapshotRepository(IDomainEventsStore domainEventsStore, IDomainEventsRepository domainEventsRepository, ISnapshotStore snapshotStore,
-        ISnapshotStrategy snapshotStrategy, ISerializer serializer, ICache<Guid, AggregateRoot> cache)
+    public SnapshotRepository(IDomainEventsStore domainEventsStore, IDomainEventsRepository domainEventsRepository,
+        ISnapshotStore snapshotStore, ISnapshotStrategy snapshotStrategy, ISerializer serializer,
+        ICache<Guid, AggregateRoot> cache)
     {
         _domainEventsStore = domainEventsStore ?? throw new ArgumentNullException(nameof(domainEventsStore));
-        _domainEventsRepository = domainEventsRepository ?? throw new ArgumentNullException(nameof(domainEventsRepository));
+        _domainEventsRepository =
+            domainEventsRepository ?? throw new ArgumentNullException(nameof(domainEventsRepository));
         _snapshotStore = snapshotStore ?? throw new ArgumentNullException(nameof(snapshotStore));
         _snapshotStrategy = snapshotStrategy ?? throw new ArgumentNullException(nameof(snapshotStrategy));
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
@@ -38,7 +41,7 @@ public class SnapshotRepository : ISnapshotRepository
             return (T)snapshot;
         }
 
-        T aggregate = AggregateFactory<T>.CreateAggregate();
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 0);
         int snapshotVersion = RestoreAggregateFromSnapshot(aggregateId, aggregate);
 
         if (snapshotVersion == -1)
@@ -47,7 +50,8 @@ public class SnapshotRepository : ISnapshotRepository
         }
 
         IEnumerable<IDomainEvent> events = _domainEventsStore.Get(aggregateId, snapshotVersion)
-            .Select(e => _domainEventsRepository.ConvertToEvent(e)).Where(desc => desc.AggregateVersion > snapshotVersion);
+            .Select(e => _domainEventsRepository.ConvertToEvent(e))
+            .Where(desc => desc.AggregateVersion > snapshotVersion);
 
         aggregate.Rehydrate(events);
 
@@ -64,7 +68,7 @@ public class SnapshotRepository : ISnapshotRepository
             return (T)snapshot;
         }
 
-        T aggregate = AggregateFactory<T>.CreateAggregate();
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 0);
         int snapshotVersion = RestoreAggregateFromSnapshot(aggregateId, aggregate);
 
         if (snapshotVersion == -1)
@@ -125,13 +129,9 @@ public class SnapshotRepository : ISnapshotRepository
     public T Unbox<T>(Guid aggregateId) where T : AggregateRoot
     {
         Snapshot snapshot = _snapshotStore.Unbox(aggregateId);
-        T aggregate = AggregateFactory<T>.CreateAggregate();
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 1);
 
-        aggregate.AggregateIdentifier = aggregateId;
-        aggregate.AggregateVersion = 1;
-
-        aggregate.State =
-            _serializer.Deserialize<AggregateState>(snapshot.AggregateState, aggregate.CreateState().GetType());
+        aggregate.RestoreState(snapshot.AggregateState, _serializer);
 
         return aggregate;
     }
@@ -140,13 +140,9 @@ public class SnapshotRepository : ISnapshotRepository
         where T : AggregateRoot
     {
         Snapshot snapshot = await _snapshotStore.UnboxAsync(aggregateId, cancellationToken);
-        T aggregate = AggregateFactory<T>.CreateAggregate();
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 1);
 
-        aggregate.AggregateIdentifier = aggregateId;
-        aggregate.AggregateVersion = 1;
-
-        aggregate.State =
-            _serializer.Deserialize<AggregateState>(snapshot.AggregateState, aggregate.CreateState().GetType());
+        aggregate.RestoreState(snapshot.AggregateState, _serializer);
 
         return aggregate;
     }
@@ -180,11 +176,7 @@ public class SnapshotRepository : ISnapshotRepository
             return -1;
         }
 
-        aggregate.AggregateIdentifier = snapshot.AggregateIdentifier;
-        aggregate.AggregateVersion = snapshot.AggregateVersion;
-
-        aggregate.State =
-            _serializer.Deserialize<AggregateState>(snapshot.AggregateState, aggregate.CreateState().GetType());
+        aggregate.RestoreState(snapshot.AggregateState, _serializer);
 
         return snapshot.AggregateVersion;
     }
@@ -196,14 +188,9 @@ public class SnapshotRepository : ISnapshotRepository
             return;
         }
 
-        Snapshot snapshot = new()
-        {
-            AggregateIdentifier = aggregate.AggregateIdentifier,
-            AggregateVersion = aggregate.AggregateVersion,
-            AggregateState = _serializer.Serialize(aggregate.State)
-        };
-
-        snapshot.AggregateVersion = aggregate.AggregateVersion + aggregate.GetUncommittedChanges().Length;
+        int aggregateVersion = aggregate.AggregateVersion + aggregate.GetUncommittedChanges().Length;
+        string aggregateState = _serializer.Serialize(aggregate.State);
+        Snapshot snapshot = new(aggregate.AggregateIdentifier, aggregateVersion, aggregateState);
 
         _snapshotStore.Save(snapshot);
     }

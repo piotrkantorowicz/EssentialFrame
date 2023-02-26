@@ -13,7 +13,7 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
     {
         _snapshotCache = snapshotCache ?? throw new ArgumentNullException(nameof(snapshotCache));
     }
-    
+
     public Snapshot Get(Guid id)
     {
         throw new NotImplementedException();

@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Exceptions" />
+        <Folder Include="Exceptions"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Core\EssentialFrame\EssentialFrame.csproj" />
+        <ProjectReference Include="..\..\Core\EssentialFrame\EssentialFrame.csproj"/>
     </ItemGroup>
 
 </Project>

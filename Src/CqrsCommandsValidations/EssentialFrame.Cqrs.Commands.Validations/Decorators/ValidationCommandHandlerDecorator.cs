@@ -1,10 +1,10 @@
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Errors;
-using EssentialFrame.Cqrs.Commands.Logging;
 using EssentialFrame.Cqrs.Commands.Validations.Logging;
 using EssentialFrame.Extensions;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
 namespace EssentialFrame.Cqrs.Commands.Validations.Decorators;
@@ -29,7 +29,8 @@ public sealed class ValidationCommandHandlerDecorator<TCommand> : ICommandHandle
     {
         try
         {
-            var failures = _validators.Select(x => x.Validate(command)).Where(x => !x.IsValid).ToList();
+            List<ValidationResult> failures =
+                _validators.Select(x => x.Validate(command)).Where(x => !x.IsValid).ToList();
 
             if (failures.Any())
             {
