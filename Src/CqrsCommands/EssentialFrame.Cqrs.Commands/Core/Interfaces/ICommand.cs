@@ -12,5 +12,7 @@ public interface ICommand
 
     Guid UserIdentity { get; }
 
+    Guid CorrelationIdentity { get; }
+
     string ServiceIdentity { get; }
 }

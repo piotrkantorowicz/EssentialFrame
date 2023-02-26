@@ -12,5 +12,7 @@ public interface IEvent
 
     Guid UserIdentity { get; }
 
+    Guid CorrelationIdentity { get; }
+
     string ServiceIdentity { get; }
 }

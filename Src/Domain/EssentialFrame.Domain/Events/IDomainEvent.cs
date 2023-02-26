@@ -8,11 +8,13 @@ public interface IDomainEvent
 
     int AggregateVersion { get; }
 
-    public string ServiceIdentity { get; }
+    string ServiceIdentity { get; }
 
-    public Guid TenantIdentity { get; }
+    Guid TenantIdentity { get; }
 
-    public Guid UserIdentity { get; }
+    Guid UserIdentity { get; }
+
+    Guid CorrelationIdentity { get; }
 
     DateTimeOffset EventTime { get; }
 

@@ -15,6 +15,7 @@ public abstract class DomainEventBase : IDomainEvent
         TenantIdentity = identity.Tenant.Identifier;
         UserIdentity = identity.User.Identifier;
         ServiceIdentity = identity.Service.GetFullIdentifier();
+        CorrelationIdentity = identity.Correlation.Identifier;
     }
 
     protected DomainEventBase(Guid aggregateIdentifier, IIdentity identity) : this(identity)
@@ -62,6 +63,8 @@ public abstract class DomainEventBase : IDomainEvent
     public Guid TenantIdentity { get; }
 
     public Guid UserIdentity { get; }
+
+    public Guid CorrelationIdentity { get; }
 
     public DateTimeOffset EventTime { get; private set; } = SystemClock.Now;
 }

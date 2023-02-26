@@ -6,5 +6,7 @@ public interface IIdentity
 
     IUser User { get; }
 
+    ICorrelation Correlation { get; }
+
     IService Service { get; }
 }
