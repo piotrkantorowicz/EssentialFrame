@@ -3,6 +3,8 @@ name: Build and tests on pull request - EssentialFrame
 on:
   pull_request:
     branches: [ 'stage*',dev,main ]
+env:
+  DOTNET_VERSION: '7.0.x'
 
 jobs:
   build-and-push-package:
@@ -20,7 +22,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: ${{ env.DOTNET_VERSION }}
           source-url: https://nuget.pkg.github.com/piotrkantorowicz/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.ACTION_GITHUB_TOKEN}}
@@ -32,7 +34,7 @@ jobs:
         run: dotnet build
 
       - name: Tests
-        run: dotnet test --no-build --logger "trx;LogFilePrefix=Tests.trx" --results-directory "TestResults-$DOTNET_VERSION"
+        run: dotnet test --no-build --logger "trx;LogFilePrefix=Tests.trx" --results-directory "TestResults-${{ env.DOTNET_VERSION}}"
 
       - name: Upload test results
         uses: actions/upload-artifact@v2
