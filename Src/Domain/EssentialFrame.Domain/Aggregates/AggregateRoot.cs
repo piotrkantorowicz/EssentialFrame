@@ -1,11 +1,13 @@
 ﻿using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
+using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Aggregates;
 
 public abstract class AggregateRoot
 {
+    private readonly IIdentityService _identityService;
     private readonly List<IDomainEvent> _changes = new();
 
     protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion)
@@ -19,6 +21,19 @@ public abstract class AggregateRoot
         AggregateVersion = aggregateVersion;
     }
 
+    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion, IIdentityService identityService)
+    {
+        if (aggregateIdentifier == Guid.Empty)
+        {
+            throw new MissingAggregateIdentifierException(GetType());
+        }
+
+        _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+
+        AggregateIdentifier = aggregateIdentifier;
+        AggregateVersion = aggregateVersion;
+    }
+
     public Guid AggregateIdentifier { get; }
 
     public int AggregateVersion { get; private set; }
@@ -27,6 +42,16 @@ public abstract class AggregateRoot
 
     public abstract AggregateState CreateState();
     public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
+
+    public IIdentity GetIdentity()
+    {
+        if (_identityService is null)
+        {
+            throw new MissingIdentityContextException(GetType());
+        }
+
+        return _identityService.GetCurrent();
+    }
 
     public IDomainEvent[] GetUncommittedChanges()
     {

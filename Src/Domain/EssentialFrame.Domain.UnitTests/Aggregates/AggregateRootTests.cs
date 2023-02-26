@@ -5,6 +5,7 @@ using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Factories;
 using EssentialFrame.Extensions;
+using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.TestData.Domain.Aggregates;
 using EssentialFrame.TestData.Domain.DomainEvents;
@@ -22,6 +23,7 @@ public sealed class AggregateRootTests
 {
     private readonly Faker _faker = new();
     private readonly Mock<ISerializer> _serializerMock = new();
+    private readonly Mock<IIdentityService> _identityServiceMock = new();
 
     [Test]
     public void CreateState_Always_ShouldReturnSpecificType()
@@ -29,8 +31,11 @@ public sealed class AggregateRootTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
-        TestAggregate aggregate =
-            GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
+
+        TestAggregate aggregate = GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier,
+            aggregateVersion, _identityServiceMock.Object);
 
         // Act
         TestAggregateState state = aggregate.CreateState();
@@ -46,8 +51,11 @@ public sealed class AggregateRootTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         string serializedState = _faker.Lorem.Sentence();
-        TestAggregate aggregate =
-            GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
+
+        TestAggregate aggregate = GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier,
+            aggregateVersion, _identityServiceMock.Object);
 
         TestAggregateState expectedAggregateState = new(new TestTitle(_faker.Lorem.Sentence(), false),
             _faker.Lorem.Sentences(), _faker.Date.FutureOffset(),
@@ -78,8 +86,12 @@ public sealed class AggregateRootTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
-        TestAggregate aggregate =
-            GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
+
+        TestAggregate aggregate = GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier,
+            aggregateVersion, _identityServiceMock.Object);
+
         TestTitle expectedTitle = new(_faker.Lorem.Sentence(), true);
         string expectedDescription = _faker.Lorem.Sentences();
         DateTimeOffset expectedExpiration = _faker.Date.FutureOffset();
@@ -112,8 +124,11 @@ public sealed class AggregateRootTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
-        TestAggregate aggregate =
-            GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
+
+        TestAggregate aggregate = GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier,
+            aggregateVersion, _identityServiceMock.Object);
+
         TestTitle expectedTitle = new(_faker.Lorem.Sentence(), true);
         string expectedDescription = _faker.Lorem.Sentences();
         DateTimeOffset expectedExpiration = _faker.Date.FutureOffset();
@@ -134,8 +149,12 @@ public sealed class AggregateRootTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
-        TestAggregate aggregate =
-            GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
+
+        TestAggregate aggregate = GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier,
+            aggregateVersion, _identityServiceMock.Object);
+
         TestTitle expectedTitle = new(_faker.Lorem.Sentence(), true);
         string expectedDescription = _faker.Lorem.Sentences();
         DateTimeOffset expectedExpiration = _faker.Date.FutureOffset();
@@ -244,6 +263,24 @@ public sealed class AggregateRootTests
         action.Should().ThrowExactly<UnmatchedDomainEventException>().WithMessage(
             $"Aggregate ({aggregate.GetTypeFullName()}) with identifier: ({aggregateIdentifier}) doesn't match " +
             $"provided domain event ({changeExpirationEvent.GetTypeFullName()}) with expected aggregate identifier: ({changeExpirationEvent.AggregateIdentifier}).");
+    }
+
+    [Test]
+    public void GetIdentity_WhenIdentityContextMissing_ShouldThrowMissingIdentityContextException()
+    {
+        // Arrange
+        Guid aggregateIdentifier = _faker.Random.Guid();
+        const int aggregateVersion = 0;
+
+        TestAggregate aggregate =
+            GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+
+        // Act
+        Action action = () => aggregate.GetIdentity();
+
+        // Assert
+        action.Should().ThrowExactly<MissingIdentityContextException>().WithMessage(
+            $"This aggregate ({aggregate.GetTypeFullName()}) has missing identity context. Consider to build your aggregates via constructor allows to pass an identity parameter.");
     }
 
     private static void AssertState(TestAggregateState aggregateState, TestAggregateState expectedAggregateState)
