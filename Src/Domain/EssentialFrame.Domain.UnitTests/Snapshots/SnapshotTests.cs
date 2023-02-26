@@ -1,10 +1,12 @@
 using System;
 using Bogus;
 using EssentialFrame.Domain.Factories;
+using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.TestData.Domain.Aggregates;
 using EssentialFrame.TestData.Domain.Snapshots;
 using EssentialFrame.TestData.Domain.ValueObjects;
+using EssentialFrame.TestData.Identity;
 using FluentAssertions;
 using Moq;
 using Moq.Language.Flow;
@@ -17,6 +19,7 @@ public class SnapshotTests
 {
     private readonly Faker _faker = new();
     private readonly Mock<ISerializer> _serializerMock = new();
+    private readonly Mock<IIdentityService> _identityServiceMock = new();
 
     [Test]
     public void CreateSnapshotInstance_Always_AssignCorrectValues()
@@ -24,8 +27,12 @@ public class SnapshotTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
-        TestAggregate aggregate =
-            GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
+
+        TestAggregate aggregate = GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier,
+            aggregateVersion, _identityServiceMock.Object);
+        
         TestTitle expectedTitle = new(_faker.Lorem.Sentence(), true);
         string expectedDescription = _faker.Lorem.Sentences();
         DateTimeOffset expectedExpiration = _faker.Date.FutureOffset();
