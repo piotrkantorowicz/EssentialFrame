@@ -26,12 +26,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Core\EssentialFrame\EssentialFrame.csproj" />
-        <ProjectReference Include="..\..\CqrsCommands\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj" />
+        <ProjectReference Include="..\..\Core\EssentialFrame\EssentialFrame.csproj"/>
+        <ProjectReference Include="..\..\CqrsCommands\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentValidation" Version="11.4.0" />
+        <PackageReference Include="FluentValidation" Version="11.4.0"/>
     </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
     {
         _eventsCache = eventsCache ?? throw new ArgumentNullException(nameof(eventsCache));
     }
-    
+
     public bool Exists(Guid aggregate)
     {
         throw new NotImplementedException();
@@ -38,7 +38,8 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
         throw new NotImplementedException();
     }
 
-    public Task<IReadOnlyCollection<DomainEventDao>> GetAsync(Guid aggregate, int version, CancellationToken cancellationToken = default)
+    public Task<IReadOnlyCollection<DomainEventDao>> GetAsync(Guid aggregate, int version,
+        CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
@@ -58,7 +59,8 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
         throw new NotImplementedException();
     }
 
-    public Task SaveAsync(AggregateRoot aggregate, IEnumerable<DomainEventDao> events, CancellationToken cancellationToken = default)
+    public Task SaveAsync(AggregateRoot aggregate, IEnumerable<DomainEventDao> events,
+        CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

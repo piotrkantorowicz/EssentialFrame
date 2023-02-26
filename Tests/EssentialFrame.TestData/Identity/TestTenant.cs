@@ -1,7 +1,7 @@
 using System;
 using EssentialFrame.Identity;
 
-namespace EssentialFrame.Domain.UnitTests.TestData;
+namespace EssentialFrame.TestData.Identity;
 
 public class TestTenant : ITenant
 {
@@ -14,7 +14,10 @@ public class TestTenant : ITenant
     }
 
     public Guid Identifier { get; }
+
     public string Code { get; }
+
     public string Name { get; }
+
     public int Key { get; }
 }

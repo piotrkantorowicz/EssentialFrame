@@ -57,6 +57,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.IntegrationT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.ArchitectureTests", "Tests\EssentialFrame.ArchitectureTests\EssentialFrame.ArchitectureTests.csproj", "{060B479C-7A63-4E80-ADB0-35527BCE590A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.TestData", "Tests\EssentialFrame.TestData\EssentialFrame.TestData.csproj", "{24566404-79B3-40FC-9B1B-D6467840FDB9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,7 @@ Global
 		{BF72DB10-1F0D-4837-A8F6-9F589F8E79A2} = {567D8402-3657-4446-A361-AB69E029ACA1}
 		{43B6C8EC-27A4-4450-9C8A-078354564FC5} = {77B2F06A-FFE2-43BE-A8DC-DC2EF4C0624B}
 		{060B479C-7A63-4E80-ADB0-35527BCE590A} = {77B2F06A-FFE2-43BE-A8DC-DC2EF4C0624B}
+		{24566404-79B3-40FC-9B1B-D6467840FDB9} = {77B2F06A-FFE2-43BE-A8DC-DC2EF4C0624B}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F2659D84-08BA-495F-A0F8-2EC4ACB54EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -153,5 +156,9 @@ Global
 		{060B479C-7A63-4E80-ADB0-35527BCE590A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{060B479C-7A63-4E80-ADB0-35527BCE590A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{060B479C-7A63-4E80-ADB0-35527BCE590A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24566404-79B3-40FC-9B1B-D6467840FDB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24566404-79B3-40FC-9B1B-D6467840FDB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24566404-79B3-40FC-9B1B-D6467840FDB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24566404-79B3-40FC-9B1B-D6467840FDB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

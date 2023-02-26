@@ -3,10 +3,15 @@
 namespace EssentialFrame.Domain.Exceptions;
 
 [Serializable]
-internal class MissingAggregateIdentifierException : EssentialFrameException
+public class MissingAggregateIdentifierException : EssentialFrameException
 {
+    public MissingAggregateIdentifierException(Type aggregateType) : base(
+        $"The aggregate identifier is missing from the aggregate instance ({aggregateType.FullName}).")
+    {
+    }
+
     public MissingAggregateIdentifierException(Type aggregateType, Type eventType) : base(
-        $"The aggregate identifier is missing from both the aggregate instance ({aggregateType.FullName}) and the event instance ({eventType.FullName}).")
+        $"The aggregate identifier is missing from aggregate instance ({aggregateType.FullName}) or the event instance ({eventType.FullName}).")
     {
     }
 }

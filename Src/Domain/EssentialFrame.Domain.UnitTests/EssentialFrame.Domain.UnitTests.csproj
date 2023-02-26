@@ -19,10 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Aggregates"/>
-    </ItemGroup>
-
-    <ItemGroup>
+        <ProjectReference Include="..\..\..\Tests\EssentialFrame.TestData\EssentialFrame.TestData.csproj"/>
         <ProjectReference Include="..\EssentialFrame.Domain\EssentialFrame.Domain.csproj"/>
     </ItemGroup>
 

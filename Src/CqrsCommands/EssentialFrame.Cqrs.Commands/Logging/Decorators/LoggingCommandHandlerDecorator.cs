@@ -68,8 +68,8 @@ public sealed class LoggingCommandHandlerDecorator<TCommand> : ICommandHandler<T
             {
                 stopwatch.Stop();
 
-                _logger.LogError(LoggingUtils.UnexpectedException, ex,
-                    "[END] {CommandName}: {ExecutionTime}[ms]", commandName, stopwatch.ElapsedMilliseconds);
+                _logger.LogError(LoggingUtils.UnexpectedException, ex, "[END] {CommandName}: {ExecutionTime}[ms]",
+                    commandName, stopwatch.ElapsedMilliseconds);
 
                 throw;
             }

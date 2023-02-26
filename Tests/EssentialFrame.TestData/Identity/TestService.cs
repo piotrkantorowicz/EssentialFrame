@@ -1,7 +1,7 @@
 using System;
 using EssentialFrame.Identity;
 
-namespace EssentialFrame.Domain.UnitTests.TestData;
+namespace EssentialFrame.TestData.Identity;
 
 public sealed class TestService : IService
 {
@@ -13,7 +13,9 @@ public sealed class TestService : IService
     }
 
     public Guid Identifier { get; }
+
     public string Name { get; }
+
     public string Version { get; }
 
     public string GetFullIdentifier()

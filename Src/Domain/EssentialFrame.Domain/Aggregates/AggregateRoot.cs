@@ -1,5 +1,6 @@
 ﻿using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
+using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Aggregates;
 
@@ -7,13 +8,25 @@ public abstract class AggregateRoot
 {
     private readonly List<IDomainEvent> _changes = new();
 
-    public AggregateState State { get; set; }
+    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion)
+    {
+        if (aggregateIdentifier == Guid.Empty)
+        {
+            throw new MissingAggregateIdentifierException(GetType());
+        }
 
-    public Guid AggregateIdentifier { get; set; }
+        AggregateIdentifier = aggregateIdentifier;
+        AggregateVersion = aggregateVersion;
+    }
 
-    public int AggregateVersion { get; set; }
+    public Guid AggregateIdentifier { get; }
+
+    public int AggregateVersion { get; private set; }
+
+    public AggregateState State { get; protected set; }
 
     public abstract AggregateState CreateState();
+    public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
 
     public IDomainEvent[] GetUncommittedChanges()
     {
@@ -33,14 +46,14 @@ public abstract class AggregateRoot
 
             foreach (IDomainEvent change in changes)
             {
-                if (change.AggregateIdentifier == Guid.Empty && AggregateIdentifier == Guid.Empty)
+                if (change.AggregateIdentifier == Guid.Empty || AggregateIdentifier == Guid.Empty)
                 {
                     throw new MissingAggregateIdentifierException(GetType(), change.GetType());
                 }
 
                 i++;
 
-                change.AdjustToAggregate(AggregateIdentifier, AggregateVersion + i);
+                change.AdjustAggregateVersion(AggregateIdentifier, AggregateVersion + i);
             }
 
             AggregateVersion += changes.Length;
@@ -55,8 +68,14 @@ public abstract class AggregateRoot
     {
         lock (_changes)
         {
-            foreach (IDomainEvent change in history.ToArray())
+            foreach (IDomainEvent change in history)
             {
+                if (change.AggregateIdentifier != AggregateIdentifier)
+                {
+                    throw new UnmatchedDomainEventException(GetType(), change.GetType(), AggregateIdentifier,
+                        change.AggregateIdentifier);
+                }
+
                 if (change.AggregateVersion != AggregateVersion + 1)
                 {
                     throw new UnorderedEventsException(change.AggregateIdentifier);
@@ -64,7 +83,6 @@ public abstract class AggregateRoot
 
                 ApplyEvent(change);
 
-                AggregateIdentifier = change.AggregateIdentifier;
                 AggregateVersion++;
             }
         }

@@ -1,7 +1,7 @@
 using System;
 using EssentialFrame.Identity;
 
-namespace EssentialFrame.Domain.UnitTests.TestData;
+namespace EssentialFrame.TestData.Identity;
 
 public class TestUser : IUser
 {
@@ -15,8 +15,12 @@ public class TestUser : IUser
     }
 
     public Guid Identifier { get; }
+
     public string Email { get; }
+
     public string Name { get; }
+
     public bool IsAuthenticated { get; }
+
     public int Key { get; }
 }

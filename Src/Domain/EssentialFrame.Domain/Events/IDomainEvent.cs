@@ -16,5 +16,5 @@ public interface IDomainEvent
 
     DateTimeOffset EventTime { get; }
 
-    void AdjustToAggregate(Guid aggregateId, int aggregateVersion);
+    void AdjustAggregateVersion(Guid aggregateIdentifier, int aggregateVersion);
 }

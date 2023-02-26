@@ -53,6 +53,8 @@ resharper_autodetect_indent_settings = true
 resharper_enforce_line_ending_style = true
 resharper_keep_existing_linebreaks = false
 resharper_use_indent_from_vs = false
+resharper_blank_lines_around_single_line_property = 1
+resharper_blank_lines_around_single_line_auto_property = 1
 
 # ReSharper inspection severities
 resharper_arrange_redundant_parentheses_highlighting = hint
