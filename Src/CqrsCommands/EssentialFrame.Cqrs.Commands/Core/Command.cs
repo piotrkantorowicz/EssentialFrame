@@ -13,6 +13,7 @@ public abstract class Command : ICommand
     {
         TenantIdentity = identity.Tenant.Identifier;
         UserIdentity = identity.User.Identifier;
+        CorrelationIdentity = identity.Correlation.Identifier;
         ServiceIdentity = identity.Service.GetFullIdentifier();
     }
 
@@ -37,6 +38,8 @@ public abstract class Command : ICommand
     public Guid TenantIdentity { get; }
 
     public Guid UserIdentity { get; }
+
+    public Guid CorrelationIdentity { get; }
 
     public Guid CommandIdentifier { get; } = Guid.NewGuid();
 }

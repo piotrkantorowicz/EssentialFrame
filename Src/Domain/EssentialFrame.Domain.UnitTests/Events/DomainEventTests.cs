@@ -330,5 +330,6 @@ public sealed class DomainEventTests
         provided.User.Identifier.Should().Be(expected.UserIdentity);
         provided.Service.GetFullIdentifier().Should().Be(expected.ServiceIdentity);
         provided.Tenant.Identifier.Should().Be(expected.TenantIdentity);
+        provided.Correlation.Identifier.Should().Be(expected.CorrelationIdentity);
     }
 }

@@ -35,7 +35,8 @@ public sealed class LoggingCommandHandlerDecorator<TCommand> : ICommandHandler<T
                    ["ExpectedVersion"] = command.ExpectedVersion ?? -1,
                    ["UserId"] = command.UserIdentity,
                    ["ServiceId"] = command.ServiceIdentity,
-                   ["TenantId"] = command.TenantIdentity
+                   ["TenantId"] = command.TenantIdentity,
+                   ["CorrelationId"] = command.CorrelationIdentity
                }))
         {
             string serializedCommand = _serializer.Serialize(command);

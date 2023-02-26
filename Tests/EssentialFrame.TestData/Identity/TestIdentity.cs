@@ -9,11 +9,14 @@ public sealed class TestIdentity : IIdentity
         Service = new TestService();
         User = new TestUser();
         Tenant = new TestTenant();
+        Correlation = new TestCorrelation();
     }
 
     public ITenant Tenant { get; }
 
     public IUser User { get; }
+
+    public ICorrelation Correlation { get; }
 
     public IService Service { get; }
 }
