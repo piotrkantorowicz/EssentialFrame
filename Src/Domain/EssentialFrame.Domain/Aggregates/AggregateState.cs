@@ -1,10 +1,11 @@
 ﻿using System.Reflection;
+using EssentialFrame.Domain.Base;
 using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
 
 namespace EssentialFrame.Domain.Aggregates;
 
-public abstract class AggregateState
+public abstract class AggregateState : BusinessRuleDomainObject
 {
     public void Apply(IDomainEvent domainEvent)
     {

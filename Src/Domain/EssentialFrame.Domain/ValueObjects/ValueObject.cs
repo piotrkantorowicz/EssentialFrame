@@ -1,6 +1,8 @@
+using EssentialFrame.Domain.Base;
+
 namespace EssentialFrame.Domain.ValueObjects;
 
-public abstract class ValueObject
+public abstract class ValueObject : BusinessRuleDomainObject
 {
     protected abstract IEnumerable<object> GetEqualityComponents();
 

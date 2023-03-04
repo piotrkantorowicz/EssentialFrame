@@ -21,6 +21,11 @@ public class TestTitle : ValueObject
 
     public bool Uppercase { get; }
 
+    public bool IsEmpty()
+    {
+        return string.IsNullOrEmpty(Value);
+    }
+
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
