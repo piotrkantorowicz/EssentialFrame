@@ -22,7 +22,13 @@ public sealed class TestAggregate : AggregateRoot
 
     public override TestAggregateState CreateState()
     {
-        return new TestAggregateState();
+        return TestAggregateState.Create(AggregateIdentifier, GetType());
+    }
+
+    public TestAggregateState CreateState(TestTitle title, string description, DateTimeOffset expiration,
+        HashSet<TestEntity> images)
+    {
+        return TestAggregateState.Create(AggregateIdentifier, GetType(), title, description, expiration, images);
     }
 
     public override void RestoreState(object aggregateState, ISerializer serializer = null)

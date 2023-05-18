@@ -27,7 +27,7 @@ public sealed class DomainEventTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         Guid eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
-        TestTitle title = new(_faker.Lorem.Sentence(), true);
+        TestTitle title = TestTitle.Create(_faker.Lorem.Sentence(), true);
 
         // Act
         ChangeTitleTestDomainEvent @event = new(aggregateIdentifier, identity, title);
@@ -187,8 +187,8 @@ public sealed class DomainEventTests
         int aggregateVersion = _faker.Random.Number();
         HashSet<TestEntity> images = new()
         {
-            new(_faker.Random.Guid(), _faker.Lorem.Word(), _faker.Random.Bytes(200)),
-            new(_faker.Random.Guid(), _faker.Lorem.Word(), _faker.Random.Bytes(500))
+            TestEntity.Create(_faker.Random.Guid(), _faker.Lorem.Word(), _faker.Random.Bytes(200)),
+            TestEntity.Create(_faker.Random.Guid(), _faker.Lorem.Word(), _faker.Random.Bytes(500))
         };
 
         // Act
@@ -297,7 +297,7 @@ public sealed class DomainEventTests
         int aggregateVersion = _faker.Random.Number();
 
         ChangeTitleTestDomainEvent @event = new(aggregateIdentifier, new TestIdentity(),
-            new TestTitle(_faker.Lorem.Sentence(), true));
+            TestTitle.Create(_faker.Lorem.Sentence(), true));
 
         // Act
         @event.AdjustAggregateVersion(aggregateIdentifier, aggregateVersion);
@@ -315,7 +315,7 @@ public sealed class DomainEventTests
         int aggregateVersion = _faker.Random.Number();
 
         ChangeTitleTestDomainEvent @event = new(_faker.Random.Guid(), new TestIdentity(),
-            new TestTitle(_faker.Lorem.Sentence(), true));
+            TestTitle.Create(_faker.Lorem.Sentence(), true));
 
         // Act
         Action action = () => @event.AdjustAggregateVersion(aggregateIdentifier, aggregateVersion);

@@ -1,4 +1,6 @@
+using System;
 using Bogus;
+using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.TestData.Domain.ValueObjects;
 using FluentAssertions;
 using NUnit.Framework;
@@ -15,8 +17,8 @@ public sealed class ValueObjectTests
     {
         // Arrange
         string value = _faker.Lorem.Sentence();
-        TestTitle title1 = new(value, true);
-        TestTitle title2 = new(value, true);
+        TestTitle title1 = TestTitle.Create(value, true);
+        TestTitle title2 = TestTitle.Create(value, true);
 
         // Act
         bool isEqual = title1.Equals(title2);
@@ -35,8 +37,8 @@ public sealed class ValueObjectTests
     public void Equals_WhenObjectsHaveDifferentValues_ShouldBeFalse()
     {
         // Arrange
-        TestTitle title1 = new(_faker.Lorem.Sentence(), true);
-        TestTitle title2 = new(_faker.Lorem.Sentence(), false);
+        TestTitle title1 = TestTitle.Create(_faker.Lorem.Sentence(), true);
+        TestTitle title2 = TestTitle.Create(_faker.Lorem.Sentence(), false);
 
         // Act
         bool isEqual = title1.Equals(title2);
@@ -49,5 +51,20 @@ public sealed class ValueObjectTests
         haveValidHashes.Should().BeFalse();
         isEqualsUsingOperator.Should().BeFalse();
         isNotEqualsUsingOperator.Should().BeTrue();
+    }
+
+    [Test]
+    public void Create_WhenTitleIsEmpty_ShouldThrowTitleValueCannotBeEmptyRuleValidationException()
+    {
+        // Arrange
+        string value = string.Empty;
+        bool uppercase = _faker.Random.Bool();
+
+        // Act
+        Action action = () => TestTitle.Create(value, uppercase);
+
+        // Assert
+        action.Should().Throw<BusinessRuleValidationException>().WithMessage(
+            $"Unable to set value for value object ({typeof(TestTitle).FullName}), because value cannot be empty.");
     }
 }

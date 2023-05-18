@@ -7,8 +7,8 @@ namespace EssentialFrame.Domain.Aggregates;
 
 public abstract class AggregateRoot
 {
-    private readonly IIdentityService _identityService;
     private readonly List<IDomainEvent> _changes = new();
+    private readonly IIdentityService _identityService;
 
     protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion)
     {

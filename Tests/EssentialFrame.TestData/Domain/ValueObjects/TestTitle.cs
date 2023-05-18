@@ -1,17 +1,14 @@
-using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.TestData.Domain.Rules;
 
 namespace EssentialFrame.TestData.Domain.ValueObjects;
 
-public class TestTitle : ValueObject
+public sealed class TestTitle : ValueObject
 {
-    public TestTitle(string value, bool uppercase)
+    private TestTitle(string value, bool uppercase)
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            throw new ArgumentException("Title value cannot be null or empty.");
-        }
+        CheckRule(new TitleValueCannotBeEmptyRule(GetType(), value));
 
         Value = value;
         Uppercase = uppercase;
@@ -20,6 +17,16 @@ public class TestTitle : ValueObject
     public string Value { get; }
 
     public bool Uppercase { get; }
+
+    public static TestTitle Create(string value, bool uppercase)
+    {
+        return new TestTitle(value, uppercase);
+    }
+
+    public bool IsEmpty()
+    {
+        return string.IsNullOrEmpty(Value);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
