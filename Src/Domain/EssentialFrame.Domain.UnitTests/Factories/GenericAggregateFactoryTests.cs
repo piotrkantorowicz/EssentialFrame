@@ -36,7 +36,7 @@ public sealed class GenericAggregateFactoryTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
-        TestIdentityService identityService = new TestIdentityService();
+        TestIdentityService identityService = new();
 
         // Act
         TestAggregate aggregate =

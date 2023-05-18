@@ -1,8 +1,9 @@
-using EssentialFrame.Domain.Base;
+using EssentialFrame.Domain.Exceptions;
+using EssentialFrame.Domain.Rules.Base;
 
 namespace EssentialFrame.Domain.ValueObjects;
 
-public abstract class ValueObject : BusinessRuleDomainObject
+public abstract class ValueObject
 {
     protected abstract IEnumerable<object> GetEqualityComponents();
 
@@ -52,5 +53,18 @@ public abstract class ValueObject : BusinessRuleDomainObject
     public static bool operator !=(ValueObject a, ValueObject b)
     {
         return !(a == b);
+    }
+
+    protected virtual void CheckRule(ValueObjectBusinessRuleBase rule, bool useExtraParameters = true)
+    {
+        if (rule.IsBroken())
+        {
+            if (useExtraParameters)
+            {
+                rule.AddExtraParameters();
+            }
+
+            throw new BusinessRuleValidationException(rule);
+        }
     }
 }

@@ -1,24 +1,29 @@
 using System;
-using EssentialFrame.Domain.Rules;
+using System.Collections.Generic;
+using EssentialFrame.Domain.Rules.Base;
 
 namespace EssentialFrame.TestData.Domain.Rules;
 
-public sealed class TestEntityNameCannotBeEmptyRule : BaseBusinessRule
+public sealed class TestEntityNameCannotBeEmptyRule : EntityBusinessRuleBase
 {
-    public TestEntityNameCannotBeEmptyRule(Guid aggregateIdentifier, Type aggregateType) : base(aggregateIdentifier,
-        aggregateType)
+    private readonly string _imageName;
+
+    public TestEntityNameCannotBeEmptyRule(Guid entityIdentifier, Type entityType, string imageName) : base(
+        entityIdentifier, entityType)
     {
+        _imageName = imageName;
     }
 
-    public override string Message { get; }
+    public override string Message =>
+        $"Unable to set name for aggregate ({EntityType.FullName}) with identifier ({EntityIdentifier}), because image cannot be empty.";
 
     public override bool IsBroken()
     {
-        throw new NotImplementedException();
+        return string.IsNullOrEmpty(_imageName);
     }
 
-    protected override void AddExtraParameters()
+    public override void AddExtraParameters()
     {
-        throw new NotImplementedException();
+        Parameters.TryAdd("ImageName", _imageName);
     }
 }

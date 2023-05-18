@@ -32,8 +32,8 @@ public class SnapshotTests
 
         TestAggregate aggregate = GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
-        
-        TestTitle expectedTitle = new(_faker.Lorem.Sentence(), true);
+
+        TestTitle expectedTitle = TestTitle.Create(_faker.Lorem.Sentence(), true);
         string expectedDescription = _faker.Lorem.Sentences();
         DateTimeOffset expectedExpiration = _faker.Date.FutureOffset();
 
