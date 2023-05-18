@@ -409,9 +409,8 @@ public sealed class AggregateRootTests
     {
         // Arrange
         const int aggregateVersion = 0;
-        const int waitTime = 100;
         Guid aggregateIdentifier = _faker.Random.Guid();
-        DateTimeOffset expiration = SystemClock.Now.AddMilliseconds(waitTime);
+        DateTimeOffset expiration = _faker.Date.FutureOffset();
         Guid imageId = _faker.Random.Guid();
         string imageName = _faker.Lorem.Word();
 
