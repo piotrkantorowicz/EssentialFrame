@@ -29,4 +29,9 @@
         <ProjectReference Include="..\..\Core\EssentialFrame\EssentialFrame.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Compile Remove="Base\BusinessRuleDomainObject.cs"/>
+        <Compile Remove="Rules\BaseBusinessRule.cs"/>
+    </ItemGroup>
+
 </Project>

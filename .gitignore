@@ -31,6 +31,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+inspectcode.xml
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -43,6 +44,7 @@ Generated\ Files/
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
+Tests/CoverageReport*/
 
 # NUnit
 *.VisualState.xml
