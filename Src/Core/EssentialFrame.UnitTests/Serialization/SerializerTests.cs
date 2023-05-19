@@ -48,7 +48,7 @@ public class SerializerTests
     public void SerializeWithOptions_Always_ShouldSerializeObject(object serializedObject)
     {
         // Arrange
-        JsonSerializerOptions options = new JsonSerializerOptions
+        JsonSerializerOptions options = new()
         {
             WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
@@ -77,7 +77,7 @@ public class SerializerTests
     public void DeserializeBasicObjectWithOptions_Always_ShouldDeserializeObject()
     {
         // Arrange
-        JsonSerializerOptions options = new JsonSerializerOptions
+        JsonSerializerOptions options = new()
         {
             WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
@@ -109,13 +109,31 @@ public class SerializerTests
     public void DeserializeBasicObject_Always_ShouldDeserializeObjectWithUnspecifiedType()
     {
         // Arrange
-        string serializedObj = _serializer.Serialize(ComplexObject);
+        string serializedObj = _serializer.Serialize(BasicObject);
 
         // Act
         object result = _serializer.Deserialize(serializedObj, typeof(SerializationTestObject));
 
         // Assert
-        result.Should().BeEquivalentTo(ComplexObject);
+        result.Should().BeEquivalentTo(BasicObject);
+    }
+
+    [Test]
+    public void DeserializeBasicObjectWithOptions_Always_ShouldDeserializeObjectWithUnspecifiedType()
+    {
+        // Arrange
+        JsonSerializerOptions options = new()
+        {
+            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        string serializedObj = _serializer.Serialize(BasicObject);
+
+        // Act
+        object result = _serializer.Deserialize(serializedObj, typeof(SerializationTestObject), options);
+
+        // Assert
+        result.Should().BeEquivalentTo(BasicObject);
     }
 
     [Test]
@@ -135,7 +153,7 @@ public class SerializerTests
     public void DeserializeComplexObjectWithOptions_Always_ShouldDeserializeObject()
     {
         // Arrange
-        JsonSerializerOptions options = new JsonSerializerOptions
+        JsonSerializerOptions options = new()
         {
             WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
@@ -172,6 +190,24 @@ public class SerializerTests
 
         // Act
         object result = _serializer.Deserialize(serializedObj, typeof(SerializationTestObject));
+
+        // Assert
+        result.Should().BeEquivalentTo(ComplexObject);
+    }
+
+    [Test]
+    public void DeserializeComplexObjectWithOptions_Always_ShouldDeserializeObjectWithUnspecifiedType()
+    {
+        // Arrange
+        JsonSerializerOptions options = new()
+        {
+            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        string serializedObj = _serializer.Serialize(ComplexObject);
+
+        // Act
+        object result = _serializer.Deserialize(serializedObj, typeof(SerializationTestObject), options);
 
         // Assert
         result.Should().BeEquivalentTo(ComplexObject);
