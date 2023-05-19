@@ -3,7 +3,7 @@ using Autofac;
 
 namespace EssentialFrame;
 
-public sealed class DefaultEssentialFrameBuilder : IEssentialFrameBuilder<ContainerBuilder, IContainer>
+internal sealed class DefaultEssentialFrameBuilder : IEssentialFrameBuilder<ContainerBuilder, IContainer>
 {
     private IContainer _container;
 

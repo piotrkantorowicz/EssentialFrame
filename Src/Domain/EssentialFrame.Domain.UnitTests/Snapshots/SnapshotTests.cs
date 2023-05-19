@@ -41,7 +41,7 @@ public class SnapshotTests
         aggregate.ChangeDescription(expectedDescription);
         aggregate.ExtendExpirationDate(expectedExpiration);
 
-        ISetup<ISerializer, string> state = _serializerMock.Setup(s => s.Serialize(aggregate.State));
+        ISetup<ISerializer, string> state = _serializerMock.Setup(s => s.Serialize(aggregate.State, null));
 
         // Act
         TestSnapshot snapshot = new(aggregateIdentifier, aggregateVersion, state);
