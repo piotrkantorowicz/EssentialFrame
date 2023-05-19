@@ -11,7 +11,13 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
     private readonly Dictionary<TK, T> _cache = new();
     private readonly ReaderWriterLockSlim _locker = new();
     private readonly Dictionary<TK, Timer> _timers = new();
+    private readonly int _timerInterval;
     private bool _disposed;
+
+    protected CacheBase(int timerInterval)
+    {
+        _timerInterval = timerInterval;
+    }
 
     public void Dispose()
     {
@@ -63,15 +69,7 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
         try
         {
             CheckTimer(key, timeout, restartTimer);
-
-            if (!_cache.ContainsKey(key))
-            {
-                _cache.Add(key, value);
-            }
-            else
-            {
-                _cache[key] = value;
-            }
+            _cache[key] = value;
         }
         finally
         {
@@ -238,7 +236,7 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
         {
             if (restartTimerIfExists)
             {
-                timer.Change(cacheTimeout == Timeout.Infinite ? Timeout.Infinite : cacheTimeout * 1000,
+                timer.Change(cacheTimeout == Timeout.Infinite ? Timeout.Infinite : cacheTimeout * _timerInterval,
                     Timeout.Infinite);
             }
         }
@@ -246,7 +244,8 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
         {
             _timers.Add(key,
                 new Timer(RemoveByTimer!, key,
-                    cacheTimeout == Timeout.Infinite ? Timeout.Infinite : cacheTimeout * 1000, Timeout.Infinite));
+                    cacheTimeout == Timeout.Infinite ? Timeout.Infinite : cacheTimeout * _timerInterval,
+                    Timeout.Infinite));
         }
     }
 
