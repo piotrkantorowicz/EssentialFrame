@@ -10,8 +10,8 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
 {
     private readonly Dictionary<TK, T> _cache = new();
     private readonly ReaderWriterLockSlim _locker = new();
-    private readonly Dictionary<TK, Timer> _timers = new();
     private readonly int _timerInterval;
+    private readonly Dictionary<TK, Timer> _timers = new();
     private bool _disposed;
 
     protected CacheBase(int timerInterval)
@@ -77,12 +77,28 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
         }
     }
 
+    public void AddMany(IEnumerable<KeyValuePair<TK, T>> values)
+    {
+        foreach (KeyValuePair<TK, T> value in values)
+        {
+            Add(value.Key, value.Value);
+        }
+    }
+
+    public void AddMany(IEnumerable<KeyValuePair<TK, T>> values, int timeout, bool restartTimer = false)
+    {
+        foreach (KeyValuePair<TK, T> value in values)
+        {
+            Add(value.Key, value.Value, timeout, restartTimer);
+        }
+    }
+
     public void Add(TK key, T value)
     {
         Add(key, value, Timeout.Infinite);
     }
 
-    public void Remove(Predicate<TK> pattern)
+    public void Remove(Func<TK, T, bool> predicate)
     {
         if (_disposed)
         {
@@ -93,9 +109,49 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
 
         try
         {
-            List<TK> removers = (from k in _cache.Keys where pattern(k) select k).ToList();
+            TK workKey = _cache.FirstOrDefault(x => predicate(x.Key, x.Value)).Key;
 
-            foreach (TK workKey in removers)
+
+            try
+            {
+                _timers[workKey].Dispose();
+            }
+            catch
+            {
+                // ignored
+            }
+
+            _timers.Remove(workKey);
+            _cache.Remove(workKey);
+        }
+        finally
+        {
+            _locker.ExitWriteLock();
+        }
+    }
+
+    public void RemoveMany(IEnumerable<TK> keys)
+    {
+        foreach (TK key in keys)
+        {
+            Remove(key);
+        }
+    }
+
+    public void RemoveMany(Func<TK, T, bool> predicate)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _locker.EnterWriteLock();
+
+        try
+        {
+            List<TK> workKeys = _cache.Where(x => predicate(x.Key, x.Value)).Select(x => x.Key).ToList();
+
+            foreach (TK workKey in workKeys)
             {
                 try
                 {
@@ -172,6 +228,66 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
         }
     }
 
+    public T Get(Func<TK, T, bool> predicate)
+    {
+        if (_disposed)
+        {
+            return default;
+        }
+
+        _locker.EnterReadLock();
+
+        try
+        {
+            return _cache.FirstOrDefault(x => predicate(x.Key, x.Value)).Value;
+        }
+
+        finally
+        {
+            _locker.ExitReadLock();
+        }
+    }
+
+    public IReadOnlyCollection<T> GetMany()
+    {
+        if (_disposed)
+        {
+            return default;
+        }
+
+        _locker.EnterReadLock();
+
+        try
+        {
+            return _cache.Select(x => x.Value).ToList();
+        }
+
+        finally
+        {
+            _locker.ExitReadLock();
+        }
+    }
+
+    public IReadOnlyCollection<T> GetMany(Func<TK, T, bool> predicate)
+    {
+        if (_disposed)
+        {
+            return default;
+        }
+
+        _locker.EnterReadLock();
+
+        try
+        {
+            return _cache.Where(x => predicate(x.Key, x.Value)).Select(x => x.Value).ToList();
+        }
+
+        finally
+        {
+            _locker.ExitReadLock();
+        }
+    }
+
     public bool TryGet(TK key, out T value)
     {
         if (_disposed)
@@ -193,6 +309,29 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
         }
     }
 
+    public bool TryGet(Func<TK, T, bool> predicate, out T value)
+    {
+        if (_disposed)
+        {
+            value = default;
+
+            return false;
+        }
+
+        _locker.EnterReadLock();
+
+        try
+        {
+            value = _cache.FirstOrDefault(x => predicate(x.Key, x.Value)).Value;
+
+            return value != null;
+        }
+        finally
+        {
+            _locker.ExitReadLock();
+        }
+    }
+
     public bool Exists(TK key)
     {
         if (_disposed)
@@ -205,6 +344,25 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
         try
         {
             return _cache.ContainsKey(key);
+        }
+        finally
+        {
+            _locker.ExitReadLock();
+        }
+    }
+
+    public bool Exists(Func<TK, T, bool> predicate)
+    {
+        if (_disposed)
+        {
+            return false;
+        }
+
+        _locker.EnterReadLock();
+
+        try
+        {
+            return _cache.Any(x => predicate(x.Key, x.Value));
         }
         finally
         {

@@ -1,4 +1,5 @@
 using EssentialFrame.Cache.Interfaces;
+using EssentialFrame.Cqrs.Commands.Store.Const;
 using EssentialFrame.Cqrs.Commands.Store.Interfaces;
 using EssentialFrame.Cqrs.Commands.Store.Models;
 
@@ -15,42 +16,45 @@ internal sealed class DefaultCommandStore : ICommandStore
 
     public bool Exists(Guid commandIdentifier)
     {
-        throw new NotImplementedException();
+        return _commandsCache.Exists(commandIdentifier);
     }
 
-    public Task<bool> ExistsAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(Exists(commandIdentifier));
     }
 
     public CommandDao Get(Guid commandIdentifier)
     {
-        throw new NotImplementedException();
+        return _commandsCache[commandIdentifier];
     }
 
-    public Task<CommandDao> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
+    public async Task<CommandDao> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(Get(commandIdentifier));
     }
 
     public IReadOnlyCollection<CommandDao> GetPossibleToSend(DateTimeOffset at)
     {
-        throw new NotImplementedException();
+        return _commandsCache.GetMany((_, v) =>
+            v.SendStatus == CommandSendingStatuses.Scheduled && v.SendScheduled <= at);
     }
 
-    public Task<IReadOnlyCollection<CommandDao>> GetPossibleToSendAsync(DateTimeOffset at,
+    public async Task<IReadOnlyCollection<CommandDao>> GetPossibleToSendAsync(DateTimeOffset at,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(GetPossibleToSend(at));
     }
 
     public void Save(CommandDao commandDao, bool isNew)
     {
-        throw new NotImplementedException();
+        _commandsCache.Add(commandDao.CommandIdentifier, commandDao);
     }
 
-    public Task SaveAsync(CommandDao commandDao, bool isNew, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(CommandDao commandDao, bool isNew, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        Save(commandDao, isNew);
+
+        await Task.CompletedTask;
     }
 }

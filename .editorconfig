@@ -97,6 +97,7 @@ dotnet_sort_system_directives_first = true
 file_header_template = # this. and Me. preferences
 
 
+
 dotnet_style_qualification_for_event = false:silent
 dotnet_style_qualification_for_field = false:silent
 dotnet_style_qualification_for_method = false:silent

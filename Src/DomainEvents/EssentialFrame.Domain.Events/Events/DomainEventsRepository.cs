@@ -35,7 +35,6 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
         }
 
         IDomainEvent[] events = aggregate.FlushUncommittedChanges();
-
         IEnumerable<DomainEventDao> eventDaos = events.Select(e => new DomainEventDao(e));
 
         _store.Save(aggregate, eventDaos);

@@ -7,6 +7,8 @@ public class DomainEventDao
 {
     public DomainEventDao(IDomainEvent domainEvent)
     {
+        AggregateIdentifier = domainEvent.AggregateIdentifier;
+        AggregateVersion = domainEvent.AggregateVersion;
         EventIdentifier = domainEvent.EventIdentifier;
         EventClass = domainEvent.GetClassName();
         EventType = domainEvent.GetTypeFullName();
@@ -19,6 +21,10 @@ public class DomainEventDao
     public virtual string EventClass { get; }
 
     public virtual string EventType { get; }
+
+    public virtual Guid AggregateIdentifier { get; }
+
+    public virtual int AggregateVersion { get; }
 
     public virtual Guid EventIdentifier { get; }
 

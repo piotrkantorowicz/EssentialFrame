@@ -38,6 +38,10 @@ public abstract class AggregateRoot
 
     public int AggregateVersion { get; private set; }
 
+    public DateTimeOffset? DeletedDate { get; private set; }
+
+    public bool IsDeleted { get; private set; }
+
     public AggregateState State { get; protected set; }
 
     public abstract AggregateState CreateState();
@@ -111,6 +115,18 @@ public abstract class AggregateRoot
                 AggregateVersion++;
             }
         }
+    }
+
+    public void SafeDelete()
+    {
+        DeletedDate = DateTimeOffset.UtcNow;
+        IsDeleted = true;
+    }
+
+    public void UnDelete()
+    {
+        DeletedDate = null;
+        IsDeleted = false;
     }
 
     protected void Apply(IDomainEvent change)
