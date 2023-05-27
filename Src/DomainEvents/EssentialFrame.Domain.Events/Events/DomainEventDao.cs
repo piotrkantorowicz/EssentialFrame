@@ -13,7 +13,7 @@ public class DomainEventDao
         EventClass = domainEvent.GetClassName();
         EventType = domainEvent.GetTypeFullName();
         DomainEvent = domainEvent;
-        CreatedAt = SystemClock.Now;
+        CreatedAt = SystemClock.UtcNow;
     }
 
     public virtual object DomainEvent { get; }

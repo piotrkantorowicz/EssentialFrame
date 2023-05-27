@@ -8,6 +8,7 @@ using EssentialFrame.TestData.Domain.DomainEvents;
 using EssentialFrame.TestData.Domain.Entities;
 using EssentialFrame.TestData.Domain.ValueObjects;
 using EssentialFrame.TestData.Identity;
+using EssentialFrame.TestData.Utils;
 using EssentialFrame.Time;
 using FluentAssertions;
 using NUnit.Framework;
@@ -304,7 +305,7 @@ public sealed class DomainEventTests
 
         // Assert
         @event.AggregateVersion.Should().Be(aggregateVersion);
-        @event.EventTime.Should().BeCloseTo(SystemClock.Now, TimeSpan.FromMilliseconds(100));
+        @event.EventTime.Should().BeCloseTo(SystemClock.UtcNow, TimeSpan.FromMilliseconds(Defaults.DefaultCloseTo));
     }
 
     [Test]

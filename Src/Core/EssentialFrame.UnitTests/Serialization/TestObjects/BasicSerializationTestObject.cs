@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EssentialFrame.UnitTests.Serialization.SerializationTestObjects;
+namespace EssentialFrame.UnitTests.Serialization.TestObjects;
 
 public class BasicSerializationTestObject
 {

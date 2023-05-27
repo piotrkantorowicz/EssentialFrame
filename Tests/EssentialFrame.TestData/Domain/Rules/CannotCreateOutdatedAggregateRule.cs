@@ -22,7 +22,7 @@ public class CannotCreateOutdatedAggregateRule : AggregateBusinessRuleBase
 
     public override bool IsBroken()
     {
-        return _expiration < SystemClock.Now;
+        return _expiration < SystemClock.UtcNow;
     }
 
     public override void AddExtraParameters()
