@@ -304,7 +304,7 @@ public sealed class DomainEventTests
 
         // Assert
         @event.AggregateVersion.Should().Be(aggregateVersion);
-        @event.EventTime.Should().BeCloseTo(SystemClock.Now, TimeSpan.FromMilliseconds(100));
+        @event.EventTime.Should().BeCloseTo(SystemClock.UtcNow, TimeSpan.FromMilliseconds(100));
     }
 
     [Test]

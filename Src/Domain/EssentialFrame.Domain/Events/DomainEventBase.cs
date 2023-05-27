@@ -49,7 +49,7 @@ public abstract class DomainEventBase : IDomainEvent
         }
 
         AggregateVersion = aggregateVersion;
-        EventTime = SystemClock.Now;
+        EventTime = SystemClock.UtcNow;
     }
 
     public Guid EventIdentifier { get; } = Guid.NewGuid();
@@ -66,5 +66,5 @@ public abstract class DomainEventBase : IDomainEvent
 
     public Guid CorrelationIdentity { get; }
 
-    public DateTimeOffset EventTime { get; private set; } = SystemClock.Now;
+    public DateTimeOffset EventTime { get; private set; } = SystemClock.UtcNow;
 }

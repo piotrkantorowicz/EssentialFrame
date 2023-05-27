@@ -321,7 +321,7 @@ public sealed class AggregateRootTests
         const int aggregateVersion = 0;
         const int waitTime = 100;
         Guid aggregateIdentifier = _faker.Random.Guid();
-        DateTimeOffset expiration = SystemClock.Now.AddMilliseconds(waitTime);
+        DateTimeOffset expiration = SystemClock.UtcNow.AddMilliseconds(waitTime);
         TestTitle title = TestTitle.Create(_faker.Lorem.Sentence(), true);
         string description = _faker.Lorem.Sentences();
         Guid imageId = _faker.Random.Guid();
@@ -381,8 +381,8 @@ public sealed class AggregateRootTests
         const int aggregateVersion = 0;
         const int waitTime = 100;
         Guid aggregateIdentifier = _faker.Random.Guid();
-        DateTimeOffset expiration = SystemClock.Now.AddMilliseconds(waitTime);
-        DateTimeOffset newExpiration = SystemClock.Now.AddDays(14);
+        DateTimeOffset expiration = SystemClock.UtcNow.AddMilliseconds(waitTime);
+        DateTimeOffset newExpiration = SystemClock.UtcNow.AddDays(14);
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
 
@@ -445,7 +445,7 @@ public sealed class AggregateRootTests
         const int aggregateVersion = 0;
         const int waitTime = 100;
         Guid aggregateIdentifier = _faker.Random.Guid();
-        DateTimeOffset expiration = SystemClock.Now.AddMilliseconds(waitTime);
+        DateTimeOffset expiration = SystemClock.UtcNow.AddMilliseconds(waitTime);
         Guid imageId = _faker.Random.Guid();
         string imageName = _faker.Lorem.Word();
         string duplicateImageName = _faker.Lorem.Word();

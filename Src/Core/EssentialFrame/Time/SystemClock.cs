@@ -6,8 +6,11 @@ public static class SystemClock
 {
     private static DateTimeOffset? _customDateTimeOffset;
 
-    public static DateTimeOffset Now =>
+    public static DateTimeOffset UtcNow =>
         _customDateTimeOffset ?? DateTimeOffset.UtcNow;
+
+    public static DateTimeOffset Now =>
+        _customDateTimeOffset ?? DateTimeOffset.Now;
 
     public static DateTimeOffset Min => DateTimeOffset.MinValue;
 

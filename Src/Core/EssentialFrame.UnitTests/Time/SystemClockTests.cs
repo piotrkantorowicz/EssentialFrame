@@ -21,7 +21,7 @@ public class SystemClockTests
         SystemClock.Set(customDateTimeOffset);
 
         // Assert
-        customDateTimeOffset.Should().Be(SystemClock.Now);
+        customDateTimeOffset.Should().Be(SystemClock.UtcNow);
     }
 
     [Test]
@@ -35,7 +35,7 @@ public class SystemClockTests
         SystemClock.Reset();
 
         // Assert
-        customDateTimeOffset.Should().NotBe(SystemClock.Now);
+        customDateTimeOffset.Should().NotBe(SystemClock.UtcNow);
     }
 
     [Test]
