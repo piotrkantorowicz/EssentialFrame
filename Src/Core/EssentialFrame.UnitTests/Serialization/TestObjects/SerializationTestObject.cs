@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EssentialFrame.UnitTests.Serialization.SerializationTestObjects;
+namespace EssentialFrame.UnitTests.Serialization.TestObjects;
 
 public class SerializationTestObject
 {

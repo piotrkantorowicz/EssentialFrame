@@ -149,7 +149,7 @@ public class SnapshotRepository : ISnapshotRepository
 
     public void Ping()
     {
-        IEnumerable<Guid> aggregates = _domainEventsStore.GetExpired(SystemClock.Now);
+        IEnumerable<Guid> aggregates = _domainEventsStore.GetExpired(SystemClock.UtcNow);
 
         foreach (Guid aggregate in aggregates)
         {
@@ -159,7 +159,7 @@ public class SnapshotRepository : ISnapshotRepository
 
     public async Task PingAsync(CancellationToken cancellationToken = default)
     {
-        IEnumerable<Guid> aggregates = await _domainEventsStore.GetExpiredAsync(SystemClock.Now, cancellationToken);
+        IEnumerable<Guid> aggregates = await _domainEventsStore.GetExpiredAsync(SystemClock.UtcNow, cancellationToken);
 
         foreach (Guid aggregate in aggregates)
         {

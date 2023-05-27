@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using Bogus;
 using EssentialFrame.Serialization;
 using EssentialFrame.Serialization.Interfaces;
-using EssentialFrame.UnitTests.Serialization.SerializationTestObjects;
+using EssentialFrame.UnitTests.Serialization.TestObjects;
 using FluentAssertions;
 using NUnit.Framework;
 

@@ -30,7 +30,7 @@ public abstract class CommandsBackgroundServiceBase : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             IReadOnlyCollection<ICommand> storedCommandsPossibleToSend =
-                await commandsRepository.GetPossibleToSendAsync(SystemClock.Now, stoppingToken);
+                await commandsRepository.GetPossibleToSendAsync(SystemClock.UtcNow, stoppingToken);
 
             if (storedCommandsPossibleToSend.Any())
             {

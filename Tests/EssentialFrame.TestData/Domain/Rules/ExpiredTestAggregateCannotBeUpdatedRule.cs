@@ -21,7 +21,7 @@ public sealed class ExpiredTestAggregateCannotBeUpdatedRule : AggregateBusinessR
 
     public override bool IsBroken()
     {
-        return _expiration != SystemClock.Min && _expiration <= SystemClock.Now;
+        return _expiration != SystemClock.Min && _expiration <= SystemClock.UtcNow;
     }
 
     public override void AddExtraParameters()

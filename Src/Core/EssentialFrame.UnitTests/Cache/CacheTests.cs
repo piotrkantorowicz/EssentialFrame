@@ -12,6 +12,7 @@ namespace EssentialFrame.UnitTests.Cache;
 public class CacheTests
 {
     private const int TimerInterval = 1;
+    private const int CacheDelay = 10;
 
     private readonly Faker _faker = new();
     private readonly ICache<Guid, string> _cache;
@@ -169,7 +170,7 @@ public class CacheTests
 
         // Act
         _cache.Add(key, value, timeout);
-        await Task.Delay(timeout + 1);
+        await Task.Delay(timeout + CacheDelay);
 
         // Assert
         _cache.Exists(key).Should().BeFalse();

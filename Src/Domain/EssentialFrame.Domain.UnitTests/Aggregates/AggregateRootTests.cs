@@ -14,6 +14,7 @@ using EssentialFrame.TestData.Domain.DomainEvents;
 using EssentialFrame.TestData.Domain.Entities;
 using EssentialFrame.TestData.Domain.ValueObjects;
 using EssentialFrame.TestData.Identity;
+using EssentialFrame.TestData.Utils;
 using EssentialFrame.Time;
 using FluentAssertions;
 using Moq;
@@ -319,9 +320,8 @@ public sealed class AggregateRootTests
     {
         // Arrange
         const int aggregateVersion = 0;
-        const int waitTime = 100;
         Guid aggregateIdentifier = _faker.Random.Guid();
-        DateTimeOffset expiration = SystemClock.Now.AddMilliseconds(waitTime);
+        DateTimeOffset expiration = SystemClock.UtcNow.AddMilliseconds(Defaults.DefaultWaitTime);
         TestTitle title = TestTitle.Create(_faker.Lorem.Sentence(), true);
         string description = _faker.Lorem.Sentences();
         Guid imageId = _faker.Random.Guid();
@@ -342,7 +342,7 @@ public sealed class AggregateRootTests
 
         aggregate.RestoreState(aggregateState);
 
-        await Task.Delay(waitTime);
+        await Task.Delay(Defaults.DefaultWaitTime);
 
         // Act
         Action changeTitleAction = () => aggregate.ChangeTitle(title);
@@ -379,10 +379,9 @@ public sealed class AggregateRootTests
     {
         // Arrange
         const int aggregateVersion = 0;
-        const int waitTime = 100;
         Guid aggregateIdentifier = _faker.Random.Guid();
-        DateTimeOffset expiration = SystemClock.Now.AddMilliseconds(waitTime);
-        DateTimeOffset newExpiration = SystemClock.Now.AddDays(14);
+        DateTimeOffset expiration = SystemClock.UtcNow.AddMilliseconds(Defaults.DefaultWaitTime);
+        DateTimeOffset newExpiration = SystemClock.UtcNow.AddDays(14);
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
 
@@ -394,7 +393,7 @@ public sealed class AggregateRootTests
 
         aggregate.RestoreState(aggregateState);
 
-        await Task.Delay(waitTime);
+        await Task.Delay(Defaults.DefaultWaitTime);
 
         // Act
         Action extendExpirationAction = () => aggregate.ExtendExpirationDate(newExpiration);
@@ -443,9 +442,8 @@ public sealed class AggregateRootTests
     {
         // Arrange
         const int aggregateVersion = 0;
-        const int waitTime = 100;
         Guid aggregateIdentifier = _faker.Random.Guid();
-        DateTimeOffset expiration = SystemClock.Now.AddMilliseconds(waitTime);
+        DateTimeOffset expiration = SystemClock.UtcNow.AddMilliseconds(Defaults.DefaultWaitTime);
         Guid imageId = _faker.Random.Guid();
         string imageName = _faker.Lorem.Word();
         string duplicateImageName = _faker.Lorem.Word();

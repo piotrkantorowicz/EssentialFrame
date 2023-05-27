@@ -16,7 +16,7 @@ public class CommandDao
         CommandClass = command.GetClassName();
         CommandType = command.GetTypeFullName();
         Command = command;
-        CreatedAt = SystemClock.Now;
+        CreatedAt = SystemClock.UtcNow;
     }
 
     public virtual Guid CommandIdentifier { get; }
@@ -48,7 +48,7 @@ public class CommandDao
             CommandSendingStatuses.Started, CommandExecutionStatuses.WaitingForExecution
         });
 
-        SendStarted = SystemClock.Now;
+        SendStarted = SystemClock.UtcNow;
         SendStatus = CommandSendingStatuses.Started;
         ExecutionStatus = CommandExecutionStatuses.WaitingForExecution;
     }
@@ -72,7 +72,7 @@ public class CommandDao
             CommandSendingStatuses.Cancelled, CommandExecutionStatuses.ExecutionCancelled
         });
 
-        SendCancelled = SystemClock.Now;
+        SendCancelled = SystemClock.UtcNow;
         SendStatus = CommandSendingStatuses.Cancelled;
         ExecutionStatus = CommandExecutionStatuses.ExecutionCancelled;
     }
@@ -85,7 +85,7 @@ public class CommandDao
             CommandExecutionStatuses.ExecutedWithErrors
         });
 
-        SendCompleted = SystemClock.Now;
+        SendCompleted = SystemClock.UtcNow;
         SendStatus = CommandSendingStatuses.Completed;
 
         ExecutionStatus = success
