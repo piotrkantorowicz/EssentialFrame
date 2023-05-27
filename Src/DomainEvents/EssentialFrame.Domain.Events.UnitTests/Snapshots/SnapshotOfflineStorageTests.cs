@@ -19,6 +19,7 @@ using EssentialFrame.TestData.Domain.Aggregates;
 using EssentialFrame.TestData.Domain.DomainEvents;
 using EssentialFrame.TestData.Domain.ValueObjects;
 using EssentialFrame.TestData.Identity;
+using EssentialFrame.TestData.Utils;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -30,8 +31,6 @@ namespace EssentialFrame.Domain.Events.UnitTests.Snapshots;
 [TestFixture]
 public class SnapshotOfflineStorageTests
 {
-    private const int DefaultAggregateVersion = 1;
-
     private readonly Faker _faker = new();
     private readonly Mock<IFileStorage> _fileStorageMock = new();
     private readonly Mock<ISerializer> _serializerMock = new();
@@ -272,7 +271,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         snapshot.AggregateIdentifier.Should().Be(_aggregate.AggregateIdentifier);
-        snapshot.AggregateVersion.Should().Be(DefaultAggregateVersion);
+        snapshot.AggregateVersion.Should().Be(Defaults.DefaultAggregateVersion);
         snapshot.AggregateState.Should().Be(serializedState);
     }
 
@@ -298,7 +297,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         snapshot.AggregateIdentifier.Should().Be(_aggregate.AggregateIdentifier);
-        snapshot.AggregateVersion.Should().Be(DefaultAggregateVersion);
+        snapshot.AggregateVersion.Should().Be(Defaults.DefaultAggregateVersion);
         snapshot.AggregateState.Should().Be(serializedState);
     }
 
@@ -325,7 +324,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         snapshot.AggregateIdentifier.Should().Be(_aggregate.AggregateIdentifier);
-        snapshot.AggregateVersion.Should().Be(DefaultAggregateVersion);
+        snapshot.AggregateVersion.Should().Be(Defaults.DefaultAggregateVersion);
         snapshot.AggregateState.Should().Be(serializedState);
     }
 
@@ -354,7 +353,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         snapshot.AggregateIdentifier.Should().Be(_aggregate.AggregateIdentifier);
-        snapshot.AggregateVersion.Should().Be(DefaultAggregateVersion);
+        snapshot.AggregateVersion.Should().Be(Defaults.DefaultAggregateVersion);
         snapshot.AggregateState.Should().Be(serializedState);
     }
 

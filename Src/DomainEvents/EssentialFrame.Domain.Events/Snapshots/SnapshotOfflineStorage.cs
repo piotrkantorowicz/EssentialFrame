@@ -11,7 +11,7 @@ namespace EssentialFrame.Domain.Events.Snapshots;
 
 internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
 {
-    private const string SnapshotFilename = "Snapshot.csv";
+    private const string SnapshotFilename = "Snapshot.json";
 
     private readonly IFileStorage _fileStorage;
     private readonly ISerializer _serializer;

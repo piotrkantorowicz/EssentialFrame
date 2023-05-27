@@ -104,7 +104,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
     {
         string eventsContents = _serializer.Serialize(events);
 
-        Dictionary<string, string> metaData = new Dictionary<string, string>
+        Dictionary<string, string> metaData = new()
         {
             { "AggregateIdentifier", aggregate.AggregateIdentifier.ToString() },
             { "AggregateType", aggregate.GetType().FullName },
