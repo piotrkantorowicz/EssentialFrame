@@ -17,9 +17,9 @@ public interface IDomainEventsStore
     Task<IReadOnlyCollection<DomainEventDao>> GetAsync(Guid aggregateIdentifier, int version,
         CancellationToken cancellationToken = default);
 
-    IEnumerable<Guid> GetTerminated();
+    IEnumerable<Guid> GetDeleted();
 
-    Task<IEnumerable<Guid>> GetTerminatedAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<Guid>> GetDeletedAsync(CancellationToken cancellationToken = default);
 
     void Save(AggregateRoot aggregate, IEnumerable<DomainEventDao> events);
 

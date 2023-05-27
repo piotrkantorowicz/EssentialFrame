@@ -1,13 +1,12 @@
-﻿using EssentialFrame.Domain.Aggregates;
-using EssentialFrame.Domain.Snapshots;
+﻿using EssentialFrame.Domain.Snapshots;
 
 namespace EssentialFrame.Domain.Events.Snapshots.Interfaces;
 
 public interface ISnapshotOfflineStorage
 {
-    void Save(AggregateRoot aggregate);
+    void Save(Snapshot snapshot);
 
-    Task SaveAsync(AggregateRoot aggregate, CancellationToken cancellationToken = default);
+    Task SaveAsync(Snapshot snapshot, CancellationToken cancellationToken = default);
 
     Snapshot Restore(Guid aggregateIdentifier);
 

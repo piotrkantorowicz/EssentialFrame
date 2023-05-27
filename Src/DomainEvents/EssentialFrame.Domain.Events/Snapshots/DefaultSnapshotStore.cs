@@ -7,10 +7,13 @@ namespace EssentialFrame.Domain.Events.Snapshots;
 internal sealed class DefaultSnapshotStore : ISnapshotStore
 {
     private readonly ICache<Guid, Snapshot> _snapshotCache;
+    private readonly ISnapshotOfflineStorage _snapshotOfflineStorage;
 
-    public DefaultSnapshotStore(ICache<Guid, Snapshot> snapshotCache)
+    public DefaultSnapshotStore(ICache<Guid, Snapshot> snapshotCache, ISnapshotOfflineStorage snapshotOfflineStorage)
     {
         _snapshotCache = snapshotCache ?? throw new ArgumentNullException(nameof(snapshotCache));
+        _snapshotOfflineStorage =
+            snapshotOfflineStorage ?? throw new ArgumentNullException(nameof(snapshotOfflineStorage));
     }
 
     public Snapshot Get(Guid aggregateIdentifier)
@@ -37,21 +40,25 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
 
     public void Box(Guid aggregateIdentifier)
     {
-        throw new NotImplementedException();
+        Snapshot aggregate = _snapshotCache.Get(aggregateIdentifier);
+
+        _snapshotOfflineStorage.Save(aggregate);
     }
 
-    public Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        Snapshot aggregate = _snapshotCache.Get(aggregateIdentifier);
+
+        await _snapshotOfflineStorage.SaveAsync(aggregate, cancellationToken);
     }
 
     public Snapshot Unbox(Guid aggregateIdentifier)
     {
-        throw new NotImplementedException();
+        return _snapshotOfflineStorage.Restore(aggregateIdentifier);
     }
 
-    public Task<Snapshot> UnboxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task<Snapshot> UnboxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await _snapshotOfflineStorage.RestoreAsync(aggregateIdentifier, cancellationToken); 
     }
 }

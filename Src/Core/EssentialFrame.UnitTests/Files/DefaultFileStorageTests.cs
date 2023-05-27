@@ -15,8 +15,20 @@ namespace EssentialFrame.UnitTests.Files;
 public class DefaultFileStorageTests
 {
     private readonly Faker _faker = new();
-    private readonly Mock<IFileSystem> _fileSystemMock = new();
+    private Mock<IFileSystem> _fileSystemMock;
 
+    [SetUp]
+    public void Setup()
+    {
+        _fileSystemMock = new Mock<IFileSystem>();
+    }
+
+    [TearDown]
+    public void Destroy()
+    {
+        _fileSystemMock.Reset();
+    }
+    
     [Test]
     public void Read_WhenDirectoryExists_ShouldReadFile()
     {

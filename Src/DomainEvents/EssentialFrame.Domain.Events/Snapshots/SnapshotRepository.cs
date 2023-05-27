@@ -148,7 +148,7 @@ public class SnapshotRepository : ISnapshotRepository
 
     public void Ping()
     {
-        IEnumerable<Guid> aggregates = _domainEventsStore.GetTerminated();
+        IEnumerable<Guid> aggregates = _domainEventsStore.GetDeleted();
 
         foreach (Guid aggregate in aggregates)
         {
@@ -158,7 +158,7 @@ public class SnapshotRepository : ISnapshotRepository
 
     public async Task PingAsync(CancellationToken cancellationToken = default)
     {
-        IEnumerable<Guid> aggregates = await _domainEventsStore.GetTerminatedAsync(cancellationToken);
+        IEnumerable<Guid> aggregates = await _domainEventsStore.GetDeletedAsync(cancellationToken);
 
         foreach (Guid aggregate in aggregates)
         {

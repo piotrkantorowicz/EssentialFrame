@@ -8,12 +8,15 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 {
     private readonly ICache<Guid, AggregateRoot> _aggregateCache;
     private readonly ICache<Guid, DomainEventDao> _eventsCache;
+    private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
 
     public DefaultDomainEventsStore(ICache<Guid, DomainEventDao> eventsCache,
-        ICache<Guid, AggregateRoot> aggregateCache)
+        ICache<Guid, AggregateRoot> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage)
     {
         _eventsCache = eventsCache ?? throw new ArgumentNullException(nameof(eventsCache));
         _aggregateCache = aggregateCache ?? throw new ArgumentNullException(nameof(aggregateCache));
+        _aggregateOfflineStorage =
+            aggregateOfflineStorage ?? throw new ArgumentNullException(nameof(aggregateOfflineStorage));
     }
 
     public bool Exists(Guid aggregateIdentifier)
@@ -50,14 +53,14 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
         return await Task.FromResult(Get(aggregateIdentifier, version));
     }
 
-    public IEnumerable<Guid> GetTerminated()
+    public IEnumerable<Guid> GetDeleted()
     {
         return _aggregateCache.GetMany((_, v) => v.IsDeleted).Select(v => v.AggregateIdentifier);
     }
 
-    public async Task<IEnumerable<Guid>> GetTerminatedAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Guid>> GetDeletedAsync(CancellationToken cancellationToken = default)
     {
-        return await Task.FromResult(GetTerminated());
+        return await Task.FromResult(GetDeleted());
     }
 
     public void Save(AggregateRoot aggregate, IEnumerable<DomainEventDao> events)
@@ -76,11 +79,34 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 
     public void Box(Guid aggregateIdentifier)
     {
-        throw new NotImplementedException();
+        (AggregateRoot aggregate, IReadOnlyCollection<IDomainEvent> events) =
+            GetAggregateAndEvents(aggregateIdentifier);
+
+        _aggregateOfflineStorage.Save(aggregate, events);
     }
 
-    public Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        (AggregateRoot aggregate, IReadOnlyCollection<IDomainEvent> events) =
+            GetAggregateAndEvents(aggregateIdentifier);
+
+        await _aggregateOfflineStorage.SaveAsync(aggregate, events, cancellationToken);
+    }
+
+    private (AggregateRoot, IReadOnlyCollection<IDomainEvent>) GetAggregateAndEvents(Guid aggregateIdentifier)
+    {
+        AggregateRoot aggregate = _aggregateCache.Get(aggregateIdentifier);
+        List<IDomainEvent> events = _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier).Select(
+            v =>
+            {
+                if (v.DomainEvent is IDomainEvent domainEvent)
+                {
+                    return domainEvent;
+                }
+
+                throw new InvalidCastException($"Unable to cast {v.DomainEvent.GetType()} to {nameof(IDomainEvent)}");
+            }).ToList();
+
+        return (aggregate, events);
     }
 }
