@@ -41,13 +41,10 @@ jobs:
       - name: Tests
         run: dotnet test --settings tests.runsettings --logger "trx;LogFilePrefix=TestResults.trx" --results-directory "TestResults" --collect:"XPlat Code Coverage"
 
-      - name: Copy Coverage to Predictable Location
-        run: cp TestResults/*/coverage.cobertura.xml TestResults/coverage.cobertura.xml
-
       - name: Code Coverage Summary Report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: TestResults/coverage.cobertura.xml
+          filename: coverage/**/coverage.cobertura.xml
           badge: true
           format: 'markdown'
           output: 'both'
