@@ -7,7 +7,7 @@ env:
   DOTNET_VERSION: '7.0.x'
 
 jobs:
-  build-and-test:
+  build-and-push-package:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -39,20 +39,25 @@ jobs:
         run: dotnet build
 
       - name: Tests
-        run: dotnet test --no-build --logger "trx;LogFilePrefix=Tests.trx" --results-directory "TestResults-${{ env.DOTNET_VERSION}}"
+        run: dotnet test --settings tests.runsettings --logger "trx;LogFilePrefix=TestResults.trx" --results-directory "TestResults" --collect:"XPlat Code Coverage"
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        if: always()
+        uses: actions/upload-artifact@v3
         with:
-          name: TestResults-${{ env.DOTNET_VERSION }}
-          path: TestResults-${{ env.DOTNET_VERSION }}
-        if: ${{ always() }}
+          name: TestResults
+          path: TestResults
 
       - name: Tests report generation
         uses: dorny/test-reporter@v1.5.0
         if: success() || failure()
         with:
-          name: TestResults-${{ env.DOTNET_VERSION}}
-          path: '**/*.trx'
+          name: Test Results
+          path: 'TestResults/*.trx'
           reporter: dotnet-trx
           list-tests: 'failed'
