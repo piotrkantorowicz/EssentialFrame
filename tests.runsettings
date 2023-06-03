@@ -4,6 +4,7 @@
     <DataCollectors>
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
+          <Format>opencover</Format>
           <Exclude>
             [EssentialFrame.UnitTests]*,
             [EssentialFrame.Cqrs.Commands.UnitTests]*,
