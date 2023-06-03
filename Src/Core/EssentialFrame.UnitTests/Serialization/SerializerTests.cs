@@ -106,6 +106,28 @@ public class SerializerTests
     }
 
     [Test]
+    public void DeserializeBasicObjectWithOptions_Always_ShouldDeserializeObjectWithCustomType()
+    {
+        // Arrange
+        JsonSerializerOptions options = new()
+        {
+            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        string serializedObj = _serializer.Serialize(BasicObject);
+
+        // Act
+        BasicSerializationTestObject result =
+            _serializer.Deserialize<BasicSerializationTestObject>(serializedObj, typeof(BasicSerializationTestObject),
+                options);
+
+        // Assert
+        result.Should().BeEquivalentTo(BasicObject);
+    }
+    
+    
+    
+    [Test]
     public void DeserializeBasicObject_Always_ShouldDeserializeObjectWithUnspecifiedType()
     {
         // Arrange
@@ -177,6 +199,25 @@ public class SerializerTests
         // Act
         SerializationTestObject result =
             _serializer.Deserialize<SerializationTestObject>(serializedObj, typeof(SerializationTestObject));
+
+        // Assert
+        result.Should().BeEquivalentTo(ComplexObject);
+    }
+
+    [Test]
+    public void DeserializeComplexObjectWithOptions_Always_ShouldDeserializeObjectWithCustomType()
+    {
+        // Arrange
+        JsonSerializerOptions options = new()
+        {
+            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        string serializedObj = _serializer.Serialize(ComplexObject);
+
+        // Act
+        SerializationTestObject result =
+            _serializer.Deserialize<SerializationTestObject>(serializedObj, typeof(SerializationTestObject), options);
 
         // Assert
         result.Should().BeEquivalentTo(ComplexObject);
