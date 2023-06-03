@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Exclude>
+            [EssentialFrame.UnitTests]*,
+            [EssentialFrame.Cqrs.Commands.UnitTests]*,
+            [EssentialFrame.Cqrs.Commands.Validations.UnitTests]*,
+            [EssentialFrame.Cqrs.Events.UnitTests]*,
+            [EssentialFrame.Domain.UnitTests]*,
+            [EssentialFrame.Domain.Events.UnitTests]*,
+            [EssentialFrame.Cqrs.Queries.UnitTests]*,
+            [EssentialFrame.ArchitectureTests]*,
+            [EssentialFrame.IntegrationTests]*,
+            [EssentialFrame.TestData]*
+          </Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
