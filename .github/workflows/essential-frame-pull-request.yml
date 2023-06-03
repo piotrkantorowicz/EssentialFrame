@@ -7,7 +7,7 @@ env:
   DOTNET_VERSION: '7.0.x'
 
 jobs:
-  build-and-push-package:
+  build-and-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
