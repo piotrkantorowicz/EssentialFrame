@@ -8,16 +8,16 @@ public interface ICommandStore
 
     Task<bool> ExistsAsync(Guid commandIdentifier, CancellationToken cancellationToken = default);
 
-    CommandDao Get(Guid commandIdentifier);
+    CommandDataModel Get(Guid commandIdentifier);
 
-    Task<CommandDao> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken = default);
+    Task<CommandDataModel> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken = default);
 
-    IReadOnlyCollection<CommandDao> GetPossibleToSend(DateTimeOffset at);
+    IReadOnlyCollection<CommandDataModel> GetPossibleToSend(DateTimeOffset at);
 
-    Task<IReadOnlyCollection<CommandDao>> GetPossibleToSendAsync(DateTimeOffset at,
+    Task<IReadOnlyCollection<CommandDataModel>> GetPossibleToSendAsync(DateTimeOffset at,
         CancellationToken cancellationToken = default);
 
-    void Save(CommandDao commandDao, bool isNew);
+    void Save(CommandDataModel commandDataModel, bool isNew);
 
-    Task SaveAsync(CommandDao commandDao, bool isNew, CancellationToken cancellationToken = default);
+    Task SaveAsync(CommandDataModel commandDataModel, bool isNew, CancellationToken cancellationToken = default);
 }

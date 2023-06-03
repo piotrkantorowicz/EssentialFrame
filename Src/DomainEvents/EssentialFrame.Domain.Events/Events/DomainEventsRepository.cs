@@ -34,12 +34,12 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
             throw new ConcurrencyException(aggregate.AggregateIdentifier);
         }
 
-        IDomainEvent[] events = aggregate.FlushUncommittedChanges();
-        IEnumerable<DomainEventDao> eventDbo = events.Select(e => new DomainEventDao(e));
+        IDomainEvent[] domainEvents = aggregate.FlushUncommittedChanges();
+        IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => new DomainEventDataModel(e));
 
-        _store.Save(aggregate, eventDbo);
+        _store.Save(aggregate, domainEventDataModels);
 
-        return events;
+        return domainEvents;
     }
 
     public async Task<IDomainEvent[]> SaveAsync<T>(T aggregate, int? version = null,
@@ -51,26 +51,26 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
             throw new ConcurrencyException(aggregate.AggregateIdentifier);
         }
 
-        IDomainEvent[] events = aggregate.FlushUncommittedChanges();
-        IEnumerable<DomainEventDao> eventDbo = events.Select(e => new DomainEventDao(e));
+        IDomainEvent[] domainEvents = aggregate.FlushUncommittedChanges();
+        IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => new DomainEventDataModel(e));
 
-        await _store.SaveAsync(aggregate, eventDbo, cancellationToken);
+        await _store.SaveAsync(aggregate, domainEventDataModels, cancellationToken);
 
-        return events;
+        return domainEvents;
     }
 
-    public IDomainEvent ConvertToEvent(DomainEventDao domainEventDao)
+    public IDomainEvent ConvertToEvent(DomainEventDataModel domainEventDataModel)
     {
-        object @event = domainEventDao.DomainEvent;
+        object @event = domainEventDataModel.DomainEvent;
 
         if (@event is string serializedEvent)
         {
             IDomainEvent deserialized =
-                _serializer.Deserialize<IDomainEvent>(serializedEvent, Type.GetType(domainEventDao.EventClass));
+                _serializer.Deserialize<IDomainEvent>(serializedEvent, Type.GetType(domainEventDataModel.EventClass));
 
             if (deserialized is null)
             {
-                throw new UnknownEventTypeException(domainEventDao.EventType);
+                throw new UnknownEventTypeException(domainEventDataModel.EventType);
             }
         }
 
@@ -81,7 +81,7 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
 
     private T Rehydrate<T>(Guid id) where T : AggregateRoot
     {
-        IReadOnlyCollection<DomainEventDao> events = _store.Get(id, -1);
+        IReadOnlyCollection<DomainEventDataModel> events = _store.Get(id, -1);
         T aggregate = RehydrateInternal<T>(id, events);
 
         return aggregate;
@@ -90,14 +90,14 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
     private async Task<T> RehydrateAsync<T>(Guid id, CancellationToken cancellationToken = default)
         where T : AggregateRoot
     {
-        IReadOnlyCollection<DomainEventDao> events = await _store.GetAsync(id, -1, cancellationToken);
+        IReadOnlyCollection<DomainEventDataModel> events = await _store.GetAsync(id, -1, cancellationToken);
 
         T aggregate = RehydrateInternal<T>(id, events);
 
         return aggregate;
     }
 
-    private T RehydrateInternal<T>(Guid id, IEnumerable<DomainEventDao> eventsData) where T : AggregateRoot
+    private T RehydrateInternal<T>(Guid id, IEnumerable<DomainEventDataModel> eventsData) where T : AggregateRoot
     {
         List<IDomainEvent> events = eventsData.Select(ConvertToEvent).ToList();
 

@@ -13,5 +13,5 @@ public interface IDomainEventsRepository
     Task<IDomainEvent[]> SaveAsync<T>(T aggregate, int? version = null, CancellationToken cancellationToken = default)
         where T : AggregateRoot;
 
-    IDomainEvent ConvertToEvent(DomainEventDao domainEventDao);
+    IDomainEvent ConvertToEvent(DomainEventDataModel domainEventDataModel);
 }

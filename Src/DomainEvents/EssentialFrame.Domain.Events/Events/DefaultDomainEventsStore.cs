@@ -9,11 +9,11 @@ namespace EssentialFrame.Domain.Events.Events;
 internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 {
     private readonly ICache<Guid, AggregateRoot> _aggregateCache;
-    private readonly ICache<Guid, DomainEventDao> _eventsCache;
+    private readonly ICache<Guid, DomainEventDataModel> _eventsCache;
     private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
     private readonly ISerializer _serializer;
 
-    public DefaultDomainEventsStore(ICache<Guid, DomainEventDao> eventsCache,
+    public DefaultDomainEventsStore(ICache<Guid, DomainEventDataModel> eventsCache,
         ICache<Guid, AggregateRoot> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage,
         ISerializer serializer)
     {
@@ -46,13 +46,13 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
         return await Task.FromResult(Exists(aggregateIdentifier, version));
     }
 
-    public IReadOnlyCollection<DomainEventDao> Get(Guid aggregateIdentifier, int version)
+    public IReadOnlyCollection<DomainEventDataModel> Get(Guid aggregateIdentifier, int version)
     {
         return _eventsCache.GetMany((_, v) =>
             v.AggregateIdentifier == aggregateIdentifier && v.AggregateVersion >= version);
     }
 
-    public async Task<IReadOnlyCollection<DomainEventDao>> GetAsync(Guid aggregateIdentifier, int version,
+    public async Task<IReadOnlyCollection<DomainEventDataModel>> GetAsync(Guid aggregateIdentifier, int version,
         CancellationToken cancellationToken = default)
     {
         return await Task.FromResult(Get(aggregateIdentifier, version));
@@ -68,16 +68,16 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
         return await Task.FromResult(GetDeleted());
     }
 
-    public void Save(AggregateRoot aggregate, IEnumerable<DomainEventDao> events)
+    public void Save(AggregateRoot aggregate, IEnumerable<DomainEventDataModel> events)
     {
-        IEnumerable<KeyValuePair<Guid, DomainEventDao>> eventsDbo =
-            events?.Select(v => new KeyValuePair<Guid, DomainEventDao>(v.EventIdentifier, v));
+        IEnumerable<KeyValuePair<Guid, DomainEventDataModel>> domainEventDataModels =
+            events?.Select(v => new KeyValuePair<Guid, DomainEventDataModel>(v.EventIdentifier, v));
 
         _aggregateCache.Add(aggregate.AggregateIdentifier, aggregate);
-        _eventsCache.AddMany(eventsDbo);
+        _eventsCache.AddMany(domainEventDataModels);
     }
 
-    public async Task SaveAsync(AggregateRoot aggregate, IEnumerable<DomainEventDao> events,
+    public async Task SaveAsync(AggregateRoot aggregate, IEnumerable<DomainEventDataModel> events,
         CancellationToken cancellationToken = default)
     {
         Save(aggregate, events);
@@ -111,18 +111,18 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
     }
 
     // todo: move to a separate class
-    private IDomainEvent ConvertToEvent(DomainEventDao domainEventDao)
+    private IDomainEvent ConvertToEvent(DomainEventDataModel domainEventDataModel)
     {
-        object @event = domainEventDao.DomainEvent;
+        object @event = domainEventDataModel.DomainEvent;
 
         if (@event is string serializedEvent)
         {
             IDomainEvent deserialized =
-                _serializer.Deserialize<IDomainEvent>(serializedEvent, Type.GetType(domainEventDao.EventClass));
+                _serializer.Deserialize<IDomainEvent>(serializedEvent, Type.GetType(domainEventDataModel.EventClass));
 
             if (deserialized is null)
             {
-                throw new UnknownEventTypeException(domainEventDao.EventType);
+                throw new UnknownEventTypeException(domainEventDataModel.EventType);
             }
         }
 
