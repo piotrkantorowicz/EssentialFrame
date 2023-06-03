@@ -1,6 +1,6 @@
 ﻿namespace EssentialFrame.Domain.Events.Snapshots;
 
-public class SnapshotDb
+public class SnapshotDataModel
 {
     public Guid AggregateIdentifier { get; }
 
