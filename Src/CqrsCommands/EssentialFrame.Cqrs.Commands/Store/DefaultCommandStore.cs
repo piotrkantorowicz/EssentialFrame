@@ -7,9 +7,9 @@ namespace EssentialFrame.Cqrs.Commands.Store;
 
 internal sealed class DefaultCommandStore : ICommandStore
 {
-    private readonly ICache<Guid, CommandDao> _commandsCache;
+    private readonly ICache<Guid, CommandDataModel> _commandsCache;
 
-    public DefaultCommandStore(ICache<Guid, CommandDao> commandsCache)
+    public DefaultCommandStore(ICache<Guid, CommandDataModel> commandsCache)
     {
         _commandsCache = commandsCache ?? throw new ArgumentNullException(nameof(commandsCache));
     }
@@ -24,36 +24,37 @@ internal sealed class DefaultCommandStore : ICommandStore
         return await Task.FromResult(Exists(commandIdentifier));
     }
 
-    public CommandDao Get(Guid commandIdentifier)
+    public CommandDataModel Get(Guid commandIdentifier)
     {
         return _commandsCache[commandIdentifier];
     }
 
-    public async Task<CommandDao> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
+    public async Task<CommandDataModel> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
     {
         return await Task.FromResult(Get(commandIdentifier));
     }
 
-    public IReadOnlyCollection<CommandDao> GetPossibleToSend(DateTimeOffset at)
+    public IReadOnlyCollection<CommandDataModel> GetPossibleToSend(DateTimeOffset at)
     {
         return _commandsCache.GetMany((_, v) =>
             v.SendStatus == CommandSendingStatuses.Scheduled && v.SendScheduled <= at);
     }
 
-    public async Task<IReadOnlyCollection<CommandDao>> GetPossibleToSendAsync(DateTimeOffset at,
+    public async Task<IReadOnlyCollection<CommandDataModel>> GetPossibleToSendAsync(DateTimeOffset at,
         CancellationToken cancellationToken = default)
     {
         return await Task.FromResult(GetPossibleToSend(at));
     }
 
-    public void Save(CommandDao commandDao, bool isNew)
+    public void Save(CommandDataModel commandDataModel, bool isNew)
     {
-        _commandsCache.Add(commandDao.CommandIdentifier, commandDao);
+        _commandsCache.Add(commandDataModel.CommandIdentifier, commandDataModel);
     }
 
-    public async Task SaveAsync(CommandDao commandDao, bool isNew, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(CommandDataModel commandDataModel, bool isNew,
+        CancellationToken cancellationToken = default)
     {
-        Save(commandDao, isNew);
+        Save(commandDataModel, isNew);
 
         await Task.CompletedTask;
     }

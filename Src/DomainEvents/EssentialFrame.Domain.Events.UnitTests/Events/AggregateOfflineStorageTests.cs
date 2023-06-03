@@ -37,7 +37,7 @@ public class AggregateOfflineStorageTests
 
     private ILogger<AggregateOfflineStorage> _logger;
     private AggregateRoot _aggregate;
-    private IReadOnlyCollection<IDomainEvent> _events;
+    private IReadOnlyCollection<IDomainEvent> _domainEvents;
 
     private static object[] _possibleExceptions =
     {
@@ -60,7 +60,7 @@ public class AggregateOfflineStorageTests
         _aggregate = GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion,
             _identityServiceMock.Object);
 
-        _events = new List<IDomainEvent>
+        _domainEvents = new List<IDomainEvent>
         {
             new ChangeTitleTestDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 TestTitle.Create(_faker.Lorem.Sentence(), true)),
@@ -97,10 +97,10 @@ public class AggregateOfflineStorageTests
         _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null))
             .Returns(fileInfoMock.Object);
 
-        _serializerMock.Setup(s => s.Serialize(_events)).Returns(_faker.Lorem.Sentences());
+        _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        aggregateOfflineStorage.Save(_aggregate, _events);
+        aggregateOfflineStorage.Save(_aggregate, _domainEvents);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -108,7 +108,7 @@ public class AggregateOfflineStorageTests
         _fileStorageMock.Verify(fs => fs.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null),
             Times.Exactly(3));
 
-        _serializerMock.Verify(s => s.Serialize(_events), Times.Once);
+        _serializerMock.Verify(s => s.Serialize(_domainEvents), Times.Once);
     }
 
     [Test]
@@ -130,10 +130,10 @@ public class AggregateOfflineStorageTests
             .Setup(fs => fs.CreateAsync(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null, default))
             .ReturnsAsync(fileInfoMock.Object);
 
-        _serializerMock.Setup(s => s.Serialize(_events)).Returns(_faker.Lorem.Sentences());
+        _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        await aggregateOfflineStorage.SaveAsync(_aggregate, _events);
+        await aggregateOfflineStorage.SaveAsync(_aggregate, _domainEvents);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -142,7 +142,7 @@ public class AggregateOfflineStorageTests
             fs => fs.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null, default),
             Times.Exactly(3));
 
-        _serializerMock.Verify(s => s.Serialize(_events), Times.Once);
+        _serializerMock.Verify(s => s.Serialize(_domainEvents), Times.Once);
     }
 
     [Test]
@@ -165,10 +165,10 @@ public class AggregateOfflineStorageTests
         _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null))
             .Returns(fileInfoMock.Object);
 
-        _serializerMock.Setup(s => s.Serialize(_events)).Returns(_faker.Lorem.Sentences());
+        _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        aggregateOfflineStorage.Save(_aggregate, _events);
+        aggregateOfflineStorage.Save(_aggregate, _domainEvents);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -176,7 +176,7 @@ public class AggregateOfflineStorageTests
         _fileStorageMock.Verify(fs => fs.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null),
             Times.Exactly(3));
 
-        _serializerMock.Verify(s => s.Serialize(_events), Times.Once);
+        _serializerMock.Verify(s => s.Serialize(_domainEvents), Times.Once);
     }
 
     [Test]
@@ -200,10 +200,10 @@ public class AggregateOfflineStorageTests
             .Setup(fs => fs.CreateAsync(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null, default))
             .ReturnsAsync(fileInfoMock.Object);
 
-        _serializerMock.Setup(s => s.Serialize(_events)).Returns(_faker.Lorem.Sentences());
+        _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        await aggregateOfflineStorage.SaveAsync(_aggregate, _events);
+        await aggregateOfflineStorage.SaveAsync(_aggregate, _domainEvents);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -212,7 +212,7 @@ public class AggregateOfflineStorageTests
             fs => fs.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null, default),
             Times.Exactly(3));
 
-        _serializerMock.Verify(s => s.Serialize(_events), Times.Once);
+        _serializerMock.Verify(s => s.Serialize(_domainEvents), Times.Once);
     }
 
     [Test]
@@ -232,7 +232,7 @@ public class AggregateOfflineStorageTests
             .Throws(Activator.CreateInstance(exception) as Exception);
 
         // Act
-        Action action = () => aggregateOfflineStorage.Save(_aggregate, _events);
+        Action action = () => aggregateOfflineStorage.Save(_aggregate, _domainEvents);
 
         // Assert
         action.Should().ThrowExactly<AggregateBoxingFailedException>().WithMessage(
@@ -258,7 +258,7 @@ public class AggregateOfflineStorageTests
             .ThrowsAsync(Activator.CreateInstance(exception) as Exception);
 
         // Act
-        Func<Task> action = async () => await aggregateOfflineStorage.SaveAsync(_aggregate, _events);
+        Func<Task> action = async () => await aggregateOfflineStorage.SaveAsync(_aggregate, _domainEvents);
 
         // Assert
         await action.Should().ThrowExactlyAsync<AggregateBoxingFailedException>().WithMessage(

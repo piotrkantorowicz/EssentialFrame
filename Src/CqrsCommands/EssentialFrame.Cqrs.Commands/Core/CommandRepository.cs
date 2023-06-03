@@ -20,90 +20,90 @@ public sealed class CommandRepository : ICommandRepository
 
     public void StartExecution(ICommand command)
     {
-        CommandDao commandDao = new(command);
-        commandDao.Start();
+        CommandDataModel commandDataModel = new(command);
+        commandDataModel.Start();
 
-        _commandStore.Save(commandDao, true);
+        _commandStore.Save(commandDataModel, true);
     }
 
     public async Task StartExecutionAsync(ICommand command, CancellationToken cancellationToken = default)
     {
-        CommandDao commandDao = new(command);
-        commandDao.Start();
+        CommandDataModel commandDataModel = new(command);
+        commandDataModel.Start();
 
-        await _commandStore.SaveAsync(commandDao, true, cancellationToken);
+        await _commandStore.SaveAsync(commandDataModel, true, cancellationToken);
     }
 
     public void CancelExecution(Guid commandIdentifier)
     {
-        CommandDao commandDao = _commandStore.Get(commandIdentifier);
+        CommandDataModel commandDataModel = _commandStore.Get(commandIdentifier);
 
-        if (commandDao is null)
+        if (commandDataModel is null)
         {
             throw new CommandNotFoundException(commandIdentifier);
         }
 
-        commandDao.Cancel();
-        _commandStore.Save(commandDao, false);
+        commandDataModel.Cancel();
+        _commandStore.Save(commandDataModel, false);
     }
 
     public async Task CancelExecutionAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
     {
-        CommandDao commandDao = await _commandStore.GetAsync(commandIdentifier, cancellationToken);
+        CommandDataModel commandDataModel = await _commandStore.GetAsync(commandIdentifier, cancellationToken);
 
-        if (commandDao is null)
+        if (commandDataModel is null)
         {
             throw new CommandNotFoundException(commandIdentifier);
         }
 
-        commandDao.Cancel();
+        commandDataModel.Cancel();
 
-        await _commandStore.SaveAsync(commandDao, false, cancellationToken);
+        await _commandStore.SaveAsync(commandDataModel, false, cancellationToken);
     }
 
     public void ScheduleExecution(ICommand command, DateTimeOffset at)
     {
-        CommandDao commandDao = new(command);
-        commandDao.Schedule(at);
+        CommandDataModel commandDataModel = new(command);
+        commandDataModel.Schedule(at);
 
-        _commandStore.Save(commandDao, true);
+        _commandStore.Save(commandDataModel, true);
     }
 
     public async Task ScheduleExecutionAsync(ICommand command, DateTimeOffset at,
         CancellationToken cancellationToken = default)
     {
-        CommandDao commandDao = new(command);
-        commandDao.Start();
+        CommandDataModel commandDataModel = new(command);
+        commandDataModel.Start();
 
-        await _commandStore.SaveAsync(commandDao, true, cancellationToken);
+        await _commandStore.SaveAsync(commandDataModel, true, cancellationToken);
     }
 
     public void CompleteExecution(Guid commandIdentifier, bool isSuccess)
     {
-        CommandDao commandDao = _commandStore.Get(commandIdentifier);
+        CommandDataModel commandDataModel = _commandStore.Get(commandIdentifier);
 
-        if (commandDao is null)
+        if (commandDataModel is null)
         {
             throw new CommandNotFoundException(commandIdentifier);
         }
 
-        commandDao.Complete(isSuccess);
-        _commandStore.Save(commandDao, false);
+        commandDataModel.Complete(isSuccess);
+        _commandStore.Save(commandDataModel, false);
     }
 
     public async Task CompleteExecutionAsync(Guid commandIdentifier, bool isSuccess,
         CancellationToken cancellationToken = default)
     {
-        CommandDao commandDao = await _commandStore.GetAsync(commandIdentifier, cancellationToken);
+        CommandDataModel commandDataModel = await _commandStore.GetAsync(commandIdentifier, cancellationToken);
 
-        if (commandDao is null)
+        if (commandDataModel is null)
         {
             throw new CommandNotFoundException(commandIdentifier);
         }
 
-        commandDao.Complete(isSuccess);
+        commandDataModel.Complete(isSuccess);
 
-        await _commandStore.SaveAsync(commandDao, false, cancellationToken);
+        await _commandStore.SaveAsync(commandDataModel, false, cancellationToken);
     }
 
     public IReadOnlyCollection<ICommand> GetPossibleToSend(DateTimeOffset at)
@@ -114,7 +114,7 @@ public sealed class CommandRepository : ICommandRepository
     public async Task<IReadOnlyCollection<ICommand>> GetPossibleToSendAsync(DateTimeOffset at,
         CancellationToken cancellationToken = default)
     {
-        IReadOnlyCollection<CommandDao> possibleCommandsDataToSend =
+        IReadOnlyCollection<CommandDataModel> possibleCommandsDataToSend =
             await _commandStore.GetPossibleToSendAsync(at, cancellationToken);
 
         ReadOnlyCollection<ICommand> possibleCommandsToSend =
@@ -123,18 +123,18 @@ public sealed class CommandRepository : ICommandRepository
         return possibleCommandsToSend;
     }
 
-    private ICommand ConvertToCommand(CommandDao commandDao)
+    private ICommand ConvertToCommand(CommandDataModel commandDataModel)
     {
-        object command = commandDao.Command;
+        object command = commandDataModel.Command;
 
         if (command is string serializedEvent)
         {
             ICommand deserialized =
-                _serializer.Deserialize<ICommand>(serializedEvent, Type.GetType(commandDao.CommandClass));
+                _serializer.Deserialize<ICommand>(serializedEvent, Type.GetType(commandDataModel.CommandClass));
 
             if (deserialized is null)
             {
-                throw new UnknownCommandTypeException(commandDao.CommandType);
+                throw new UnknownCommandTypeException(commandDataModel.CommandType);
             }
         }
 

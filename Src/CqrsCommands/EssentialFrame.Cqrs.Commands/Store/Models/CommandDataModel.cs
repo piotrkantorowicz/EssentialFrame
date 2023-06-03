@@ -5,9 +5,9 @@ using EssentialFrame.Time;
 
 namespace EssentialFrame.Cqrs.Commands.Store.Models;
 
-public class CommandDao
+public class CommandDataModel
 {
-    public CommandDao(ICommand command)
+    public CommandDataModel(ICommand command)
     {
         CommandIdentifier = command.CommandIdentifier;
 

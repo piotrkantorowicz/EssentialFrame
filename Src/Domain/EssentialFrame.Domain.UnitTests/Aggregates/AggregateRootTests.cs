@@ -342,7 +342,7 @@ public sealed class AggregateRootTests
 
         aggregate.RestoreState(aggregateState);
 
-        await Task.Delay(Defaults.DefaultWaitTime);
+        await Task.Delay(Defaults.DefaultWaitTime + Defaults.DefaultWaitTimeOffset);
 
         // Act
         Action changeTitleAction = () => aggregate.ChangeTitle(title);
@@ -393,7 +393,7 @@ public sealed class AggregateRootTests
 
         aggregate.RestoreState(aggregateState);
 
-        await Task.Delay(Defaults.DefaultWaitTime);
+        await Task.Delay(Defaults.DefaultWaitTime + Defaults.DefaultWaitTimeOffset);
 
         // Act
         Action extendExpirationAction = () => aggregate.ExtendExpirationDate(newExpiration);

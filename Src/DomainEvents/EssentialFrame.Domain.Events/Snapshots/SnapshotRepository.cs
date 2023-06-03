@@ -75,7 +75,7 @@ public class SnapshotRepository : ISnapshotRepository
             return await _domainEventsRepository.GetAsync<T>(aggregateId, cancellationToken);
         }
 
-        IReadOnlyCollection<DomainEventDao> allEvents = await _domainEventsStore.GetAsync(aggregateId,
+        IReadOnlyCollection<DomainEventDataModel> allEvents = await _domainEventsStore.GetAsync(aggregateId,
             snapshotVersion, cancellationToken);
 
         IEnumerable<IDomainEvent> events = allEvents.Select(e => _domainEventsRepository.ConvertToEvent(e))

@@ -3,9 +3,9 @@ using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Events.Events;
 
-public class DomainEventDao
+public class DomainEventDataModel
 {
-    public DomainEventDao(IDomainEvent domainEvent)
+    public DomainEventDataModel(IDomainEvent domainEvent)
     {
         AggregateIdentifier = domainEvent.AggregateIdentifier;
         AggregateVersion = domainEvent.AggregateVersion;

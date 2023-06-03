@@ -18,13 +18,13 @@ namespace EssentialFrame.Cqrs.Commands.UnitTests.Commands;
 public class DefaultCommandStoreTests
 {
     private readonly Faker _faker = new();
-    private Mock<ICache<Guid, CommandDao>> _commandsCacheMock;
+    private Mock<ICache<Guid, CommandDataModel>> _commandsCacheMock;
     private Mock<IIdentityService> _identityServiceMock;
 
     [SetUp]
     public void SetUp()
     {
-        _commandsCacheMock = new Mock<ICache<Guid, CommandDao>>();
+        _commandsCacheMock = new Mock<ICache<Guid, CommandDataModel>>();
         _identityServiceMock = new Mock<IIdentityService>();
 
         _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new TestIdentity());
@@ -68,116 +68,119 @@ public class DefaultCommandStoreTests
     }
 
     [Test]
-    public void Get_WhenCommandIdentifierIsProvided_ShouldReturnCommandDao()
+    public void Get_WhenCommandIdentifierIsProvided_ShouldReturnCommandDataModel()
     {
         // Arrange
         Guid commandIds = _faker.Random.Guid();
-        CommandDao commandDao = new CommandDao(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
+        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
             _faker.Lorem.Word(), _faker.Random.Bool()));
 
-        _commandsCacheMock.Setup(x => x[commandIds]).Returns(commandDao);
+        _commandsCacheMock.Setup(x => x[commandIds]).Returns(commandDataModel);
         DefaultCommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
-        CommandDao result = commandStore.Get(commandIds);
+        CommandDataModel result = commandStore.Get(commandIds);
 
         // Assert
-        result.Should().BeEquivalentTo(commandDao);
+        result.Should().BeEquivalentTo(commandDataModel);
         _identityServiceMock.VerifyAll();
     }
 
     [Test]
-    public async Task GetAsync_WhenCommandIdentifierIsProvided_ShouldReturnCommandDao()
+    public async Task GetAsync_WhenCommandIdentifierIsProvided_ShouldReturnCommandDataModel()
     {
         // Arrange
         Guid commandIds = _faker.Random.Guid();
-        CommandDao commandDao = new CommandDao(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
+        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
             _faker.Lorem.Word(), _faker.Random.Bool()));
 
-        _commandsCacheMock.Setup(x => x[commandIds]).Returns(commandDao);
+        _commandsCacheMock.Setup(x => x[commandIds]).Returns(commandDataModel);
         DefaultCommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
-        CommandDao result = await commandStore.GetAsync(commandIds);
+        CommandDataModel result = await commandStore.GetAsync(commandIds);
 
         // Assert
-        result.Should().BeEquivalentTo(commandDao);
+        result.Should().BeEquivalentTo(commandDataModel);
         _identityServiceMock.VerifyAll();
     }
 
     [Test]
-    public void GetPossibleToSend_WhenDateTimeOffsetIsProvided_ShouldReturnCommandDao()
+    public void GetPossibleToSend_WhenDateTimeOffsetIsProvided_ShouldReturnCommandDataModel()
     {
         // Arrange
-        CommandDao commandDao = new CommandDao(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
+        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
             _faker.Lorem.Word(), _faker.Random.Bool()));
 
-        CommandDao[] commandDaoArray = new[] { commandDao };
-        _commandsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, CommandDao, bool>>())).Returns(commandDaoArray);
+        CommandDataModel[] commandDataModelsArray = { commandDataModel };
+        _commandsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, CommandDataModel, bool>>()))
+            .Returns(commandDataModelsArray);
         DefaultCommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
-        IReadOnlyCollection<CommandDao> result = commandStore.GetPossibleToSend(_faker.Date.RecentOffset());
+        IReadOnlyCollection<CommandDataModel> result = commandStore.GetPossibleToSend(_faker.Date.RecentOffset());
 
         // Assert
-        result.Should().BeEquivalentTo(commandDaoArray);
+        result.Should().BeEquivalentTo(commandDataModelsArray);
     }
 
     [Test]
-    public async Task GetPossibleToSendAsync_WhenDateTimeOffsetIsProvided_ShouldReturnCommandDao()
+    public async Task GetPossibleToSendAsync_WhenDateTimeOffsetIsProvided_ShouldReturnCommandDataModel()
     {
         // Arrange
-        CommandDao commandDao = new CommandDao(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
+        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
             _faker.Lorem.Word(), _faker.Random.Bool()));
 
-        CommandDao[] commandDaoArray = new[] { commandDao };
-        _commandsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, CommandDao, bool>>())).Returns(commandDaoArray);
+        CommandDataModel[] commandDataModelsArray = { commandDataModel };
+        _commandsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, CommandDataModel, bool>>()))
+            .Returns(commandDataModelsArray);
         DefaultCommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
-        IReadOnlyCollection<CommandDao> result = await commandStore.GetPossibleToSendAsync(_faker.Date.RecentOffset());
+        IReadOnlyCollection<CommandDataModel> result =
+            await commandStore.GetPossibleToSendAsync(_faker.Date.RecentOffset());
 
         // Assert
-        result.Should().BeEquivalentTo(commandDaoArray);
+        result.Should().BeEquivalentTo(commandDataModelsArray);
     }
 
     [Test]
-    public void Save_WhenCommandDaoIsProvided_ShouldSaveCommandDao()
+    public void Save_WhenCommandDataModelIsProvided_ShouldSaveCommandDataModel()
     {
         // Arrange
         bool isNew = _faker.Random.Bool();
 
-        CommandDao commandDao = new CommandDao(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
+        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
             _faker.Lorem.Word(), _faker.Random.Bool()));
 
-        _commandsCacheMock.Setup(x => x.Add(commandDao.CommandIdentifier, commandDao));
+        _commandsCacheMock.Setup(x => x.Add(commandDataModel.CommandIdentifier, commandDataModel));
         DefaultCommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
-        commandStore.Save(commandDao, isNew);
+        commandStore.Save(commandDataModel, isNew);
 
         // Assert
-        _commandsCacheMock.Verify(x => x.Add(commandDao.CommandIdentifier, commandDao), Times.Once);
+        _commandsCacheMock.Verify(x => x.Add(commandDataModel.CommandIdentifier, commandDataModel), Times.Once);
         _identityServiceMock.VerifyAll();
     }
 
     [Test]
-    public async Task SaveAsync_WhenCommandDaoIsProvided_ShouldSaveCommandDao()
+    public async Task SaveAsync_WhenCommandDataModelIsProvided_ShouldSaveCommandDataModel()
     {
         // Arrange
         bool isNew = _faker.Random.Bool();
 
-        CommandDao commandDao = new CommandDao(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
+        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
             _faker.Lorem.Word(), _faker.Random.Bool()));
 
-        _commandsCacheMock.Setup(x => x.Add(commandDao.CommandIdentifier, commandDao));
+        _commandsCacheMock.Setup(x => x.Add(commandDataModel.CommandIdentifier, commandDataModel));
         DefaultCommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
-        await commandStore.SaveAsync(commandDao, isNew);
+        await commandStore.SaveAsync(commandDataModel, isNew);
 
         // Assert
-        _commandsCacheMock.Verify(x => x.Add(commandDao.CommandIdentifier, commandDao), Times.Once);
+        _commandsCacheMock.Verify(x => x.Add(commandDataModel.CommandIdentifier, commandDataModel), Times.Once);
         _identityServiceMock.VerifyAll();
     }
 }
