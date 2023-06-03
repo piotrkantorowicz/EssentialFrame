@@ -7,6 +7,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3C50C075-9467-44B8-BC6A-65EA8C951ECB}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\essential-frame-pull-request.yml = .github\workflows\essential-frame-pull-request.yml
+		.github\workflows\codeql.yml = .github\workflows\codeql.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{98B0B268-1D92-4695-9A8C-2DE72C0468F1}"

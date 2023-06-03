@@ -1,0 +1,43 @@
+﻿name: "CodeQL"
+
+on:
+  push:
+    branches: [ 'stage*',dev,main ]
+env:
+  DOTNET_VERSION: '7.0.x'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ "7.0.x" ]
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_GITHUB_TOKEN }}
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: 'csharp'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          source-url: https://nuget.pkg.github.com/piotrkantorowicz/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.ACTION_GITHUB_TOKEN}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
