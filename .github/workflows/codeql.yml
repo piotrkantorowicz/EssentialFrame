@@ -26,12 +26,12 @@ jobs:
           languages: 'csharp'
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           source-url: https://nuget.pkg.github.com/piotrkantorowicz/index.json
         env:
-          NUGET_AUTH_TOKEN: ${{secrets.ACTION_GITHUB_TOKEN}
+          NUGET_AUTH_TOKEN: ${{secrets.ACTION_GITHUB_TOKEN}}
 
       - name: Restore dependencies
         run: dotnet restore
