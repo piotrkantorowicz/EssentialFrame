@@ -7,7 +7,7 @@ env:
   DOTNET_VERSION: '7.0.x'
 
 jobs:
-  Build and tests:
+  build-and-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -57,7 +57,7 @@ jobs:
         uses: dorny/test-reporter@v1.5.0
         if: success() || failure()
         with:
-          name: Test results
+          name: test-results (${{ env.DOTNET_VERSION }})
           path: 'TestResults/*.trx'
           reporter: dotnet-trx
           list-tests: 'failed'
