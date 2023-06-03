@@ -55,7 +55,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         catch (Exception exception)
         {
             AggregateBoxingFailedException aggregateBoxingException =
-                new AggregateBoxingFailedException(aggregate.AggregateIdentifier, aggregate.GetType(), exception);
+                new(aggregate.AggregateIdentifier, aggregate.GetType(), exception);
 
             _logger.LogError(aggregateBoxingException,
                 "Failed to save aggregate with id: {AggregateIdentifier} to offline storage",
@@ -90,7 +90,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         catch (Exception exception)
         {
             AggregateBoxingFailedException aggregateBoxingException =
-                new AggregateBoxingFailedException(aggregate.AggregateIdentifier, aggregate.GetType(), exception);
+                new(aggregate.AggregateIdentifier, aggregate.GetType(), exception);
 
             _logger.LogError(aggregateBoxingException,
                 "Failed to save aggregate {AggregateIdentifier} to offline storage", aggregate.AggregateIdentifier);

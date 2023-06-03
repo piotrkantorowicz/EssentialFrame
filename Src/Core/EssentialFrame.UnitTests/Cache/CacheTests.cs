@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Cache;
@@ -38,6 +39,53 @@ public class CacheTests
     }
 
     [Test]
+    public void Get_AlwaysWhenUsingPredicate_ShouldGetItemFromCache()
+    {
+        // Arrange
+        Guid key = _faker.Random.Guid();
+        string value = _faker.Random.String();
+        _cache.Add(key, value);
+
+        // Act
+        string result = _cache.Get((_, v) => v == value);
+
+        // Assert
+        result.Should().Be(value);
+    }
+
+    [Test]
+    public void GetMany_Always_ShouldGetItemFromCache()
+    {
+        // Arrange
+        Guid key = _faker.Random.Guid();
+        string value = _faker.Random.String();
+        _cache.Add(key, value);
+
+        // Act
+        IReadOnlyCollection<string> result = _cache.GetMany();
+
+        // Assert
+        result.Should().NotBeEmpty();
+        result.Should().Contain(value);
+    }
+
+    [Test]
+    public void GetMany_AlwaysWhenUsingPredicate_ShouldGetItemFromCache()
+    {
+        // Arrange
+        Guid key = _faker.Random.Guid();
+        string value = _faker.Random.String();
+        _cache.Add(key, value);
+
+        // Act
+        IReadOnlyCollection<string> result = _cache.GetMany((_, v) => v == value);
+
+        // Assert
+        result.Should().NotBeEmpty();
+        result.Should().Contain(value);
+    }
+
+    [Test]
     public void TryGet_Always_ShouldTryGetItemFromCache()
     {
         // Arrange
@@ -54,6 +102,22 @@ public class CacheTests
     }
 
     [Test]
+    public void TryGet_AlwaysWhenUsingPredicate_ShouldTryGetItemFromCache()
+    {
+        // Arrange
+        Guid key = _faker.Random.Guid();
+        string value = _faker.Random.String();
+        _cache.Add(key, value);
+
+        // Act
+        bool result = _cache.TryGet((_, v) => v == value, out string resultValue);
+
+        // Assert
+        result.Should().BeTrue();
+        resultValue.Should().Be(value);
+    }
+
+    [Test]
     public void Exists_Always_ShouldCheckItemExistsInCache()
     {
         // Arrange
@@ -63,6 +127,21 @@ public class CacheTests
 
         // Act
         bool result = _cache.Exists(key);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Test]
+    public void Exists_AlwaysWhenUsingPredicate_ShouldTryGetItemFromCache()
+    {
+        // Arrange
+        Guid key = _faker.Random.Guid();
+        string value = _faker.Random.String();
+        _cache.Add(key, value);
+
+        // Act
+        bool result = _cache.Exists((_, v) => v == value);
 
         // Assert
         result.Should().BeTrue();
@@ -210,6 +289,43 @@ public class CacheTests
     }
 
     [Test]
+    public void AddMany_Always_ShouldAddItemsToCache()
+    {
+        // Arrange
+        Guid key1 = _faker.Random.Guid();
+        string value1 = _faker.Random.String();
+        Guid key2 = _faker.Random.Guid();
+        string value2 = _faker.Random.String();
+        Guid key3 = _faker.Random.Guid();
+        string value3 = _faker.Random.String();
+        int timeout = _faker.Random.Int(1, 1000);
+
+        // Act
+        _cache.AddMany(new Dictionary<Guid, string> { { key1, value1 }, { key2, value2 }, { key3, value3 } }, timeout,
+            true);
+
+        // Assert
+        _cache[key1].Should().Be(value1);
+        _cache[key2].Should().Be(value2);
+        _cache[key3].Should().Be(value3);
+    }
+
+    [Test]
+    public void AddMany_Always_AddMany_Always_ShouldAddItemsToCacheWithTimeout()
+    {
+        // Arrange
+        Guid key1 = _faker.Random.Guid();
+        string value1 = _faker.Random.String();
+        Guid key2 = _faker.Random.Guid();
+        string value2 = _faker.Random.String();
+        Guid key3 = _faker.Random.Guid();
+        string value3 = _faker.Random.String();
+
+        // Act
+        _cache.AddMany(new Dictionary<Guid, string> { { key1, value1 }, { key2, value2 }, { key3, value3 } });
+    }
+
+    [Test]
     public void Remove_Always_ShouldRemoveItemFromCache()
     {
         // Arrange
@@ -225,7 +341,7 @@ public class CacheTests
     }
 
     [Test]
-    public void Remove_Always_ShouldRemoveItemFromCacheByPattern()
+    public void Remove_AlwaysWhenUsingPredicate_ShouldRemoveItemFromCache()
     {
         // Arrange
         Guid key = _faker.Random.Guid();
@@ -233,10 +349,56 @@ public class CacheTests
         _cache.Add(key, value);
 
         // Act
-        _cache.Remove(k => k == key);
+        _cache.Remove((_, v) => v == value);
 
         // Assert
         _cache.Exists(key).Should().BeFalse();
+    }
+
+    [Test]
+    public void RemoveMany_Always_ShouldRemoveItemsFromCache()
+    {
+        // Arrange
+        Guid key1 = _faker.Random.Guid();
+        string value1 = _faker.Random.String();
+        Guid key2 = _faker.Random.Guid();
+        string value2 = _faker.Random.String();
+        Guid key3 = _faker.Random.Guid();
+        string value3 = _faker.Random.String();
+        _cache.Add(key1, value1);
+        _cache.Add(key2, value2);
+        _cache.Add(key3, value3);
+
+        // Act
+        _cache.RemoveMany(new List<Guid> { key1, key2 });
+
+        // Assert
+        _cache.Exists(key1).Should().BeFalse();
+        _cache.Exists(key2).Should().BeFalse();
+        _cache.Exists(key3).Should().BeTrue();
+    }
+
+    [Test]
+    public void RemoveMany_Always_ShouldRemoveItemsFromCacheUsingPattern()
+    {
+        // Arrange
+        Guid key1 = _faker.Random.Guid();
+        string value1 = _faker.Random.String();
+        Guid key2 = _faker.Random.Guid();
+        string value2 = _faker.Random.String();
+        Guid key3 = _faker.Random.Guid();
+        string value3 = _faker.Random.String();
+        _cache.Add(key1, value1);
+        _cache.Add(key2, value2);
+        _cache.Add(key3, value3);
+
+        // Act
+        _cache.RemoveMany((_, v) => v == value1 || v == value2);
+
+        // Assert
+        _cache.Exists(key1).Should().BeFalse();
+        _cache.Exists(key2).Should().BeFalse();
+        _cache.Exists(key3).Should().BeTrue();
     }
 
     [Test]

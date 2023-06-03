@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Src\Core\EssentialFrame\EssentialFrame.csproj"/>
+        <ProjectReference Include="..\..\Src\CqrsCommands\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
         <ProjectReference Include="..\..\Src\Domain\EssentialFrame.Domain\EssentialFrame.Domain.csproj"/>
     </ItemGroup>
 

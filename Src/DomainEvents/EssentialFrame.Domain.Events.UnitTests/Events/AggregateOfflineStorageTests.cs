@@ -50,7 +50,7 @@ public class AggregateOfflineStorageTests
     };
 
     [SetUp]
-    public void Setup()
+    public void SetUp()
     {
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
         _logger = NullLoggerFactory.Instance.CreateLogger<AggregateOfflineStorage>();
@@ -70,7 +70,7 @@ public class AggregateOfflineStorageTests
     }
 
     [TearDown]
-    public void Destroy()
+    public void TearDown()
     {
         _fileStorageMock.Reset();
         _serializerMock.Reset();
@@ -86,7 +86,7 @@ public class AggregateOfflineStorageTests
         IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
             _serializerMock.Object, _fileSystemMock.Object, _logger);
 
-        Mock<IFileInfo> fileInfoMock = new Mock<IFileInfo>();
+        Mock<IFileInfo> fileInfoMock = new();
         string directoryPath = _faker.System.DirectoryPath();
 
         fileInfoMock.Setup(x => x.Length).Returns(_faker.Random.Long(1, 5000));
@@ -118,7 +118,7 @@ public class AggregateOfflineStorageTests
         IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
             _serializerMock.Object, _fileSystemMock.Object, _logger);
 
-        Mock<IFileInfo> fileInfoMock = new Mock<IFileInfo>();
+        Mock<IFileInfo> fileInfoMock = new();
         string directoryPath = _faker.System.DirectoryPath();
 
         fileInfoMock.Setup(x => x.Length).Returns(_faker.Random.Long(1, 5000));
@@ -154,7 +154,7 @@ public class AggregateOfflineStorageTests
         IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
             _serializerMock.Object, _fileSystemMock.Object, _logger, offlineDirectory);
 
-        Mock<IFileInfo> fileInfoMock = new Mock<IFileInfo>();
+        Mock<IFileInfo> fileInfoMock = new();
         string directoryPath = _faker.System.DirectoryPath();
 
         fileInfoMock.Setup(x => x.Length).Returns(_faker.Random.Long(1, 5000));
@@ -188,7 +188,7 @@ public class AggregateOfflineStorageTests
         IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
             _serializerMock.Object, _fileSystemMock.Object, _logger, offlineDirectory);
 
-        Mock<IFileInfo> fileInfoMock = new Mock<IFileInfo>();
+        Mock<IFileInfo> fileInfoMock = new();
         string directoryPath = _faker.System.DirectoryPath();
 
         fileInfoMock.Setup(x => x.Length).Returns(_faker.Random.Long(1, 5000));

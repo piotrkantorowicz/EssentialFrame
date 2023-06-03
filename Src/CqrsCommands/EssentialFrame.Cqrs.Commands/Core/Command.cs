@@ -17,6 +17,11 @@ public abstract class Command : ICommand
         ServiceIdentity = identity.Service.GetFullIdentifier();
     }
 
+    protected Command(Guid aggregateIdentifier, IIdentity identity) : this(identity)
+    {
+        AggregateIdentifier = aggregateIdentifier;
+    }
+    
     protected Command(Guid aggregateIdentifier, Guid commandIdentifier, IIdentity identity) : this(identity)
     {
         AggregateIdentifier = aggregateIdentifier;

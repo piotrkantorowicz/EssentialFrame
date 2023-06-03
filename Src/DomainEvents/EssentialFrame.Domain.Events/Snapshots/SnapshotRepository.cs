@@ -6,7 +6,6 @@ using EssentialFrame.Domain.Events.Snapshots.Interfaces;
 using EssentialFrame.Domain.Factories;
 using EssentialFrame.Domain.Snapshots;
 using EssentialFrame.Serialization.Interfaces;
-using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Events.Snapshots;
 
@@ -149,7 +148,7 @@ public class SnapshotRepository : ISnapshotRepository
 
     public void Ping()
     {
-        IEnumerable<Guid> aggregates = _domainEventsStore.GetExpired(SystemClock.UtcNow);
+        IEnumerable<Guid> aggregates = _domainEventsStore.GetDeleted();
 
         foreach (Guid aggregate in aggregates)
         {
@@ -159,7 +158,7 @@ public class SnapshotRepository : ISnapshotRepository
 
     public async Task PingAsync(CancellationToken cancellationToken = default)
     {
-        IEnumerable<Guid> aggregates = await _domainEventsStore.GetExpiredAsync(SystemClock.UtcNow, cancellationToken);
+        IEnumerable<Guid> aggregates = await _domainEventsStore.GetDeletedAsync(cancellationToken);
 
         foreach (Guid aggregate in aggregates)
         {

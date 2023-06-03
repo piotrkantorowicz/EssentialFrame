@@ -1,5 +1,7 @@
+using EssentialFrame.Cqrs.Events.Store.Interfaces;
+
 namespace EssentialFrame.Cqrs.Events.Store;
 
-public class DefaultEventsStore
+internal sealed class DefaultEventsStore : IEventsStore
 {
 }

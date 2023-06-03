@@ -471,6 +471,42 @@ public sealed class AggregateRootTests
                 $"Image with name {duplicateImageName} has been already added into an aggregate ({aggregate.GetTypeFullName()}) with identifier ({aggregateIdentifier})");
     }
 
+    [Test]
+    public void SafeDelete_Always_ShouldSetDeleteProperties()
+    {
+        // Arrange
+        Guid aggregateIdentifier = _faker.Random.Guid();
+        const int aggregateVersion = 0;
+
+        TestAggregate aggregate =
+            GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+
+        // Act
+        aggregate.SafeDelete();
+
+        // Assert
+        aggregate.IsDeleted.Should().BeTrue();
+        aggregate.DeletedDate.Should().BeCloseTo(SystemClock.Now, TimeSpan.FromMilliseconds(100));
+    }
+
+    [Test]
+    public void UnDelete_Always_ShouldSetDeleteProperties()
+    {
+        // Arrange
+        Guid aggregateIdentifier = _faker.Random.Guid();
+        const int aggregateVersion = 0;
+
+        TestAggregate aggregate =
+            GenericAggregateFactory<TestAggregate>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+
+        // Act
+        aggregate.UnDelete();
+
+        // Assert
+        aggregate.IsDeleted.Should().BeFalse();
+        aggregate.DeletedDate.Should().BeNull();
+    }
+    
     private static void AssertState(TestAggregateState aggregateState, TestAggregateState expectedAggregateState)
     {
         aggregateState.Title.Should().Be(expectedAggregateState.Title);

@@ -17,9 +17,6 @@ internal static class DomainEventsRegistration
             .InstancePerLifetimeScope();
 
         containerBuilder.RegisterType<SnapshotRepository>().As<ISnapshotRepository>().InstancePerLifetimeScope();
-
-        containerBuilder.RegisterType<SnapshotStrategy>().As<ISnapshotStrategy>().InstancePerLifetimeScope();
-
         containerBuilder.RegisterType<SnapshotStrategy>().As<ISnapshotStrategy>().InstancePerLifetimeScope();
 
         return essentialFrameBuilder;

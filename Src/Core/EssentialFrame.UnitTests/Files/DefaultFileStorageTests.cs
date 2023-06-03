@@ -15,13 +15,25 @@ namespace EssentialFrame.UnitTests.Files;
 public class DefaultFileStorageTests
 {
     private readonly Faker _faker = new();
-    private readonly Mock<IFileSystem> _fileSystemMock = new();
+    private Mock<IFileSystem> _fileSystemMock;
 
+    [SetUp]
+    public void SetUp()
+    {
+        _fileSystemMock = new Mock<IFileSystem>();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _fileSystemMock.Reset();
+    }
+    
     [Test]
     public void Read_WhenDirectoryExists_ShouldReadFile()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string directory = _faker.System.DirectoryPath();
         string fileName = _faker.System.FileName();
         Encoding encoding = Encoding.UTF8;
@@ -43,7 +55,7 @@ public class DefaultFileStorageTests
     public async Task ReadAsync_WhenFileExists_ShouldReadFile()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string directory = _faker.System.DirectoryPath();
         string fileName = _faker.System.FileName();
         Encoding encoding = Encoding.UTF8;
@@ -65,7 +77,7 @@ public class DefaultFileStorageTests
     public void Read_WhenFileDoesNotExists_ShouldThrowFileNotFoundException()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string directory = _faker.System.DirectoryPath();
         string fileName = _faker.System.FileName();
         Encoding encoding = Encoding.UTF8;
@@ -87,7 +99,7 @@ public class DefaultFileStorageTests
     public async Task ReadAsync_WhenFileDoesNotExists_ShouldThrowFileNotFoundException()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string directory = _faker.System.DirectoryPath();
         string fileName = _faker.System.FileName();
         Encoding encoding = Encoding.UTF8;
@@ -109,13 +121,13 @@ public class DefaultFileStorageTests
     public void Create_WhenDirectoryExists_ShouldOnlyCreateFile()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string directory = _faker.System.DirectoryPath();
         string fileName = _faker.System.FileName();
         string contents = _faker.Lorem.Sentence();
         Encoding encoding = Encoding.UTF8;
         string filePath = Path.Combine(directory, fileName);
-        Mock<IFileInfo> fileInfoMock = new Mock<IFileInfo>();
+        Mock<IFileInfo> fileInfoMock = new();
 
         fileInfoMock.Setup(x => x.Length).Returns(contents.Length);
         _fileSystemMock.Setup(x => x.Directory.Exists(directory)).Returns(true);
@@ -136,13 +148,13 @@ public class DefaultFileStorageTests
     public void Create_WhenDirectoryDoesNotExists_ShouldCreateDirectoryAndFile()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string directory = _faker.System.DirectoryPath();
         string fileName = _faker.System.FileName();
         string contents = _faker.Lorem.Sentence();
         Encoding encoding = Encoding.UTF8;
         string filePath = Path.Combine(directory, fileName);
-        Mock<IFileInfo> fileInfoMock = new Mock<IFileInfo>();
+        Mock<IFileInfo> fileInfoMock = new();
 
         fileInfoMock.Setup(x => x.Length).Returns(contents.Length);
         _fileSystemMock.Setup(x => x.Directory.Exists(directory)).Returns(false);
@@ -167,13 +179,13 @@ public class DefaultFileStorageTests
     public async Task CreateAsync_WhenDirectoryExists_ShouldCreateFile()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string directory = _faker.System.DirectoryPath();
         string fileName = _faker.System.FileName();
         string contents = _faker.Lorem.Sentence();
         Encoding encoding = Encoding.UTF8;
         string filePath = Path.Combine(directory, fileName);
-        Mock<IFileInfo> fileInfoMock = new Mock<IFileInfo>();
+        Mock<IFileInfo> fileInfoMock = new();
 
         fileInfoMock.Setup(x => x.Length).Returns(contents.Length);
         _fileSystemMock.Setup(x => x.Directory.Exists(directory)).Returns(true);
@@ -194,13 +206,13 @@ public class DefaultFileStorageTests
     public async Task CreateAsync_WhenDirectoryDoesNotExists_ShouldCreateDirectoryAndFile()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string directory = _faker.System.DirectoryPath();
         string fileName = _faker.System.FileName();
         string contents = _faker.Lorem.Sentence();
         Encoding encoding = Encoding.UTF8;
         string filePath = Path.Combine(directory, fileName);
-        Mock<IFileInfo> fileInfoMock = new Mock<IFileInfo>();
+        Mock<IFileInfo> fileInfoMock = new();
 
         fileInfoMock.Setup(x => x.Length).Returns(contents.Length);
         _fileSystemMock.Setup(x => x.Directory.Exists(directory)).Returns(false);
@@ -225,7 +237,7 @@ public class DefaultFileStorageTests
     public void Delete_WhenFileExists_ShouldDeleteFile()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string filePath = _faker.System.FilePath();
 
         _fileSystemMock.Setup(x => x.File.Exists(filePath)).Returns(true);
@@ -242,7 +254,7 @@ public class DefaultFileStorageTests
     public async Task DeleteAsync_WhenFileExists_ShouldDeleteFile()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string filePath = _faker.System.FilePath();
 
         _fileSystemMock.Setup(x => x.File.Exists(filePath)).Returns(true);
@@ -259,7 +271,7 @@ public class DefaultFileStorageTests
     public void Delete_WhenFileDoesNotExists_ShouldThrowFileNotFoundException()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string filePath = _faker.System.FilePath();
 
         _fileSystemMock.Setup(x => x.File.Exists(filePath)).Returns(false);
@@ -276,7 +288,7 @@ public class DefaultFileStorageTests
     public async Task DeleteAsync_WhenFileDoesNotExists_ShouldThrowFileNotFoundException()
     {
         // Arrange
-        DefaultFileStorage fileStorage = new DefaultFileStorage(_fileSystemMock.Object);
+        DefaultFileStorage fileStorage = new(_fileSystemMock.Object);
         string filePath = _faker.System.FilePath();
 
         _fileSystemMock.Setup(x => x.File.Exists(filePath)).Returns(false);
