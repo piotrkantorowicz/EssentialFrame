@@ -9,9 +9,9 @@ public class Snapshot
         AggregateState = aggregateState;
     }
 
-    public virtual Guid AggregateIdentifier { get; }
+    public Guid AggregateIdentifier { get; }
 
-    public virtual int AggregateVersion { get; }
+    public int AggregateVersion { get; }
 
-    public virtual object AggregateState { get; }
+    public object AggregateState { get; }
 }

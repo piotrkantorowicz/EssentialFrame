@@ -18,13 +18,13 @@ public class DefaultFileStorageTests
     private Mock<IFileSystem> _fileSystemMock;
 
     [SetUp]
-    public void Setup()
+    public void SetUp()
     {
         _fileSystemMock = new Mock<IFileSystem>();
     }
 
     [TearDown]
-    public void Destroy()
+    public void TearDown()
     {
         _fileSystemMock.Reset();
     }

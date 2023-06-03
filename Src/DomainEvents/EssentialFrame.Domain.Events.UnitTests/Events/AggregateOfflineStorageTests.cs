@@ -50,7 +50,7 @@ public class AggregateOfflineStorageTests
     };
 
     [SetUp]
-    public void Setup()
+    public void SetUp()
     {
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new TestIdentity());
         _logger = NullLoggerFactory.Instance.CreateLogger<AggregateOfflineStorage>();
@@ -70,7 +70,7 @@ public class AggregateOfflineStorageTests
     }
 
     [TearDown]
-    public void Destroy()
+    public void TearDown()
     {
         _fileStorageMock.Reset();
         _serializerMock.Reset();

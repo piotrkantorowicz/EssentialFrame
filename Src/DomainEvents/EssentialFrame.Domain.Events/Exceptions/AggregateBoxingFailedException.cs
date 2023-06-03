@@ -11,10 +11,4 @@ internal class AggregateBoxingFailedException : EssentialFrameException
             innerException)
     {
     }
-
-    public AggregateBoxingFailedException(Guid aggregateIdentifier, Exception innerException) : base(
-        $"Unable to box aggregate with id: ({aggregateIdentifier}). See inner exception for more details.",
-        innerException)
-    {
-    }
 }

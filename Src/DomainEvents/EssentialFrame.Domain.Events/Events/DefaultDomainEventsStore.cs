@@ -1,6 +1,8 @@
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.Domain.Events.Events.Interfaces;
+using EssentialFrame.Domain.Events.Exceptions;
+using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Events;
 
@@ -9,14 +11,17 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
     private readonly ICache<Guid, AggregateRoot> _aggregateCache;
     private readonly ICache<Guid, DomainEventDao> _eventsCache;
     private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
+    private readonly ISerializer _serializer;
 
     public DefaultDomainEventsStore(ICache<Guid, DomainEventDao> eventsCache,
-        ICache<Guid, AggregateRoot> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage)
+        ICache<Guid, AggregateRoot> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage,
+        ISerializer serializer)
     {
         _eventsCache = eventsCache ?? throw new ArgumentNullException(nameof(eventsCache));
         _aggregateCache = aggregateCache ?? throw new ArgumentNullException(nameof(aggregateCache));
         _aggregateOfflineStorage =
             aggregateOfflineStorage ?? throw new ArgumentNullException(nameof(aggregateOfflineStorage));
+        _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
     }
 
     public bool Exists(Guid aggregateIdentifier)
@@ -44,7 +49,7 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
     public IReadOnlyCollection<DomainEventDao> Get(Guid aggregateIdentifier, int version)
     {
         return _eventsCache.GetMany((_, v) =>
-            v.AggregateIdentifier == aggregateIdentifier && v.AggregateVersion == version);
+            v.AggregateIdentifier == aggregateIdentifier && v.AggregateVersion >= version);
     }
 
     public async Task<IReadOnlyCollection<DomainEventDao>> GetAsync(Guid aggregateIdentifier, int version,
@@ -55,7 +60,7 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 
     public IEnumerable<Guid> GetDeleted()
     {
-        return _aggregateCache.GetMany((_, v) => v.IsDeleted).Select(v => v.AggregateIdentifier);
+        return _aggregateCache.GetMany((_, v) => v.IsDeleted)?.Select(v => v.AggregateIdentifier);
     }
 
     public async Task<IEnumerable<Guid>> GetDeletedAsync(CancellationToken cancellationToken = default)
@@ -65,8 +70,11 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 
     public void Save(AggregateRoot aggregate, IEnumerable<DomainEventDao> events)
     {
+        IEnumerable<KeyValuePair<Guid, DomainEventDao>> eventsDbo =
+            events?.Select(v => new KeyValuePair<Guid, DomainEventDao>(v.EventIdentifier, v));
+
         _aggregateCache.Add(aggregate.AggregateIdentifier, aggregate);
-        _eventsCache.AddMany(events.Select(v => new KeyValuePair<Guid, DomainEventDao>(v.EventIdentifier, v)));
+        _eventsCache.AddMany(eventsDbo);
     }
 
     public async Task SaveAsync(AggregateRoot aggregate, IEnumerable<DomainEventDao> events,
@@ -96,17 +104,30 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
     private (AggregateRoot, IReadOnlyCollection<IDomainEvent>) GetAggregateAndEvents(Guid aggregateIdentifier)
     {
         AggregateRoot aggregate = _aggregateCache.Get(aggregateIdentifier);
-        List<IDomainEvent> events = _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier).Select(
-            v =>
-            {
-                if (v.DomainEvent is IDomainEvent domainEvent)
-                {
-                    return domainEvent;
-                }
-
-                throw new InvalidCastException($"Unable to cast {v.DomainEvent.GetType()} to {nameof(IDomainEvent)}");
-            }).ToList();
+        List<IDomainEvent> events = _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier)
+            ?.Select(ConvertToEvent).ToList();
 
         return (aggregate, events);
+    }
+
+    // todo: move to a separate class
+    private IDomainEvent ConvertToEvent(DomainEventDao domainEventDao)
+    {
+        object @event = domainEventDao.DomainEvent;
+
+        if (@event is string serializedEvent)
+        {
+            IDomainEvent deserialized =
+                _serializer.Deserialize<IDomainEvent>(serializedEvent, Type.GetType(domainEventDao.EventClass));
+
+            if (deserialized is null)
+            {
+                throw new UnknownEventTypeException(domainEventDao.EventType);
+            }
+        }
+
+        IDomainEvent castedDomainEvent = @event as IDomainEvent;
+
+        return castedDomainEvent;
     }
 }

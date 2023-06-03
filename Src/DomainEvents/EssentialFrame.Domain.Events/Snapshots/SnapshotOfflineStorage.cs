@@ -45,7 +45,8 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
         catch (Exception exception)
         {
-            AggregateBoxingFailedException aggregateBoxingException = new(snapshot.AggregateIdentifier, exception);
+            SnapshotBoxingFailedException aggregateBoxingException =
+                SnapshotBoxingFailedException.Unexpected(snapshot.AggregateIdentifier, exception);
 
             _logger.LogError(aggregateBoxingException,
                 "Failed to save aggregate {AggregateIdentifier} to offline storage", snapshot.AggregateIdentifier);
@@ -68,7 +69,8 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
         catch (Exception exception)
         {
-            AggregateBoxingFailedException aggregateBoxingException = new(snapshot.AggregateIdentifier, exception);
+            SnapshotBoxingFailedException aggregateBoxingException =
+                SnapshotBoxingFailedException.Unexpected(snapshot.AggregateIdentifier, exception);
 
             _logger.LogError(aggregateBoxingException,
                 "Failed to save aggregate {AggregateIdentifier} to offline storage", snapshot.AggregateIdentifier);
@@ -85,11 +87,17 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
                 _fileStorage.Read(_fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier.ToString()),
                     SnapshotFilename);
 
+            if (aggregateState is null)
+            {
+                throw SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier);
+            }
+
             return new Snapshot(aggregateIdentifier, 1, aggregateState);
         }
         catch (Exception exception)
         {
-            AggregateUnBoxingFailedException aggregateBoxingException = new(aggregateIdentifier, exception);
+            SnapshotUnboxingFailedException aggregateBoxingException =
+                SnapshotUnboxingFailedException.Unexpected(aggregateIdentifier, exception);
 
             _logger.LogError(aggregateBoxingException,
                 "Failed to save aggregate {AggregateIdentifier} to offline storage", aggregateIdentifier);
@@ -106,11 +114,17 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
                 _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier.ToString()), SnapshotFilename,
                 cancellationToken: cancellationToken);
 
+            if (aggregateState is null)
+            {
+                throw SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier);
+            }
+
             return new Snapshot(aggregateIdentifier, 1, aggregateState);
         }
         catch (Exception exception)
         {
-            AggregateUnBoxingFailedException aggregateBoxingException = new(aggregateIdentifier, exception);
+            SnapshotUnboxingFailedException aggregateBoxingException =
+                SnapshotUnboxingFailedException.Unexpected(aggregateIdentifier, exception);
 
             _logger.LogError(aggregateBoxingException,
                 "Failed to save aggregate {AggregateIdentifier} to offline storage", aggregateIdentifier);

@@ -33,18 +33,17 @@ public sealed class TestAggregate : AggregateRoot
 
     public override void RestoreState(object aggregateState, ISerializer serializer = null)
     {
-        if (aggregateState is null)
+        switch (aggregateState)
         {
-            return;
+            case null:
+                return;
+            case string serializedState:
+                State = serializer?.Deserialize<TestAggregateState>(serializedState, typeof(TestAggregateState));
+                return;
+            default:
+                State = (TestAggregateState)aggregateState;
+                break;
         }
-
-        if (aggregateState is string serializedState)
-        {
-            State = serializer?.Deserialize<TestAggregateState>(serializedState, typeof(TestAggregateState));
-            return;
-        }
-
-        State = (TestAggregateState)aggregateState;
     }
 
     public void ChangeTitle(TestTitle title)

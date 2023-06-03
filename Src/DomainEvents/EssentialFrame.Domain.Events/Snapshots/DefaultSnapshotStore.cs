@@ -1,4 +1,5 @@
 using EssentialFrame.Cache.Interfaces;
+using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Snapshots.Interfaces;
 using EssentialFrame.Domain.Snapshots;
 
@@ -40,16 +41,26 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
 
     public void Box(Guid aggregateIdentifier)
     {
-        Snapshot aggregate = _snapshotCache.Get(aggregateIdentifier);
+        Snapshot snapshot = _snapshotCache.Get(aggregateIdentifier);
 
-        _snapshotOfflineStorage.Save(aggregate);
+        if (snapshot is null)
+        {
+            throw SnapshotBoxingFailedException.SnapshotNotFound(aggregateIdentifier);
+        }
+
+        _snapshotOfflineStorage.Save(snapshot);
     }
 
     public async Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
     {
-        Snapshot aggregate = _snapshotCache.Get(aggregateIdentifier);
+        Snapshot snapshot = _snapshotCache.Get(aggregateIdentifier);
 
-        await _snapshotOfflineStorage.SaveAsync(aggregate, cancellationToken);
+        if (snapshot is null)
+        {
+            throw SnapshotBoxingFailedException.SnapshotNotFound(aggregateIdentifier);
+        }
+
+        await _snapshotOfflineStorage.SaveAsync(snapshot, cancellationToken);
     }
 
     public Snapshot Unbox(Guid aggregateIdentifier)
