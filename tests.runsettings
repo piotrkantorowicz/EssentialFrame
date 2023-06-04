@@ -6,17 +6,17 @@
         <Configuration>
           <Format>opencover</Format>
           <Exclude>
-            [EssentialFrame.UnitTests]*,
-            [EssentialFrame.Cqrs.Commands.UnitTests]*,
-            [EssentialFrame.Cqrs.Commands.Validations.UnitTests]*,
-            [EssentialFrame.Cqrs.Events.UnitTests]*,
-            [EssentialFrame.Domain.UnitTests]*,
-            [EssentialFrame.Domain.Events.UnitTests]*,
-            [EssentialFrame.Cqrs.Queries.UnitTests]*,
-            [EssentialFrame.ArchitectureTests]*,
-            [EssentialFrame.IntegrationTests]*,
+            [EssentialFrame.Tests.UnitTests]*,
+            [EssentialFrame.Cqrs.Commands.Tests.UnitTests]*,
+            [EssentialFrame.Cqrs.Commands.Validations.Tests.UnitTests]*,
+            [EssentialFrame.Cqrs.Events.Tests.UnitTests]*,
+            [EssentialFrame.Domain.Tests.UnitTests]*,
+            [EssentialFrame.Domain.Events.Tests.UnitTests]*,
+            [EssentialFrame.Cqrs.Queries.Tests.UnitTests]*,
+            [EssentialFrame.Tests.ArchitectureTests]*,
+            [EssentialFrame.Tests.IntegrationTests]*,
+            [EssentialFrame.Tests.Utils]*,
             [EssentialFrame.ExampleApp]*,
-	    [EssentialFrame.Tests.Utils]*
           </Exclude>
         </Configuration>
       </DataCollector>
