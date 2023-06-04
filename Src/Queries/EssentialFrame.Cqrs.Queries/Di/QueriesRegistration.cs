@@ -1,9 +1,9 @@
 using System.Reflection;
 using Autofac;
 using EssentialFrame.Cqrs.Queries.Core.Interfaces;
-using EssentialFrame.Cqrs.Queries.Executors;
-using EssentialFrame.Cqrs.Queries.Executors.Interfaces;
 using EssentialFrame.Cqrs.Queries.Logging.Decorators;
+using EssentialFrame.Cqrs.Queries.Services.Execution;
+using EssentialFrame.Cqrs.Queries.Services.Execution.Interfaces;
 
 namespace EssentialFrame.Cqrs.Queries.Di;
 

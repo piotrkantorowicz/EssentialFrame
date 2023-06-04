@@ -13,11 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{98B0B268-1D92-4695-9A8C-2DE72C0468F1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CqrsCommands", "CqrsCommands", "{2F44038B-1799-4623-B4E2-808BADED6D62}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CqrsCommandsValidations", "CqrsCommandsValidations", "{B1F32F5E-D0CE-420A-8E67-7D559BA7C114}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CqrsEvents", "CqrsEvents", "{7D795757-C549-4416-8BD7-A53C5D5B59A9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Commands", "Commands", "{2F44038B-1799-4623-B4E2-808BADED6D62}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{22015B82-5D38-4A55-81B1-879C56E8B99A}"
 EndProject
@@ -29,11 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{77B2F06A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame", "Src\Core\EssentialFrame\EssentialFrame.csproj", "{F2659D84-08BA-495F-A0F8-2EC4ACB54EE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Commands", "Src\CqrsCommands\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj", "{F68BCBBE-7FA3-4EEA-BEA3-46D773A116EB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Commands.Validations", "Src\CqrsCommandsValidations\EssentialFrame.Cqrs.Commands.Validations\EssentialFrame.Cqrs.Commands.Validations.csproj", "{B25DA459-793D-45B8-A06D-F421B2FF31CC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Events", "Src\CqrsEvents\EssentialFrame.Cqrs.Events\EssentialFrame.Cqrs.Events.csproj", "{36EF8864-A2BC-4F1E-AAC9-DD001FFFB5FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Commands", "Src\Commands\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj", "{F68BCBBE-7FA3-4EEA-BEA3-46D773A116EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Domain", "Src\Domain\EssentialFrame.Domain\EssentialFrame.Domain.csproj", "{FC6F8B8D-FFD8-4414-AFE7-2DDD164A91FC}"
 EndProject
@@ -41,25 +33,45 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Domain.Event
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Queries", "Src\Queries\EssentialFrame.Cqrs.Queries\EssentialFrame.Cqrs.Queries.csproj", "{A5A8781A-3D82-4190-A9C6-81E73D0ACF66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.UnitTests", "Src\Core\EssentialFrame.UnitTests\EssentialFrame.UnitTests.csproj", "{EE96CDC0-C9F9-43CD-9BD1-A28A0DB0194B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Tests.IntegrationTests", "Tests\EssentialFrame.Tests.IntegrationTests\EssentialFrame.Tests.IntegrationTests.csproj", "{43B6C8EC-27A4-4450-9C8A-078354564FC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Commands.UnitTests", "Src\CqrsCommands\EssentialFrame.Cqrs.Commands.UnitTests\EssentialFrame.Cqrs.Commands.UnitTests.csproj", "{B8D1203E-55FA-4795-8659-8A6883C1F46B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Tests.ArchitectureTests", "Tests\EssentialFrame.Tests.ArchitectureTests\EssentialFrame.Tests.ArchitectureTests.csproj", "{060B479C-7A63-4E80-ADB0-35527BCE590A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Commands.Validations.UnitTests", "Src\CqrsCommandsValidations\EssentialFrame.Cqrs.Commands.Validations.UnitTests\EssentialFrame.Cqrs.Commands.Validations.UnitTests.csproj", "{4E45C1A8-C428-4269-8165-23D1D7CBB0BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Tests.Utils", "Tests\EssentialFrame.Tests.Utils\EssentialFrame.Tests.Utils.csproj", "{8146748C-ADE2-4EC7-BDEE-7FB3451380A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Events.UnitTests", "Src\CqrsEvents\EssentialFrame.Cqrs.Events.UnitTests\EssentialFrame.Cqrs.Events.UnitTests.csproj", "{0FDC4795-0078-47BA-A1A8-A6C59B34FD8B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{551CCB56-7B15-4479-BDCE-A6DC53478521}"
+	ProjectSection(SolutionItems) = preProject
+		Src\Commands\Tests\EssentialFrame.Cqrs.Commands.Tests.UnitTests\EssentialFrame.Cqrs.Commands.Tests.UnitTests.csproj = Src\Commands\Tests\EssentialFrame.Cqrs.Commands.Tests.UnitTests\EssentialFrame.Cqrs.Commands.Tests.UnitTests.csproj
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Domain.UnitTests", "Src\Domain\EssentialFrame.Domain.UnitTests\EssentialFrame.Domain.UnitTests.csproj", "{B4F575E8-036C-4996-9981-91E90E80FA0F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5ED98711-F9F0-4C96-8054-F42C4F16F36A}"
+	ProjectSection(SolutionItems) = preProject
+		Src\Core\Tests\EssentialFrame.Tests.UnitTests\EssentialFrame.Tests.UnitTests.csproj = Src\Core\Tests\EssentialFrame.Tests.UnitTests\EssentialFrame.Tests.UnitTests.csproj
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Domain.Events.UnitTests", "Src\DomainEvents\EssentialFrame.Domain.Events.UnitTests\EssentialFrame.Domain.Events.UnitTests.csproj", "{F67D0A57-6C4B-4836-92EB-8EBDC0B23D6E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5049EBBC-E7C0-47E6-92CE-9CBA6A9CDBEE}"
+	ProjectSection(SolutionItems) = preProject
+		Src\Domain\Tests\EssentialFrame.Domain.Tests.UnitTests\EssentialFrame.Domain.Tests.UnitTests.csproj = Src\Domain\Tests\EssentialFrame.Domain.Tests.UnitTests\EssentialFrame.Domain.Tests.UnitTests.csproj
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Queries.UnitTests", "Src\Queries\EssentialFrame.Cqrs.Queries.UnitTests\EssentialFrame.Cqrs.Queries.UnitTests.csproj", "{BF72DB10-1F0D-4837-A8F6-9F589F8E79A2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7663572E-8524-4EFE-B1AE-2ECE40C3EF99}"
+	ProjectSection(SolutionItems) = preProject
+		Src\DomainEvents\Tests\EssentialFrame.Domain.Events.Tests.UnitTests\EssentialFrame.Domain.Events.Tests.UnitTests.csproj = Src\DomainEvents\Tests\EssentialFrame.Domain.Events.Tests.UnitTests\EssentialFrame.Domain.Events.Tests.UnitTests.csproj
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.IntegrationTests", "Tests\EssentialFrame.IntegrationTests\EssentialFrame.IntegrationTests.csproj", "{43B6C8EC-27A4-4450-9C8A-078354564FC5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F0B99CF3-7BF9-45D8-9F4C-A1961B180F0F}"
+	ProjectSection(SolutionItems) = preProject
+		Src\Queries\Tests\EssentialFrame.Cqrs.Queries.Tests.UnitTests\EssentialFrame.Cqrs.Queries.Tests.UnitTests.csproj = Src\Queries\Tests\EssentialFrame.Cqrs.Queries.Tests.UnitTests\EssentialFrame.Cqrs.Queries.Tests.UnitTests.csproj
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.ArchitectureTests", "Tests\EssentialFrame.ArchitectureTests\EssentialFrame.ArchitectureTests.csproj", "{060B479C-7A63-4E80-ADB0-35527BCE590A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{798E34E2-AEEE-4608-B40E-4EC93FF5AD03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.TestData", "Tests\EssentialFrame.TestData\EssentialFrame.TestData.csproj", "{24566404-79B3-40FC-9B1B-D6467840FDB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.ExampleApp", "Examples\EssentialFrame.ExampleApp\EssentialFrame.ExampleApp.csproj", "{0FA39BC2-BA9A-4F10-869A-38A6A737BABA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Validations", "Validations", "{025A90A2-F4AC-445E-9459-12675DE3080D}"
+	ProjectSection(SolutionItems) = preProject
+		Src\Commands\Validations\EssentialFrame.Cqrs.Commands.Validations\EssentialFrame.Cqrs.Commands.Validations.csproj = Src\Commands\Validations\EssentialFrame.Cqrs.Commands.Validations\EssentialFrame.Cqrs.Commands.Validations.csproj
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,28 +82,24 @@ Global
 		{3C50C075-9467-44B8-BC6A-65EA8C951ECB} = {F93BC7CB-AA9F-4C66-9D9E-58A73782BF8E}
 		{98B0B268-1D92-4695-9A8C-2DE72C0468F1} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
 		{2F44038B-1799-4623-B4E2-808BADED6D62} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
-		{B1F32F5E-D0CE-420A-8E67-7D559BA7C114} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
-		{7D795757-C549-4416-8BD7-A53C5D5B59A9} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
 		{22015B82-5D38-4A55-81B1-879C56E8B99A} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
 		{D0F9DF56-2378-434B-8F09-960706F7630E} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
 		{567D8402-3657-4446-A361-AB69E029ACA1} = {3DAB9B5D-1CC0-4CB2-8019-A419AD88407F}
 		{F2659D84-08BA-495F-A0F8-2EC4ACB54EE3} = {98B0B268-1D92-4695-9A8C-2DE72C0468F1}
 		{F68BCBBE-7FA3-4EEA-BEA3-46D773A116EB} = {2F44038B-1799-4623-B4E2-808BADED6D62}
-		{B25DA459-793D-45B8-A06D-F421B2FF31CC} = {B1F32F5E-D0CE-420A-8E67-7D559BA7C114}
-		{36EF8864-A2BC-4F1E-AAC9-DD001FFFB5FA} = {7D795757-C549-4416-8BD7-A53C5D5B59A9}
 		{FC6F8B8D-FFD8-4414-AFE7-2DDD164A91FC} = {22015B82-5D38-4A55-81B1-879C56E8B99A}
 		{0DC2543A-21FC-46DC-96B3-E76ED15F76D9} = {D0F9DF56-2378-434B-8F09-960706F7630E}
 		{A5A8781A-3D82-4190-A9C6-81E73D0ACF66} = {567D8402-3657-4446-A361-AB69E029ACA1}
-		{EE96CDC0-C9F9-43CD-9BD1-A28A0DB0194B} = {98B0B268-1D92-4695-9A8C-2DE72C0468F1}
-		{B8D1203E-55FA-4795-8659-8A6883C1F46B} = {2F44038B-1799-4623-B4E2-808BADED6D62}
-		{4E45C1A8-C428-4269-8165-23D1D7CBB0BB} = {B1F32F5E-D0CE-420A-8E67-7D559BA7C114}
-		{0FDC4795-0078-47BA-A1A8-A6C59B34FD8B} = {7D795757-C549-4416-8BD7-A53C5D5B59A9}
-		{B4F575E8-036C-4996-9981-91E90E80FA0F} = {22015B82-5D38-4A55-81B1-879C56E8B99A}
-		{F67D0A57-6C4B-4836-92EB-8EBDC0B23D6E} = {D0F9DF56-2378-434B-8F09-960706F7630E}
-		{BF72DB10-1F0D-4837-A8F6-9F589F8E79A2} = {567D8402-3657-4446-A361-AB69E029ACA1}
 		{43B6C8EC-27A4-4450-9C8A-078354564FC5} = {77B2F06A-FFE2-43BE-A8DC-DC2EF4C0624B}
 		{060B479C-7A63-4E80-ADB0-35527BCE590A} = {77B2F06A-FFE2-43BE-A8DC-DC2EF4C0624B}
-		{24566404-79B3-40FC-9B1B-D6467840FDB9} = {77B2F06A-FFE2-43BE-A8DC-DC2EF4C0624B}
+		{8146748C-ADE2-4EC7-BDEE-7FB3451380A3} = {77B2F06A-FFE2-43BE-A8DC-DC2EF4C0624B}
+		{551CCB56-7B15-4479-BDCE-A6DC53478521} = {2F44038B-1799-4623-B4E2-808BADED6D62}
+		{5ED98711-F9F0-4C96-8054-F42C4F16F36A} = {98B0B268-1D92-4695-9A8C-2DE72C0468F1}
+		{5049EBBC-E7C0-47E6-92CE-9CBA6A9CDBEE} = {22015B82-5D38-4A55-81B1-879C56E8B99A}
+		{7663572E-8524-4EFE-B1AE-2ECE40C3EF99} = {D0F9DF56-2378-434B-8F09-960706F7630E}
+		{F0B99CF3-7BF9-45D8-9F4C-A1961B180F0F} = {567D8402-3657-4446-A361-AB69E029ACA1}
+		{0FA39BC2-BA9A-4F10-869A-38A6A737BABA} = {798E34E2-AEEE-4608-B40E-4EC93FF5AD03}
+		{025A90A2-F4AC-445E-9459-12675DE3080D} = {2F44038B-1799-4623-B4E2-808BADED6D62}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F2659D84-08BA-495F-A0F8-2EC4ACB54EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -102,14 +110,6 @@ Global
 		{F68BCBBE-7FA3-4EEA-BEA3-46D773A116EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F68BCBBE-7FA3-4EEA-BEA3-46D773A116EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F68BCBBE-7FA3-4EEA-BEA3-46D773A116EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B25DA459-793D-45B8-A06D-F421B2FF31CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B25DA459-793D-45B8-A06D-F421B2FF31CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B25DA459-793D-45B8-A06D-F421B2FF31CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B25DA459-793D-45B8-A06D-F421B2FF31CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{36EF8864-A2BC-4F1E-AAC9-DD001FFFB5FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{36EF8864-A2BC-4F1E-AAC9-DD001FFFB5FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{36EF8864-A2BC-4F1E-AAC9-DD001FFFB5FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{36EF8864-A2BC-4F1E-AAC9-DD001FFFB5FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC6F8B8D-FFD8-4414-AFE7-2DDD164A91FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC6F8B8D-FFD8-4414-AFE7-2DDD164A91FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC6F8B8D-FFD8-4414-AFE7-2DDD164A91FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -122,34 +122,6 @@ Global
 		{A5A8781A-3D82-4190-A9C6-81E73D0ACF66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5A8781A-3D82-4190-A9C6-81E73D0ACF66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5A8781A-3D82-4190-A9C6-81E73D0ACF66}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE96CDC0-C9F9-43CD-9BD1-A28A0DB0194B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE96CDC0-C9F9-43CD-9BD1-A28A0DB0194B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE96CDC0-C9F9-43CD-9BD1-A28A0DB0194B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE96CDC0-C9F9-43CD-9BD1-A28A0DB0194B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8D1203E-55FA-4795-8659-8A6883C1F46B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8D1203E-55FA-4795-8659-8A6883C1F46B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8D1203E-55FA-4795-8659-8A6883C1F46B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8D1203E-55FA-4795-8659-8A6883C1F46B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4E45C1A8-C428-4269-8165-23D1D7CBB0BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4E45C1A8-C428-4269-8165-23D1D7CBB0BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4E45C1A8-C428-4269-8165-23D1D7CBB0BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4E45C1A8-C428-4269-8165-23D1D7CBB0BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0FDC4795-0078-47BA-A1A8-A6C59B34FD8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0FDC4795-0078-47BA-A1A8-A6C59B34FD8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0FDC4795-0078-47BA-A1A8-A6C59B34FD8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0FDC4795-0078-47BA-A1A8-A6C59B34FD8B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B4F575E8-036C-4996-9981-91E90E80FA0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4F575E8-036C-4996-9981-91E90E80FA0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4F575E8-036C-4996-9981-91E90E80FA0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4F575E8-036C-4996-9981-91E90E80FA0F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F67D0A57-6C4B-4836-92EB-8EBDC0B23D6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F67D0A57-6C4B-4836-92EB-8EBDC0B23D6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F67D0A57-6C4B-4836-92EB-8EBDC0B23D6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F67D0A57-6C4B-4836-92EB-8EBDC0B23D6E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF72DB10-1F0D-4837-A8F6-9F589F8E79A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF72DB10-1F0D-4837-A8F6-9F589F8E79A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF72DB10-1F0D-4837-A8F6-9F589F8E79A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF72DB10-1F0D-4837-A8F6-9F589F8E79A2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{43B6C8EC-27A4-4450-9C8A-078354564FC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{43B6C8EC-27A4-4450-9C8A-078354564FC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43B6C8EC-27A4-4450-9C8A-078354564FC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -158,9 +130,13 @@ Global
 		{060B479C-7A63-4E80-ADB0-35527BCE590A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{060B479C-7A63-4E80-ADB0-35527BCE590A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{060B479C-7A63-4E80-ADB0-35527BCE590A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24566404-79B3-40FC-9B1B-D6467840FDB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24566404-79B3-40FC-9B1B-D6467840FDB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24566404-79B3-40FC-9B1B-D6467840FDB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24566404-79B3-40FC-9B1B-D6467840FDB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8146748C-ADE2-4EC7-BDEE-7FB3451380A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8146748C-ADE2-4EC7-BDEE-7FB3451380A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8146748C-ADE2-4EC7-BDEE-7FB3451380A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8146748C-ADE2-4EC7-BDEE-7FB3451380A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FA39BC2-BA9A-4F10-869A-38A6A737BABA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FA39BC2-BA9A-4F10-869A-38A6A737BABA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FA39BC2-BA9A-4F10-869A-38A6A737BABA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FA39BC2-BA9A-4F10-869A-38A6A737BABA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

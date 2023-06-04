@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Src\Core\EssentialFrame\EssentialFrame.csproj"/>
+        <ProjectReference Include="..\..\Src\Commands\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
+        <ProjectReference Include="..\..\Src\Domain\EssentialFrame.Domain\EssentialFrame.Domain.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Domain\Posts\"/>
+    </ItemGroup>
+
+</Project>

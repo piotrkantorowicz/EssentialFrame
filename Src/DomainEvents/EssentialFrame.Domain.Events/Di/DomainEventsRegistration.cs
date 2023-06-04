@@ -1,8 +1,10 @@
 using Autofac;
-using EssentialFrame.Domain.Events.Events;
-using EssentialFrame.Domain.Events.Events.Interfaces;
-using EssentialFrame.Domain.Events.Snapshots;
-using EssentialFrame.Domain.Events.Snapshots.Interfaces;
+using EssentialFrame.Domain.Events.Core;
+using EssentialFrame.Domain.Events.Core.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.DomainEvents;
+using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Snapshots;
+using EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Di;
 

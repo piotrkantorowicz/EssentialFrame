@@ -5,6 +5,6 @@ public interface IEssentialFrameBuilder<out TBuilder, out TContainer> where TBui
     TBuilder Builder { get; }
 
     bool IsBuilt();
-    
+
     TContainer Build();
 }

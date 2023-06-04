@@ -9,7 +9,6 @@
         <Copyright>Copyright © 2022 Piotr Kantorowicz</Copyright>
         <Authors>Piotr Kantorowicz</Authors>
         <Company>Piotr Kantorowicz</Company>
-        <Product>EssentialFrame.Domain.Events</Product>
 
         <!-- Frameworks and language features -->
         <TargetFramework>net7.0</TargetFramework>
@@ -31,7 +30,7 @@
 
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>EssentialFrame.Domain.Events.UnitTests</_Parameter1>
+            <_Parameter1>EssentialFrame.Domain.Events.Tests.UnitTests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 
