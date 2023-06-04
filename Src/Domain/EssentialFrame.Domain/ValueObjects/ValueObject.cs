@@ -5,8 +5,6 @@ namespace EssentialFrame.Domain.ValueObjects;
 
 public abstract class ValueObject
 {
-    protected abstract IEnumerable<object> GetEqualityComponents();
-
     public override bool Equals(object obj)
     {
         if (obj == null)
@@ -67,4 +65,6 @@ public abstract class ValueObject
             throw new BusinessRuleValidationException(rule);
         }
     }
+
+    protected abstract IEnumerable<object> GetEqualityComponents();
 }

@@ -135,17 +135,8 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
 
     private string GetSerializedState(Snapshot snapshot)
     {
-        string serializedState;
+        string serializerState = snapshot.AggregateState as string ?? _serializer.Serialize(snapshot.AggregateState);
 
-        if (snapshot.AggregateState is string alreadySerializedState)
-        {
-            serializedState = alreadySerializedState;
-        }
-        else
-        {
-            serializedState = _serializer.Serialize(snapshot.AggregateState);
-        }
-
-        return serializedState;
+        return serializerState;
     }
 }
