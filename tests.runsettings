@@ -15,7 +15,8 @@
             [EssentialFrame.Cqrs.Queries.UnitTests]*,
             [EssentialFrame.ArchitectureTests]*,
             [EssentialFrame.IntegrationTests]*,
-            [EssentialFrame.TestData]*
+            [EssentialFrame.ExampleApp]*,
+	    [EssentialFrame.Tests.Utils]*
           </Exclude>
         </Configuration>
       </DataCollector>
