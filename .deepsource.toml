@@ -1,9 +1,6 @@
 version = 1
 
-[[analyzers]]
-name = "csharp"
-
-test_patterns = \[  
+test_patterns = [  
     "Tests\**",
     "Src\Commands\Tests\**",
     "Src\Core\Tests\**",
@@ -28,3 +25,12 @@ exclude_patterns = [
     "EssentialFrame/Src/Commands/EssentialFrame.Queries/bin/**",
     "EssentialFrame/Src/Commands/EssentialFrame.Queries/obj/**"
 ]
+
+
+[[analyzers]]
+name = "csharp"
+enabled = true
+
+[[analyzers]]
+name = "secrets"
+enabled = true
