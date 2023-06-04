@@ -27,9 +27,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\Examples\EssentialFrame.ExampleApp\EssentialFrame.ExampleApp.csproj"/>
-        <ProjectReference Include="..\..\..\Tests\EssentialFrame.Tests.Utils\EssentialFrame.Tests.Utils.csproj"/>
-        <ProjectReference Include="..\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
+        <ProjectReference Include="..\..\..\..\Examples\EssentialFrame.ExampleApp\EssentialFrame.ExampleApp.csproj"/>
+        <ProjectReference Include="..\..\..\..\Tests\EssentialFrame.Tests.Utils\EssentialFrame.Tests.Utils.csproj"/>
+        <ProjectReference Include="..\..\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
     </ItemGroup>
 
 </Project>

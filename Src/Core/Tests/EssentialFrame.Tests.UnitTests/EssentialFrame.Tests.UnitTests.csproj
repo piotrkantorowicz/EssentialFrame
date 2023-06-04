@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\EssentialFrame\EssentialFrame.csproj"/>
+        <ProjectReference Include="..\..\EssentialFrame\EssentialFrame.csproj"/>
     </ItemGroup>
 
 </Project>
