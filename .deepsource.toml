@@ -1,8 +1,8 @@
 version = 1
 
-exclude_patterns = [  
+exclude_patterns = [
     "Examples/**",
-    "workflows/**,
+    "workflows/**",
     "EssentialFrame/Src/Commands/EssentialFrame.Cqrs.Commands/bin/**",
     "EssentialFrame/Src/Commands/EssentialFrame.Cqrs.Commands/obj/**",
     "EssentialFrame/Src/Commands/EssentialFrame/bin/**",
@@ -17,7 +17,7 @@ exclude_patterns = [
     "EssentialFrame/Src/Commands/EssentialFrame.Queries/obj/**"
 ]
 
-test_patterns = [  
+test_patterns = [
     "Tests/**",
     "Src/Commands/Tests/**",
     "Src/Core/Tests/**",
