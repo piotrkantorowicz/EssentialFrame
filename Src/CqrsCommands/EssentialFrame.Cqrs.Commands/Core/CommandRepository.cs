@@ -3,24 +3,23 @@ using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Exceptions;
 using EssentialFrame.Cqrs.Commands.Store.Interfaces;
 using EssentialFrame.Cqrs.Commands.Store.Models;
-using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Cqrs.Commands.Core;
 
 public sealed class CommandRepository : ICommandRepository
 {
     private readonly ICommandStore _commandStore;
-    private readonly ISerializer _serializer;
+    private readonly ICommandMapper _commandMapper;
 
-    public CommandRepository(ICommandStore commandStore, ISerializer serializer)
+    public CommandRepository(ICommandStore commandStore, ICommandMapper commandMapper)
     {
         _commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
-        _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+        _commandMapper = commandMapper ?? throw new ArgumentNullException(nameof(commandMapper));
     }
 
     public void StartExecution(ICommand command)
     {
-        CommandDataModel commandDataModel = new(command);
+        CommandDataModel commandDataModel = _commandMapper.Map(command);
         commandDataModel.Start();
 
         _commandStore.Save(commandDataModel, true);
@@ -28,7 +27,7 @@ public sealed class CommandRepository : ICommandRepository
 
     public async Task StartExecutionAsync(ICommand command, CancellationToken cancellationToken = default)
     {
-        CommandDataModel commandDataModel = new(command);
+        CommandDataModel commandDataModel = _commandMapper.Map(command);
         commandDataModel.Start();
 
         await _commandStore.SaveAsync(commandDataModel, true, cancellationToken);
@@ -63,7 +62,7 @@ public sealed class CommandRepository : ICommandRepository
 
     public void ScheduleExecution(ICommand command, DateTimeOffset at)
     {
-        CommandDataModel commandDataModel = new(command);
+        CommandDataModel commandDataModel = _commandMapper.Map(command);
         commandDataModel.Schedule(at);
 
         _commandStore.Save(commandDataModel, true);
@@ -72,7 +71,7 @@ public sealed class CommandRepository : ICommandRepository
     public async Task ScheduleExecutionAsync(ICommand command, DateTimeOffset at,
         CancellationToken cancellationToken = default)
     {
-        CommandDataModel commandDataModel = new(command);
+        CommandDataModel commandDataModel = _commandMapper.Map(command);
         commandDataModel.Start();
 
         await _commandStore.SaveAsync(commandDataModel, true, cancellationToken);
@@ -108,7 +107,7 @@ public sealed class CommandRepository : ICommandRepository
 
     public IReadOnlyCollection<ICommand> GetPossibleToSend(DateTimeOffset at)
     {
-        return _commandStore.GetPossibleToSend(at).Select(ConvertToCommand).ToList().AsReadOnly();
+        return _commandStore.GetPossibleToSend(at).Select(c => _commandMapper.Map(c)).ToList().AsReadOnly();
     }
 
     public async Task<IReadOnlyCollection<ICommand>> GetPossibleToSendAsync(DateTimeOffset at,
@@ -118,28 +117,8 @@ public sealed class CommandRepository : ICommandRepository
             await _commandStore.GetPossibleToSendAsync(at, cancellationToken);
 
         ReadOnlyCollection<ICommand> possibleCommandsToSend =
-            possibleCommandsDataToSend.Select(ConvertToCommand).ToList().AsReadOnly();
+            possibleCommandsDataToSend.Select(c => _commandMapper.Map(c)).ToList().AsReadOnly();
 
         return possibleCommandsToSend;
-    }
-
-    private ICommand ConvertToCommand(CommandDataModel commandDataModel)
-    {
-        object command = commandDataModel.Command;
-
-        if (command is string serializedEvent)
-        {
-            ICommand deserialized =
-                _serializer.Deserialize<ICommand>(serializedEvent, Type.GetType(commandDataModel.CommandClass));
-
-            if (deserialized is null)
-            {
-                throw new UnknownCommandTypeException(commandDataModel.CommandType);
-            }
-        }
-
-        ICommand castedCommand = command as ICommand;
-
-        return castedCommand;
     }
 }

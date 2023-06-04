@@ -1,13 +1,14 @@
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Store.Const;
 using EssentialFrame.Extensions;
+using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.Cqrs.Commands.Store.Models;
 
 public class CommandDataModel
 {
-    public CommandDataModel(ICommand command)
+    protected internal CommandDataModel(ICommand command)
     {
         CommandIdentifier = command.CommandIdentifier;
 
@@ -16,6 +17,18 @@ public class CommandDataModel
         CommandClass = command.GetClassName();
         CommandType = command.GetTypeFullName();
         Command = command;
+        CreatedAt = SystemClock.UtcNow;
+    }
+
+    protected internal CommandDataModel(ICommand command, ISerializer serializer)
+    {
+        CommandIdentifier = command.CommandIdentifier;
+
+        Validate(command, command.GetTypeFullName(), command.GetClassName());
+
+        CommandClass = command.GetClassName();
+        CommandType = command.GetTypeFullName();
+        Command = serializer.Serialize(command);
         CreatedAt = SystemClock.UtcNow;
     }
 

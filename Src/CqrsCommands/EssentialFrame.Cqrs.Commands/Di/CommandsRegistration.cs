@@ -60,7 +60,7 @@ public static class CommandsRegistration
     {
         ContainerBuilder containerBuilder = essentialFrameBuilder.Builder;
 
-        containerBuilder.Register(ctx => new CommandsBackgroundService(ctx.Resolve<ILifetimeScope>(), interval))
+        containerBuilder.Register(ctx => new DefaultCommandsScheduler(ctx.Resolve<ILifetimeScope>(), interval))
             .AsImplementedInterfaces().SingleInstance();
 
         return essentialFrameBuilder;

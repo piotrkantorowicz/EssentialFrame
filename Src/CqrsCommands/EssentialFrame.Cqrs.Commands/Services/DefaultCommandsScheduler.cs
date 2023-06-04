@@ -5,11 +5,11 @@ using EssentialFrame.Cqrs.Commands.Services.Base;
 
 namespace EssentialFrame.Cqrs.Commands.Services;
 
-internal sealed class CommandsBackgroundService : CommandsBackgroundServiceBase
+internal sealed class DefaultCommandsScheduler : DefaultCommandSchedulerBase
 {
     private readonly ILifetimeScope _lifetimeScope;
 
-    public CommandsBackgroundService(ILifetimeScope lifetimeScope, int timeInterval) : base(timeInterval)
+    public DefaultCommandsScheduler(ILifetimeScope lifetimeScope, int timeInterval) : base(timeInterval)
     {
         _lifetimeScope = lifetimeScope ?? throw new ArgumentNullException(nameof(lifetimeScope));
     }
