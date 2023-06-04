@@ -1,0 +1,35 @@
+version = 1
+
+exclude_patterns = [
+    "Examples/**",
+    "workflows/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.Cqrs.Commands/bin/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.Cqrs.Commands/obj/**",
+    "EssentialFrame/Src/Commands/EssentialFrame/bin/**",
+    "EssentialFrame/Src/Commands/EssentialFrame/obj/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.Cqrs.Commands.Validations/bin/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.Cqrs.Commands.Validations/obj/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.Domain/bin/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.Domain/obj/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.DomainEvents/bin/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.DomainEvents/obj/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.Queries/bin/**",
+    "EssentialFrame/Src/Commands/EssentialFrame.Queries/obj/**"
+]
+
+test_patterns = [
+    "Tests/**",
+    "Src/Commands/Tests/**",
+    "Src/Core/Tests/**",
+    "Src/Domain/Tests/**",
+    "Src/DomainEvents/Tests/**",
+    "Src/Queries/Tests/**"
+]
+
+[[analyzers]]
+name = "csharp"
+enabled = true
+
+[[analyzers]]
+name = "secrets"
+enabled = true
