@@ -324,7 +324,7 @@ public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
         {
             value = _cache.FirstOrDefault(x => predicate(x.Key, x.Value)).Value;
 
-            return value != null;
+            return !value.Equals(default(T));
         }
         finally
         {
