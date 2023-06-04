@@ -3,7 +3,7 @@ using EssentialFrame.Serialization.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-namespace EssentialFrame.Cqrs.Commands.UnitTests.Commands;
+namespace EssentialFrame.Cqrs.Commands.UnitTests.Store;
 
 [TestFixture]
 public class CommandsRepositoryTests

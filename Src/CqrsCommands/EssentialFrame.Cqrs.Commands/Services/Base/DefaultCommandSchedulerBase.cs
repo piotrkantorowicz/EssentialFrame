@@ -5,11 +5,11 @@ using EssentialFrame.Time;
 
 namespace EssentialFrame.Cqrs.Commands.Services.Base;
 
-public abstract class CommandsBackgroundServiceBase : BackgroundService
+public abstract class DefaultCommandSchedulerBase : BackgroundService
 {
     private readonly int? _timeInterval;
 
-    protected CommandsBackgroundServiceBase(int? timeInterval)
+    protected DefaultCommandSchedulerBase(int? timeInterval)
     {
         _timeInterval = timeInterval;
     }
@@ -40,7 +40,7 @@ public abstract class CommandsBackgroundServiceBase : BackgroundService
                 }
             }
 
-            await Task.Delay(_timeInterval ?? 5000, stoppingToken);
+            await Task.Delay(_timeInterval ?? 1000, stoppingToken);
         }
     }
 }
