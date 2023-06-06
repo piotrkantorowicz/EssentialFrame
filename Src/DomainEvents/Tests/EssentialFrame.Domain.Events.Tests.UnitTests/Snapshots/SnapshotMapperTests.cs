@@ -53,13 +53,13 @@ public class SnapshotMapperTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
-        SnapshotDataModel snapshotDataModel = new SnapshotDataModel
+        SnapshotDataModel snapshotDataModel = new()
         {
             AggregateIdentifier = aggregateIdentifier,
             AggregateVersion = aggregateVersion,
             AggregateState = serializedState
         };
-        SnapshotMapper mapper = new SnapshotMapper();
+        SnapshotMapper mapper = new();
 
         // Act
         Snapshot result = mapper.Map(snapshotDataModel);
@@ -95,14 +95,14 @@ public class SnapshotMapperTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
-        SnapshotDataModel snapshotDataModel = new SnapshotDataModel
+        SnapshotDataModel snapshotDataModel = new()
         {
             AggregateIdentifier = aggregateIdentifier,
             AggregateVersion = aggregateVersion,
             AggregateState = serializedState
         };
         SnapshotDataModel[] snapshotDataModels = new[] { snapshotDataModel };
-        SnapshotMapper mapper = new SnapshotMapper();
+        SnapshotMapper mapper = new();
 
         // Act
         IReadOnlyCollection<Snapshot> result = mapper.Map(snapshotDataModels);

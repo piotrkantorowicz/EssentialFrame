@@ -23,7 +23,8 @@ test_patterns = [
     "Src/Core/Tests/**",
     "Src/Domain/Tests/**",
     "Src/DomainEvents/Tests/**",
-    "Src/Queries/Tests/**"
+    "Src/Queries/Tests/**",
+    "*Tests.cs"
 ]
 
 [[analyzers]]
