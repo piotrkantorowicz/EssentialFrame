@@ -2,7 +2,7 @@ using System;
 using Bogus;
 using EssentialFrame.Domain.Factories;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
-using EssentialFrame.ExampleApp.Domain.Posts.Identity.Services;
+using EssentialFrame.ExampleApp.Identity.Services;
 using FluentAssertions;
 using NUnit.Framework;
 

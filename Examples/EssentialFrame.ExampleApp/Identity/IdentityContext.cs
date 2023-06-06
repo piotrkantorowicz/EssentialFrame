@@ -1,10 +1,10 @@
 using EssentialFrame.Identity;
 
-namespace EssentialFrame.ExampleApp.Domain.Posts.Identity;
+namespace EssentialFrame.ExampleApp.Identity;
 
-public sealed class Identity : IIdentity
+public sealed class IdentityContext : IIdentityContext
 {
-    public Identity()
+    public IdentityContext()
     {
         Service = new Service();
         User = new User();

@@ -18,10 +18,11 @@ public class SnapshotRepository : ISnapshotRepository
     private readonly ISerializer _serializer;
     private readonly ISnapshotStore _snapshotStore;
     private readonly ISnapshotStrategy _snapshotStrategy;
+    private readonly ISnapshotMapper _snapshotMapper;
 
     public SnapshotRepository(IDomainEventsStore domainEventsStore, IDomainEventsRepository domainEventsRepository,
         ISnapshotStore snapshotStore, ISnapshotStrategy snapshotStrategy, ISerializer serializer,
-        ICache<Guid, AggregateRoot> cache)
+        ICache<Guid, AggregateRoot> cache, ISnapshotMapper snapshotMapper)
     {
         _domainEventsStore = domainEventsStore ?? throw new ArgumentNullException(nameof(domainEventsStore));
         _domainEventsRepository =
@@ -30,6 +31,7 @@ public class SnapshotRepository : ISnapshotRepository
         _snapshotStrategy = snapshotStrategy ?? throw new ArgumentNullException(nameof(snapshotStrategy));
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _snapshotMapper = snapshotMapper ?? throw new ArgumentNullException(nameof(snapshotMapper));
     }
 
     public T Get<T>(Guid aggregateId) where T : AggregateRoot
@@ -128,7 +130,8 @@ public class SnapshotRepository : ISnapshotRepository
 
     public T Unbox<T>(Guid aggregateId) where T : AggregateRoot
     {
-        Snapshot snapshot = _snapshotStore.Unbox(aggregateId);
+        SnapshotDataModel snapshotDataModel = _snapshotStore.Unbox(aggregateId);
+        Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
         T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 1);
 
         aggregate.RestoreState(snapshot.AggregateState, _serializer);
@@ -139,7 +142,8 @@ public class SnapshotRepository : ISnapshotRepository
     public async Task<T> UnboxAsync<T>(Guid aggregateId, CancellationToken cancellationToken = default)
         where T : AggregateRoot
     {
-        Snapshot snapshot = await _snapshotStore.UnboxAsync(aggregateId, cancellationToken);
+        SnapshotDataModel snapshotDataModel = await _snapshotStore.UnboxAsync(aggregateId, cancellationToken);
+        Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
         T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 1);
 
         aggregate.RestoreState(snapshot.AggregateState, _serializer);
@@ -169,8 +173,9 @@ public class SnapshotRepository : ISnapshotRepository
 
     private int RestoreAggregateFromSnapshot<T>(Guid id, T aggregate) where T : AggregateRoot
     {
-        Snapshot snapshot = _snapshotStore.Get(id);
-
+        SnapshotDataModel snapshotDataModel = _snapshotStore.Get(id);
+        Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
+        
         if (snapshot == null)
         {
             return -1;
@@ -191,7 +196,8 @@ public class SnapshotRepository : ISnapshotRepository
         int aggregateVersion = aggregate.AggregateVersion + aggregate.GetUncommittedChanges().Length;
         string aggregateState = _serializer.Serialize(aggregate.State);
         Snapshot snapshot = new(aggregate.AggregateIdentifier, aggregateVersion, aggregateState);
+        SnapshotDataModel snapshotDataModel = _snapshotMapper.Map(snapshot);
 
-        _snapshotStore.Save(snapshot);
+        _snapshotStore.Save(snapshotDataModel);
     }
 }

@@ -6,29 +6,30 @@ namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 
 public class ChangeImageNameDomainEvent : DomainEventBase
 {
-    public ChangeImageNameDomainEvent(Guid aggregateIdentifier, IIdentity identity, Guid imageId, string newImageName) :
-        base(aggregateIdentifier, identity)
+    public ChangeImageNameDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, Guid imageId,
+        string newImageName) : base(aggregateIdentifier, identityContext)
     {
         ImageId = imageId;
         NewImageName = newImageName;
     }
 
-    public ChangeImageNameDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity, Guid imageId,
-        string newImageName) : base(aggregateIdentifier, eventIdentifier, identity)
+    public ChangeImageNameDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
+        Guid imageId, string newImageName) : base(aggregateIdentifier, eventIdentifier, identityContext)
     {
         ImageId = imageId;
         NewImageName = newImageName;
     }
 
-    public ChangeImageNameDomainEvent(Guid aggregateIdentifier, IIdentity identity, int expectedVersion, Guid imageId,
-        string newImageName) : base(aggregateIdentifier, identity, expectedVersion)
+    public ChangeImageNameDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, int expectedVersion,
+        Guid imageId, string newImageName) : base(aggregateIdentifier, identityContext, expectedVersion)
     {
         ImageId = imageId;
         NewImageName = newImageName;
     }
 
-    public ChangeImageNameDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity,
-        int expectedVersion, Guid imageId, string newImageName) : base(aggregateIdentifier, eventIdentifier, identity,
+    public ChangeImageNameDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
+        int expectedVersion, Guid imageId, string newImageName) : base(aggregateIdentifier, eventIdentifier,
+        identityContext,
         expectedVersion)
     {
         ImageId = imageId;

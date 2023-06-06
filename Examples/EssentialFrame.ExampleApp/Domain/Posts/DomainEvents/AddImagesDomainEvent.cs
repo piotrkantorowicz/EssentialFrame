@@ -8,26 +8,27 @@ namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 
 public class AddImagesDomainEvent : DomainEventBase
 {
-    public AddImagesDomainEvent(Guid aggregateIdentifier, IIdentity identity, HashSet<Image> newImages) : base(
-        aggregateIdentifier, identity)
+    public AddImagesDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, HashSet<Image> newImages) :
+        base(aggregateIdentifier, identityContext)
     {
         NewImages = newImages;
     }
 
-    public AddImagesDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity,
-        HashSet<Image> newImages) : base(aggregateIdentifier, eventIdentifier, identity)
+    public AddImagesDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
+        HashSet<Image> newImages) : base(aggregateIdentifier, eventIdentifier, identityContext)
     {
         NewImages = newImages;
     }
 
-    public AddImagesDomainEvent(Guid aggregateIdentifier, IIdentity identity, int expectedVersion,
-        HashSet<Image> newImages) : base(aggregateIdentifier, identity, expectedVersion)
+    public AddImagesDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, int expectedVersion,
+        HashSet<Image> newImages) : base(aggregateIdentifier, identityContext, expectedVersion)
     {
         NewImages = newImages;
     }
 
-    public AddImagesDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity, int expectedVersion,
-        HashSet<Image> newImages) : base(aggregateIdentifier, eventIdentifier, identity, expectedVersion)
+    public AddImagesDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
+        int expectedVersion, HashSet<Image> newImages) : base(aggregateIdentifier, eventIdentifier, identityContext,
+        expectedVersion)
     {
         NewImages = newImages;
     }

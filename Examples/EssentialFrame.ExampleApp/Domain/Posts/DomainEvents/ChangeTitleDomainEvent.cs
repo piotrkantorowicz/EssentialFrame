@@ -7,26 +7,27 @@ namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 
 public class ChangeTitleDomainEvent : DomainEventBase
 {
-    public ChangeTitleDomainEvent(Guid aggregateIdentifier, IIdentity identity, Title newTitle) : base(
-        aggregateIdentifier, identity)
+    public ChangeTitleDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, Title newTitle) : base(
+        aggregateIdentifier, identityContext)
     {
         NewTitle = newTitle;
     }
 
-    public ChangeTitleDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity, Title newTitle) :
-        base(aggregateIdentifier, eventIdentifier, identity)
+    public ChangeTitleDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
+        Title newTitle) : base(aggregateIdentifier, eventIdentifier, identityContext)
     {
         NewTitle = newTitle;
     }
 
-    public ChangeTitleDomainEvent(Guid aggregateIdentifier, IIdentity identity, int expectedVersion, Title newTitle) :
-        base(aggregateIdentifier, identity, expectedVersion)
+    public ChangeTitleDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, int expectedVersion,
+        Title newTitle) : base(aggregateIdentifier, identityContext, expectedVersion)
     {
         NewTitle = newTitle;
     }
 
-    public ChangeTitleDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity,
-        int expectedVersion, Title newTitle) : base(aggregateIdentifier, eventIdentifier, identity, expectedVersion)
+    public ChangeTitleDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
+        int expectedVersion, Title newTitle) : base(aggregateIdentifier, eventIdentifier, identityContext,
+        expectedVersion)
     {
         NewTitle = newTitle;
     }

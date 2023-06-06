@@ -1,22 +1,20 @@
-﻿using EssentialFrame.Domain.Snapshots;
-
-namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
+﻿namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
 
 public interface ISnapshotStore
 {
-    Snapshot Get(Guid aggregateIdentifier);
+    SnapshotDataModel Get(Guid aggregateIdentifier);
 
-    Task<Snapshot> GetAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<SnapshotDataModel> GetAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
 
-    void Save(Snapshot snapshot);
+    void Save(SnapshotDataModel snapshot);
 
-    Task SaveAsync(Snapshot snapshot, CancellationToken cancellationToken = default);
+    Task SaveAsync(SnapshotDataModel snapshot, CancellationToken cancellationToken = default);
 
     void Box(Guid aggregateIdentifier);
 
     Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
 
-    Snapshot Unbox(Guid aggregateIdentifier);
+    SnapshotDataModel Unbox(Guid aggregateIdentifier);
 
-    Task<Snapshot> UnboxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<SnapshotDataModel> UnboxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
 }

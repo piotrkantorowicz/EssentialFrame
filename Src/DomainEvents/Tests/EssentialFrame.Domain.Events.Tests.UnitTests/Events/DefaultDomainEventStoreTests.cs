@@ -12,6 +12,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
+using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
@@ -32,7 +33,7 @@ public class DefaultDomainEventStoreTests
         _aggregateOfflineStorageMock = new Mock<IAggregateOfflineStorage>();
         _serializerMock = new Mock<ISerializer>();
 
-        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new ExampleApp.Domain.Posts.Identity.Identity());
+        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new IdentityContext());
     }
 
     [TearDown]

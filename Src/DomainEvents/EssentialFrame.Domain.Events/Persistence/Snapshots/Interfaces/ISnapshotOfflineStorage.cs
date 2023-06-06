@@ -1,14 +1,12 @@
-﻿using EssentialFrame.Domain.Snapshots;
-
-namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
+﻿namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
 
 public interface ISnapshotOfflineStorage
 {
-    void Save(Snapshot snapshot);
+    void Save(SnapshotDataModel snapshot);
 
-    Task SaveAsync(Snapshot snapshot, CancellationToken cancellationToken = default);
+    Task SaveAsync(SnapshotDataModel snapshot, CancellationToken cancellationToken = default);
 
-    Snapshot Restore(Guid aggregateIdentifier);
+    SnapshotDataModel Restore(Guid aggregateIdentifier);
 
-    Task<Snapshot> RestoreAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<SnapshotDataModel> RestoreAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
 }

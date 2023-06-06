@@ -6,26 +6,28 @@ namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 
 public class ChangeDescriptionDomainEvent : DomainEventBase
 {
-    public ChangeDescriptionDomainEvent(Guid aggregateIdentifier, IIdentity identity, string newDescription) : base(
-        aggregateIdentifier, identity)
+    public ChangeDescriptionDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext,
+        string newDescription) : base(aggregateIdentifier, identityContext)
     {
         NewDescription = newDescription;
     }
 
-    public ChangeDescriptionDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity,
-        string newDescription) : base(aggregateIdentifier, eventIdentifier, identity)
+    public ChangeDescriptionDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier,
+        IIdentityContext identityContext, string newDescription) : base(aggregateIdentifier, eventIdentifier,
+        identityContext)
     {
         NewDescription = newDescription;
     }
 
-    public ChangeDescriptionDomainEvent(Guid aggregateIdentifier, IIdentity identity, int expectedVersion,
-        string newDescription) : base(aggregateIdentifier, identity, expectedVersion)
+    public ChangeDescriptionDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, int expectedVersion,
+        string newDescription) : base(aggregateIdentifier, identityContext, expectedVersion)
     {
         NewDescription = newDescription;
     }
 
-    public ChangeDescriptionDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity,
-        int expectedVersion, string newDescription) : base(aggregateIdentifier, eventIdentifier, identity,
+    public ChangeDescriptionDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier,
+        IIdentityContext identityContext, int expectedVersion, string newDescription) : base(aggregateIdentifier,
+        eventIdentifier, identityContext,
         expectedVersion)
     {
         NewDescription = newDescription;

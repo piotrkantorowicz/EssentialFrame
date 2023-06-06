@@ -10,33 +10,34 @@ public abstract class DomainEventBase : IDomainEvent
     {
     }
 
-    private DomainEventBase(IIdentity identity) : this()
+    private DomainEventBase(IIdentityContext identityContext) : this()
     {
-        TenantIdentity = identity.Tenant.Identifier;
-        UserIdentity = identity.User.Identifier;
-        ServiceIdentity = identity.Service.GetFullIdentifier();
-        CorrelationIdentity = identity.Correlation.Identifier;
+        TenantIdentity = identityContext.Tenant.Identifier;
+        UserIdentity = identityContext.User.Identifier;
+        ServiceIdentity = identityContext.Service.GetFullIdentifier();
+        CorrelationIdentity = identityContext.Correlation.Identifier;
     }
 
-    protected DomainEventBase(Guid aggregateIdentifier, IIdentity identity) : this(identity)
+    protected DomainEventBase(Guid aggregateIdentifier, IIdentityContext identityContext) : this(identityContext)
     {
         AggregateIdentifier = aggregateIdentifier;
     }
 
-    protected DomainEventBase(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity) : this(identity)
+    protected DomainEventBase(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext) : this(
+        identityContext)
     {
         AggregateIdentifier = aggregateIdentifier;
         EventIdentifier = eventIdentifier;
     }
 
-    protected DomainEventBase(Guid aggregateIdentifier, IIdentity identity, int expectedVersion) : this(
-        aggregateIdentifier, identity)
+    protected DomainEventBase(Guid aggregateIdentifier, IIdentityContext identityContext, int expectedVersion) : this(
+        aggregateIdentifier, identityContext)
     {
         AggregateVersion = expectedVersion;
     }
 
-    protected DomainEventBase(Guid aggregateIdentifier, Guid eventIdentifier, IIdentity identity, int expectedVersion) :
-        this(aggregateIdentifier, eventIdentifier, identity)
+    protected DomainEventBase(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
+        int expectedVersion) : this(aggregateIdentifier, eventIdentifier, identityContext)
     {
         AggregateVersion = expectedVersion;
     }

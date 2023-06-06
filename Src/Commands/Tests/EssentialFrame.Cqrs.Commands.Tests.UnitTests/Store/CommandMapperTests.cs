@@ -6,6 +6,7 @@ using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence;
 using EssentialFrame.Cqrs.Commands.Persistence.Models;
 using EssentialFrame.ExampleApp.Commands.Posts;
+using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Tests.Utils;
@@ -19,10 +20,14 @@ namespace EssentialFrame.Cqrs.Commands.Tests.UnitTests.Store;
 [TestFixture]
 public class CommandMapperTests
 {
+    private readonly Faker _faker = new();
+    private readonly Mock<ISerializer> _serializerMock = new();
+    private readonly Mock<IIdentityService> _identityServiceMock = new();
+    
     [SetUp]
     public void Setup()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new ExampleApp.Domain.Posts.Identity.Identity());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
     }
 
     [TearDown]
@@ -31,10 +36,6 @@ public class CommandMapperTests
         _serializerMock.Reset();
         _identityServiceMock.Reset();
     }
-
-    private readonly Faker _faker = new();
-    private readonly Mock<ISerializer> _serializerMock = new();
-    private readonly Mock<IIdentityService> _identityServiceMock = new();
 
     [Test]
     public void Map_Always_ShouldMapCommand()
@@ -186,11 +187,11 @@ public class CommandMapperTests
         List<ICommand> commands = new();
         string title = _faker.Lorem.Sentence();
         bool isUppercase = _faker.Random.Bool();
-        IIdentity identity = _identityServiceMock.Object.GetCurrent();
+        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
 
         for (int i = 0; i < _faker.Random.Int(1, 20); i++)
         {
-            commands.Add(new ChangeTitleCommand(identity, title, isUppercase));
+            commands.Add(new ChangeTitleCommand(identityContext, title, isUppercase));
         }
 
         return commands;

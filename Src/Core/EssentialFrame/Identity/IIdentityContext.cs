@@ -1,6 +1,6 @@
 ﻿namespace EssentialFrame.Identity;
 
-public interface IIdentity
+public interface IIdentityContext
 {
     ITenant Tenant { get; }
 

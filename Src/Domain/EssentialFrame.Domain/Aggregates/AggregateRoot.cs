@@ -47,7 +47,7 @@ public abstract class AggregateRoot
     public abstract AggregateState CreateState();
     public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
 
-    public IIdentity GetIdentity()
+    public IIdentityContext GetIdentity()
     {
         if (_identityService is null)
         {

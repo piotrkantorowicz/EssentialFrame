@@ -1,38 +1,38 @@
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
-using EssentialFrame.Domain.Snapshots;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots;
 
 internal sealed class DefaultSnapshotStore : ISnapshotStore
 {
-    private readonly ICache<Guid, Snapshot> _snapshotCache;
+    private readonly ICache<Guid, SnapshotDataModel> _snapshotCache;
     private readonly ISnapshotOfflineStorage _snapshotOfflineStorage;
 
-    public DefaultSnapshotStore(ICache<Guid, Snapshot> snapshotCache, ISnapshotOfflineStorage snapshotOfflineStorage)
+    public DefaultSnapshotStore(ICache<Guid, SnapshotDataModel> snapshotCache,
+        ISnapshotOfflineStorage snapshotOfflineStorage)
     {
         _snapshotCache = snapshotCache ?? throw new ArgumentNullException(nameof(snapshotCache));
         _snapshotOfflineStorage =
             snapshotOfflineStorage ?? throw new ArgumentNullException(nameof(snapshotOfflineStorage));
     }
 
-    public Snapshot Get(Guid aggregateIdentifier)
+    public SnapshotDataModel Get(Guid aggregateIdentifier)
     {
         return _snapshotCache.Get(aggregateIdentifier);
     }
 
-    public Task<Snapshot> GetAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
+    public Task<SnapshotDataModel> GetAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
     {
         return Task.FromResult(Get(aggregateIdentifier));
     }
 
-    public void Save(Snapshot snapshot)
+    public void Save(SnapshotDataModel snapshot)
     {
         _snapshotCache.Add(snapshot.AggregateIdentifier, snapshot);
     }
 
-    public Task SaveAsync(Snapshot snapshot, CancellationToken cancellationToken = default)
+    public Task SaveAsync(SnapshotDataModel snapshot, CancellationToken cancellationToken = default)
     {
         Save(snapshot);
 
@@ -41,7 +41,7 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
 
     public void Box(Guid aggregateIdentifier)
     {
-        Snapshot snapshot = _snapshotCache.Get(aggregateIdentifier);
+        SnapshotDataModel snapshot = _snapshotCache.Get(aggregateIdentifier);
 
         if (snapshot is null)
         {
@@ -53,7 +53,7 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
 
     public async Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
     {
-        Snapshot snapshot = _snapshotCache.Get(aggregateIdentifier);
+        SnapshotDataModel snapshot = _snapshotCache.Get(aggregateIdentifier);
 
         if (snapshot is null)
         {
@@ -63,12 +63,13 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
         await _snapshotOfflineStorage.SaveAsync(snapshot, cancellationToken);
     }
 
-    public Snapshot Unbox(Guid aggregateIdentifier)
+    public SnapshotDataModel Unbox(Guid aggregateIdentifier)
     {
         return _snapshotOfflineStorage.Restore(aggregateIdentifier);
     }
 
-    public async Task<Snapshot> UnboxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task<SnapshotDataModel> UnboxAsync(Guid aggregateIdentifier,
+        CancellationToken cancellationToken = default)
     {
         return await _snapshotOfflineStorage.RestoreAsync(aggregateIdentifier, cancellationToken);
     }
