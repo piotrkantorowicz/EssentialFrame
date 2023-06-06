@@ -7,7 +7,7 @@ using Bogus;
 using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Snapshots;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
-using EssentialFrame.Domain.Snapshots;
+using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Files;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
@@ -26,13 +26,18 @@ public class SnapshotOfflineStorageTests
     [SetUp]
     public void SetUp()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new ExampleApp.Domain.Posts.Identity.Identity());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
         _logger = NullLoggerFactory.Instance.CreateLogger<SnapshotOfflineStorage>();
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
         string aggregateState = _faker.Lorem.Sentences();
 
-        _snapshot = new Snapshot(aggregateIdentifier, aggregateVersion, aggregateState);
+        _snapshotDataModel = new SnapshotDataModel
+        {
+            AggregateIdentifier = aggregateIdentifier,
+            AggregateVersion = aggregateVersion,
+            AggregateState = aggregateState
+        };
     }
 
     [TearDown]
@@ -52,7 +57,7 @@ public class SnapshotOfflineStorageTests
     private readonly Mock<IIdentityService> _identityServiceMock = new();
 
     private ILogger<SnapshotOfflineStorage> _logger;
-    private Snapshot _snapshot;
+    private SnapshotDataModel _snapshotDataModel;
 
     private static object[] _possibleExceptions =
     {
@@ -73,18 +78,21 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         // Act
-        snapShotOfflineStorage.Save(_snapshot);
+        snapShotOfflineStorage.Save(_snapshotDataModel);
 
         // Assert
-        _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()),
+        _fileSystemMock.Verify(
+            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()),
             Times.Once);
 
         _fileStorageMock.Verify(
-            x => x.Create(directoryPath, It.IsAny<string>(), _snapshot.AggregateState.ToString(), null), Times.Once);
+            x => x.Create(directoryPath, It.IsAny<string>(), _snapshotDataModel.AggregateState.ToString(), null),
+            Times.Once);
     }
 
     [Test]
@@ -96,18 +104,21 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         // Act
-        await snapShotOfflineStorage.SaveAsync(_snapshot);
+        await snapShotOfflineStorage.SaveAsync(_snapshotDataModel);
 
         // Assert
-        _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()),
+        _fileSystemMock.Verify(
+            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()),
             Times.Once);
 
         _fileStorageMock.Verify(
-            x => x.CreateAsync(directoryPath, It.IsAny<string>(), _snapshot.AggregateState.ToString(), null, default),
+            x => x.CreateAsync(directoryPath, It.IsAny<string>(), _snapshotDataModel.AggregateState.ToString(), null,
+                default),
             Times.Once);
     }
 
@@ -122,18 +133,20 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         // Act
-        snapShotOfflineStorage.Save(_snapshot);
+        snapShotOfflineStorage.Save(_snapshotDataModel);
 
         // Assert
-        _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()),
+        _fileSystemMock.Verify(
+            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()),
             Times.Once);
 
         _fileStorageMock.Verify(
-            x => x.Create(directoryPath, It.IsAny<string>(), _snapshot.AggregateState.ToString(), null), Times.Once);
+            x => x.Create(directoryPath, It.IsAny<string>(), _snapshotDataModel.AggregateState.ToString(), null),
+            Times.Once);
     }
 
     [Test]
@@ -147,18 +160,20 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         // Act
-        await snapShotOfflineStorage.SaveAsync(_snapshot);
+        await snapShotOfflineStorage.SaveAsync(_snapshotDataModel);
 
         // Assert
-        _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()),
+        _fileSystemMock.Verify(
+            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()),
             Times.Once);
 
         _fileStorageMock.Verify(
-            x => x.CreateAsync(directoryPath, It.IsAny<string>(), _snapshot.AggregateState.ToString(), null, default),
+            x => x.CreateAsync(directoryPath, It.IsAny<string>(), _snapshotDataModel.AggregateState.ToString(), null,
+                default),
             Times.Once);
     }
 
@@ -171,22 +186,28 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
         string[] state = _faker.Random.WordsArray(10);
-        Snapshot snapshot = new(_snapshot.AggregateIdentifier, _snapshot.AggregateVersion, state);
+        SnapshotDataModel snapshotDataModel = new()
+        {
+            AggregateIdentifier = _snapshotDataModel.AggregateIdentifier,
+            AggregateVersion = _snapshotDataModel.AggregateVersion,
+            AggregateState = state
+        };
         string serializedState = _faker.Lorem.Sentences();
 
-        _serializerMock.Setup(x => x.Serialize(snapshot.AggregateState)).Returns(serializedState);
+        _serializerMock.Setup(x => x.Serialize(snapshotDataModel.AggregateState)).Returns(serializedState);
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         // Act
-        snapShotOfflineStorage.Save(snapshot);
+        snapShotOfflineStorage.Save(snapshotDataModel);
 
         // Assert
-        _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), snapshot.AggregateIdentifier.ToString()),
+        _fileSystemMock.Verify(
+            x => x.Path.Combine(It.IsAny<string>(), snapshotDataModel.AggregateIdentifier.ToString()),
             Times.Once);
 
-        _serializerMock.Verify(x => x.Serialize(snapshot.AggregateState), Times.Once);
+        _serializerMock.Verify(x => x.Serialize(snapshotDataModel.AggregateState), Times.Once);
 
         _fileStorageMock.Verify(x => x.Create(directoryPath, It.IsAny<string>(), serializedState, null), Times.Once);
     }
@@ -200,22 +221,28 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
         string[] state = _faker.Random.WordsArray(10);
-        Snapshot snapshot = new(_snapshot.AggregateIdentifier, _snapshot.AggregateVersion, state);
+        SnapshotDataModel snapshotDataModel = new()
+        {
+            AggregateIdentifier = _snapshotDataModel.AggregateIdentifier,
+            AggregateVersion = _snapshotDataModel.AggregateVersion,
+            AggregateState = state
+        };
         string serializedState = _faker.Lorem.Sentences();
 
-        _serializerMock.Setup(x => x.Serialize(snapshot.AggregateState)).Returns(serializedState);
+        _serializerMock.Setup(x => x.Serialize(snapshotDataModel.AggregateState)).Returns(serializedState);
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         // Act
-        await snapShotOfflineStorage.SaveAsync(snapshot);
+        await snapShotOfflineStorage.SaveAsync(snapshotDataModel);
 
         // Assert
-        _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), snapshot.AggregateIdentifier.ToString()),
+        _fileSystemMock.Verify(
+            x => x.Path.Combine(It.IsAny<string>(), snapshotDataModel.AggregateIdentifier.ToString()),
             Times.Once);
 
-        _serializerMock.Verify(x => x.Serialize(snapshot.AggregateState), Times.Once);
+        _serializerMock.Verify(x => x.Serialize(snapshotDataModel.AggregateState), Times.Once);
 
         _fileStorageMock.Verify(x => x.CreateAsync(directoryPath, It.IsAny<string>(), serializedState, null, default),
             Times.Once);
@@ -231,19 +258,20 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileStorageMock.Setup(x =>
-                x.Create(directoryPath, It.IsAny<string>(), _snapshot.AggregateState.ToString(), null))
+                x.Create(directoryPath, It.IsAny<string>(), _snapshotDataModel.AggregateState.ToString(), null))
             .Throws(Activator.CreateInstance(exception) as Exception);
 
         // Act
-        Action action = () => snapShotOfflineStorage.Save(_snapshot);
+        Action action = () => snapShotOfflineStorage.Save(_snapshotDataModel);
 
         // Assert
         action.Should().ThrowExactly<SnapshotBoxingFailedException>().WithMessage(
-                $"Unexpected error while boxing snapshot for aggregate with id: ({_snapshot.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while boxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
             .WithInnerExceptionExactly(exception);
     }
 
@@ -257,19 +285,20 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
-        _fileStorageMock.Setup(x =>
-                x.CreateAsync(directoryPath, It.IsAny<string>(), _snapshot.AggregateState.ToString(), null, default))
+        _fileStorageMock.Setup(x => x.CreateAsync(directoryPath, It.IsAny<string>(),
+                _snapshotDataModel.AggregateState.ToString(), null, default))
             .Throws(Activator.CreateInstance(exception) as Exception);
 
         // Act
-        Func<Task> action = async () => await snapShotOfflineStorage.SaveAsync(_snapshot);
+        Func<Task> action = async () => await snapShotOfflineStorage.SaveAsync(_snapshotDataModel);
 
         // Assert
         await action.Should().ThrowExactlyAsync<SnapshotBoxingFailedException>().WithMessage(
-                $"Unexpected error while boxing snapshot for aggregate with id: ({_snapshot.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while boxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
             .WithInnerExceptionExactly(exception);
     }
 
@@ -282,7 +311,8 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         string serializedState = _faker.Lorem.Sentences();
@@ -290,10 +320,10 @@ public class SnapshotOfflineStorageTests
         _fileStorageMock.Setup(x => x.Read(directoryPath, It.IsAny<string>(), null)).Returns(serializedState);
 
         // Act
-        Snapshot snapshot = snapShotOfflineStorage.Restore(_snapshot.AggregateIdentifier);
+        SnapshotDataModel snapshot = snapShotOfflineStorage.Restore(_snapshotDataModel.AggregateIdentifier);
 
         // Assert
-        snapshot.AggregateIdentifier.Should().Be(_snapshot.AggregateIdentifier);
+        snapshot.AggregateIdentifier.Should().Be(_snapshotDataModel.AggregateIdentifier);
         snapshot.AggregateVersion.Should().Be(Defaults.DefaultAggregateVersion);
         snapshot.AggregateState.Should().Be(serializedState);
     }
@@ -307,7 +337,8 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         string serializedState = _faker.Lorem.Sentences();
@@ -316,10 +347,10 @@ public class SnapshotOfflineStorageTests
             .ReturnsAsync(serializedState);
 
         // Act
-        Snapshot snapshot = await snapShotOfflineStorage.RestoreAsync(_snapshot.AggregateIdentifier);
+        SnapshotDataModel snapshot = await snapShotOfflineStorage.RestoreAsync(_snapshotDataModel.AggregateIdentifier);
 
         // Assert
-        snapshot.AggregateIdentifier.Should().Be(_snapshot.AggregateIdentifier);
+        snapshot.AggregateIdentifier.Should().Be(_snapshotDataModel.AggregateIdentifier);
         snapshot.AggregateVersion.Should().Be(Defaults.DefaultAggregateVersion);
         snapshot.AggregateState.Should().Be(serializedState);
     }
@@ -335,7 +366,7 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         string serializedState = _faker.Lorem.Sentences();
@@ -343,10 +374,10 @@ public class SnapshotOfflineStorageTests
         _fileStorageMock.Setup(x => x.Read(directoryPath, It.IsAny<string>(), null)).Returns(serializedState);
 
         // Act
-        Snapshot snapshot = snapShotOfflineStorage.Restore(_snapshot.AggregateIdentifier);
+        SnapshotDataModel snapshot = snapShotOfflineStorage.Restore(_snapshotDataModel.AggregateIdentifier);
 
         // Assert
-        snapshot.AggregateIdentifier.Should().Be(_snapshot.AggregateIdentifier);
+        snapshot.AggregateIdentifier.Should().Be(_snapshotDataModel.AggregateIdentifier);
         snapshot.AggregateVersion.Should().Be(Defaults.DefaultAggregateVersion);
         snapshot.AggregateState.Should().Be(serializedState);
     }
@@ -362,7 +393,7 @@ public class SnapshotOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         string serializedState = _faker.Lorem.Sentences();
@@ -371,10 +402,11 @@ public class SnapshotOfflineStorageTests
             .ReturnsAsync(serializedState);
 
         // Act
-        Snapshot snapshot = snapShotOfflineStorage.RestoreAsync(_snapshot.AggregateIdentifier).GetAwaiter().GetResult();
+        SnapshotDataModel snapshot = snapShotOfflineStorage.RestoreAsync(_snapshotDataModel.AggregateIdentifier)
+            .GetAwaiter().GetResult();
 
         // Assert
-        snapshot.AggregateIdentifier.Should().Be(_snapshot.AggregateIdentifier);
+        snapshot.AggregateIdentifier.Should().Be(_snapshotDataModel.AggregateIdentifier);
         snapshot.AggregateVersion.Should().Be(Defaults.DefaultAggregateVersion);
         snapshot.AggregateState.Should().Be(serializedState);
     }
@@ -389,7 +421,8 @@ public class SnapshotOfflineStorageTests
         string directoryPath = _faker.System.DirectoryPath();
         string filePath = _faker.System.FilePath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileSystemMock.Setup(x => x.Path.Combine(directoryPath, filePath)).Returns(directoryPath + filePath);
@@ -400,11 +433,11 @@ public class SnapshotOfflineStorageTests
         _fileStorageMock.Setup(x => x.Read(directoryPath, It.IsAny<string>(), null)).Throws(fileNotFoundException);
 
         // Act
-        Action action = () => snapShotOfflineStorage.Restore(_snapshot.AggregateIdentifier);
+        Action action = () => snapShotOfflineStorage.Restore(_snapshotDataModel.AggregateIdentifier);
 
         // Assert
         action.Should().ThrowExactly<SnapshotUnboxingFailedException>().WithMessage(
-                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshot.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
             .WithInnerExceptionExactly<FileNotFoundException>().WithMessage(fileNotFoundException.Message);
     }
 
@@ -418,7 +451,8 @@ public class SnapshotOfflineStorageTests
         string directoryPath = _faker.System.DirectoryPath();
         string filePath = _faker.System.FilePath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileSystemMock.Setup(x => x.Path.Combine(directoryPath, filePath)).Returns(directoryPath + filePath);
@@ -430,11 +464,12 @@ public class SnapshotOfflineStorageTests
             .Throws(fileNotFoundException);
 
         // Act
-        Func<Task> action = async () => await snapShotOfflineStorage.RestoreAsync(_snapshot.AggregateIdentifier);
+        Func<Task> action = async () =>
+            await snapShotOfflineStorage.RestoreAsync(_snapshotDataModel.AggregateIdentifier);
 
         // Assert
         await action.Should().ThrowExactlyAsync<SnapshotUnboxingFailedException>().WithMessage(
-                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshot.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
             .WithInnerExceptionExactly(fileNotFoundException.GetType()).WithMessage(fileNotFoundException.Message);
     }
 
@@ -449,7 +484,8 @@ public class SnapshotOfflineStorageTests
         string directoryPath = _faker.System.DirectoryPath();
         string filePath = _faker.System.FilePath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileSystemMock.Setup(x => x.Path.Combine(directoryPath, filePath)).Returns(directoryPath + filePath);
@@ -457,11 +493,11 @@ public class SnapshotOfflineStorageTests
             .Throws(Activator.CreateInstance(exception) as Exception);
 
         // Act
-        Action action = () => snapShotOfflineStorage.Restore(_snapshot.AggregateIdentifier);
+        Action action = () => snapShotOfflineStorage.Restore(_snapshotDataModel.AggregateIdentifier);
 
         // Assert
         action.Should().ThrowExactly<SnapshotUnboxingFailedException>().WithMessage(
-                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshot.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
             .WithInnerExceptionExactly(exception);
     }
 
@@ -476,7 +512,8 @@ public class SnapshotOfflineStorageTests
         string directoryPath = _faker.System.DirectoryPath();
         string filePath = _faker.System.FilePath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshot.AggregateIdentifier.ToString()))
+        _fileSystemMock
+            .Setup(x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileSystemMock.Setup(x => x.Path.Combine(directoryPath, filePath)).Returns(directoryPath + filePath);
@@ -484,11 +521,12 @@ public class SnapshotOfflineStorageTests
             .Throws(Activator.CreateInstance(exception) as Exception);
 
         // Act
-        Func<Task> action = async () => await snapShotOfflineStorage.RestoreAsync(_snapshot.AggregateIdentifier);
+        Func<Task> action = async () =>
+            await snapShotOfflineStorage.RestoreAsync(_snapshotDataModel.AggregateIdentifier);
 
         // Assert
         await action.Should().ThrowExactlyAsync<SnapshotUnboxingFailedException>().WithMessage(
-                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshot.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
             .WithInnerExceptionExactly(exception);
     }
 }

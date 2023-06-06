@@ -4,6 +4,7 @@ using EssentialFrame.Domain.Factories;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Snapshots;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
+using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
@@ -27,7 +28,7 @@ public class SnapshotTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new ExampleApp.Domain.Posts.Identity.Identity());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);

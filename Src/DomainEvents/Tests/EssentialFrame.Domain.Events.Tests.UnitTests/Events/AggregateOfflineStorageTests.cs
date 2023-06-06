@@ -13,6 +13,7 @@ using EssentialFrame.Domain.Factories;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
+using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Extensions;
 using EssentialFrame.Files;
 using EssentialFrame.Identity;
@@ -31,7 +32,7 @@ public class AggregateOfflineStorageTests
     [SetUp]
     public void SetUp()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new ExampleApp.Domain.Posts.Identity.Identity());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
         _logger = NullLoggerFactory.Instance.CreateLogger<AggregateOfflineStorage>();
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;

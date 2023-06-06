@@ -2,9 +2,9 @@
 
 public class SnapshotDataModel
 {
-    public Guid AggregateIdentifier { get; }
+    public virtual Guid AggregateIdentifier { get; set; }
 
-    public int AggregateVersion { get; }
+    public virtual int AggregateVersion { get; set; }
 
-    public object AggregateState { get; }
+    public virtual object AggregateState { get; set; }
 }

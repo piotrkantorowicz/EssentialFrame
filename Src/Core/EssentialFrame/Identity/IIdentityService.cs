@@ -2,5 +2,5 @@
 
 public interface IIdentityService
 {
-    IIdentity GetCurrent();
+    IIdentityContext GetCurrent();
 }

@@ -5,14 +5,14 @@ namespace EssentialFrame.Cqrs.Queries.Core;
 
 public abstract class Query<T> : IQuery<T>
 {
-    protected Query(IIdentity identity)
+    protected Query(IIdentityContext identityContext)
     {
-        TenantIdentity = identity.Tenant.Identifier;
-        UserIdentity = identity.User.Identifier;
-        ServiceIdentity = identity.Service.GetFullIdentifier();
+        TenantIdentity = identityContext.Tenant.Identifier;
+        UserIdentity = identityContext.User.Identifier;
+        ServiceIdentity = identityContext.Service.GetFullIdentifier();
     }
 
-    protected Query(Guid queryIdentifier, IIdentity identity) : this(identity)
+    protected Query(Guid queryIdentifier, IIdentityContext identityContext) : this(identityContext)
     {
         QueryIdentifier = queryIdentifier;
     }

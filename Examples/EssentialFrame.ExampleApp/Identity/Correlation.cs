@@ -1,7 +1,7 @@
 using System;
 using EssentialFrame.Identity;
 
-namespace EssentialFrame.ExampleApp.Domain.Posts.Identity;
+namespace EssentialFrame.ExampleApp.Identity;
 
 public class Correlation : ICorrelation
 {

@@ -5,6 +5,17 @@ namespace EssentialFrame.Domain.ValueObjects;
 
 public abstract class ValueObject
 {
+    public override int GetHashCode()
+    {
+        return GetEqualityComponents().Aggregate(1, (current, obj) =>
+        {
+            unchecked
+            {
+                return (current * 23) + (obj?.GetHashCode() ?? 0);
+            }
+        });
+    }
+    
     public override bool Equals(object obj)
     {
         if (obj == null)
@@ -20,17 +31,6 @@ public abstract class ValueObject
         ValueObject valueObject = (ValueObject)obj;
 
         return GetEqualityComponents().SequenceEqual(valueObject.GetEqualityComponents());
-    }
-
-    public override int GetHashCode()
-    {
-        return GetEqualityComponents().Aggregate(1, (current, obj) =>
-        {
-            unchecked
-            {
-                return (current * 23) + (obj?.GetHashCode() ?? 0);
-            }
-        });
     }
 
     public static bool operator ==(ValueObject a, ValueObject b)

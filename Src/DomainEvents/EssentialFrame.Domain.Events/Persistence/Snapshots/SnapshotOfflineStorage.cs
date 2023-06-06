@@ -1,7 +1,6 @@
 ﻿using System.IO.Abstractions;
 using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
-using EssentialFrame.Domain.Snapshots;
 using EssentialFrame.Files;
 using EssentialFrame.Serialization.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -32,7 +31,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         _offlineStorageDirectory = offlineStorageDirectory;
     }
 
-    public void Save(Snapshot snapshot)
+    public void Save(SnapshotDataModel snapshot)
     {
         try
         {
@@ -55,7 +54,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public async Task SaveAsync(Snapshot snapshot, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(SnapshotDataModel snapshot, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -79,7 +78,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public Snapshot Restore(Guid aggregateIdentifier)
+    public SnapshotDataModel Restore(Guid aggregateIdentifier)
     {
         try
         {
@@ -92,7 +91,10 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
                 throw SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier);
             }
 
-            return new Snapshot(aggregateIdentifier, 1, aggregateState);
+            return new SnapshotDataModel
+            {
+                AggregateIdentifier = aggregateIdentifier, AggregateVersion = 1, AggregateState = aggregateState
+            };
         }
         catch (Exception exception)
         {
@@ -106,7 +108,8 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public async Task<Snapshot> RestoreAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task<SnapshotDataModel> RestoreAsync(Guid aggregateIdentifier,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -119,7 +122,10 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
                 throw SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier);
             }
 
-            return new Snapshot(aggregateIdentifier, 1, aggregateState);
+            return new SnapshotDataModel
+            {
+                AggregateIdentifier = aggregateIdentifier, AggregateVersion = 1, AggregateState = aggregateState
+            };
         }
         catch (Exception exception)
         {
@@ -133,7 +139,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    private string GetSerializedState(Snapshot snapshot)
+    private string GetSerializedState(SnapshotDataModel snapshot)
     {
         string serializerState = snapshot.AggregateState as string ?? _serializer.Serialize(snapshot.AggregateState);
 

@@ -5,7 +5,7 @@ using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Snapshots;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
-using EssentialFrame.Domain.Snapshots;
+using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Identity;
 using FluentAssertions;
 using Moq;
@@ -19,11 +19,11 @@ public class DefaultSnapshotStoreTests
     [SetUp]
     public void SetUp()
     {
-        _snapshotCacheMock = new Mock<ICache<Guid, Snapshot>>();
+        _snapshotCacheMock = new Mock<ICache<Guid, SnapshotDataModel>>();
         _identityServiceMock = new Mock<IIdentityService>();
         _snapshotOfflineStorageMock = new Mock<ISnapshotOfflineStorage>();
 
-        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new ExampleApp.Domain.Posts.Identity.Identity());
+        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new IdentityContext());
     }
 
     [TearDown]
@@ -35,7 +35,7 @@ public class DefaultSnapshotStoreTests
     }
 
     private readonly Faker _faker = new();
-    private Mock<ICache<Guid, Snapshot>> _snapshotCacheMock;
+    private Mock<ICache<Guid, SnapshotDataModel>> _snapshotCacheMock;
     private Mock<IIdentityService> _identityServiceMock;
     private Mock<ISnapshotOfflineStorage> _snapshotOfflineStorageMock;
 
@@ -44,15 +44,15 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshot);
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        Snapshot result = snapshotStore.Get(aggregateIdentifier);
+        SnapshotDataModel result = snapshotStore.Get(aggregateIdentifier);
 
         // Assert
-        result.Should().Be(snapshot);
+        result.Should().Be(snapshotDataModel);
     }
 
     [Test]
@@ -60,15 +60,15 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshot);
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        Snapshot result = await snapshotStore.GetAsync(aggregateIdentifier);
+        SnapshotDataModel result = await snapshotStore.GetAsync(aggregateIdentifier);
 
         // Assert
-        result.Should().Be(snapshot);
+        result.Should().Be(snapshotDataModel);
     }
 
     [Test]
@@ -76,11 +76,11 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((Snapshot)null);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        Snapshot result = snapshotStore.Get(aggregateIdentifier);
+        SnapshotDataModel result = snapshotStore.Get(aggregateIdentifier);
 
         // Assert
         result.Should().BeNull();
@@ -91,11 +91,11 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((Snapshot)null);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        Snapshot result = await snapshotStore.GetAsync(aggregateIdentifier);
+        SnapshotDataModel result = await snapshotStore.GetAsync(aggregateIdentifier);
 
         // Assert
         result.Should().BeNull();
@@ -106,14 +106,14 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        snapshotStore.Save(snapshot);
+        snapshotStore.Save(snapshotDataModel);
 
         // Assert
-        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshot), Times.Once);
+        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshotDataModel), Times.Once);
     }
 
     [Test]
@@ -121,14 +121,14 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        await snapshotStore.SaveAsync(snapshot);
+        await snapshotStore.SaveAsync(snapshotDataModel);
 
         // Assert
-        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshot), Times.Once);
+        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshotDataModel), Times.Once);
     }
 
     [Test]
@@ -136,15 +136,15 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshot);
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        snapshotStore.Save(snapshot);
+        snapshotStore.Save(snapshotDataModel);
 
         // Assert
-        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshot), Times.Once);
+        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshotDataModel), Times.Once);
     }
 
     [Test]
@@ -152,15 +152,15 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshot);
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        await snapshotStore.SaveAsync(snapshot);
+        await snapshotStore.SaveAsync(snapshotDataModel);
 
         // Assert
-        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshot), Times.Once);
+        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshotDataModel), Times.Once);
     }
 
     [Test]
@@ -168,15 +168,15 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((Snapshot)null);
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        snapshotStore.Save(snapshot);
+        snapshotStore.Save(snapshotDataModel);
 
         // Assert
-        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshot), Times.Once);
+        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshotDataModel), Times.Once);
     }
 
     [Test]
@@ -184,15 +184,15 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((Snapshot)null);
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        await snapshotStore.SaveAsync(snapshot);
+        await snapshotStore.SaveAsync(snapshotDataModel);
 
         // Assert
-        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshot), Times.Once);
+        _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshotDataModel), Times.Once);
     }
 
     [Test]
@@ -200,9 +200,9 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshot);
-        _snapshotOfflineStorageMock.Setup(x => x.Save(snapshot));
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
+        _snapshotOfflineStorageMock.Setup(x => x.Save(snapshotDataModel));
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
@@ -210,7 +210,7 @@ public class DefaultSnapshotStoreTests
 
         // Assert
         _snapshotCacheMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
-        _snapshotOfflineStorageMock.Verify(x => x.Save(snapshot), Times.Once);
+        _snapshotOfflineStorageMock.Verify(x => x.Save(snapshotDataModel), Times.Once);
     }
 
     [Test]
@@ -218,9 +218,9 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshot);
-        _snapshotOfflineStorageMock.Setup(x => x.SaveAsync(snapshot, default));
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
+        _snapshotOfflineStorageMock.Setup(x => x.SaveAsync(snapshotDataModel, default));
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
@@ -228,7 +228,7 @@ public class DefaultSnapshotStoreTests
 
         // Assert
         _snapshotCacheMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
-        _snapshotOfflineStorageMock.Verify(x => x.SaveAsync(snapshot, default), Times.Once);
+        _snapshotOfflineStorageMock.Verify(x => x.SaveAsync(snapshotDataModel, default), Times.Once);
     }
 
     [Test]
@@ -236,7 +236,7 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((Snapshot)null);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
@@ -252,7 +252,7 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((Snapshot)null);
+        _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
@@ -268,15 +268,15 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotOfflineStorageMock.Setup(x => x.Restore(aggregateIdentifier)).Returns(snapshot);
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotOfflineStorageMock.Setup(x => x.Restore(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        Snapshot result = snapshotStore.Unbox(aggregateIdentifier);
+        SnapshotDataModel result = snapshotStore.Unbox(aggregateIdentifier);
 
         // Assert
-        result.Should().BeEquivalentTo(snapshot);
+        result.Should().BeEquivalentTo(snapshotDataModel);
         _snapshotOfflineStorageMock.Verify(x => x.Restore(aggregateIdentifier), Times.Once);
     }
 
@@ -285,15 +285,16 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        Snapshot snapshot = new(aggregateIdentifier, 1, _identityServiceMock.Object.GetCurrent());
-        _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, default)).ReturnsAsync(snapshot);
+        SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
+        _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, default))
+            .ReturnsAsync(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        Snapshot result = await snapshotStore.UnboxAsync(aggregateIdentifier);
+        SnapshotDataModel result = await snapshotStore.UnboxAsync(aggregateIdentifier);
 
         // Assert
-        result.Should().BeEquivalentTo(snapshot);
+        result.Should().BeEquivalentTo(snapshotDataModel);
         _snapshotOfflineStorageMock.Verify(x => x.RestoreAsync(aggregateIdentifier, default), Times.Once);
     }
 
@@ -329,5 +330,18 @@ public class DefaultSnapshotStoreTests
         // Assert
         await act.Should().ThrowExactlyAsync<SnapshotUnboxingFailedException>().WithMessage(
             $"Unable to unbox snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details.");
+    }
+
+    private SnapshotDataModel GetSnapshotDataModel(Guid aggregateIdentifier)
+    {
+        string serializedAggregateState = _faker.Random.String(_faker.Random.Int(1, 250));
+        SnapshotDataModel snapshotDataModel = new()
+        {
+            AggregateIdentifier = aggregateIdentifier,
+            AggregateVersion = 1,
+            AggregateState = serializedAggregateState
+        };
+
+        return snapshotDataModel;
     }
 }
