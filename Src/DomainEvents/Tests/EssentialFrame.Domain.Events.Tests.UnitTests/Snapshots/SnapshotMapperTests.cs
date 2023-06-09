@@ -76,7 +76,7 @@ public class SnapshotMapperTests
         int aggregateVersion = _faker.Random.Int();
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
         Snapshot snapshot = new(aggregateIdentifier, aggregateVersion, serializedState);
-        Snapshot[] snapshots = new[] { snapshot };
+        Snapshot[] snapshots = { snapshot };
         SnapshotMapper snapshotMapper = new();
 
         // Act
@@ -101,7 +101,7 @@ public class SnapshotMapperTests
             AggregateVersion = aggregateVersion,
             AggregateState = serializedState
         };
-        SnapshotDataModel[] snapshotDataModels = new[] { snapshotDataModel };
+        SnapshotDataModel[] snapshotDataModels = { snapshotDataModel };
         SnapshotMapper mapper = new();
 
         // Act

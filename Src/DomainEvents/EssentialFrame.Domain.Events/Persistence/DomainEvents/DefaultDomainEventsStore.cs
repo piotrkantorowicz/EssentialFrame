@@ -1,27 +1,23 @@
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.Aggregates;
-using EssentialFrame.Domain.Events.Exceptions;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
-using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Persistence.DomainEvents;
 
 internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 {
     private readonly ICache<Guid, AggregateRoot> _aggregateCache;
-    private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
     private readonly ICache<Guid, DomainEventDataModel> _eventsCache;
-    private readonly ISerializer _serializer;
+    private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
 
     public DefaultDomainEventsStore(ICache<Guid, DomainEventDataModel> eventsCache,
-        ICache<Guid, AggregateRoot> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage,
-        ISerializer serializer)
+        ICache<Guid, AggregateRoot> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage)
     {
         _eventsCache = eventsCache ?? throw new ArgumentNullException(nameof(eventsCache));
         _aggregateCache = aggregateCache ?? throw new ArgumentNullException(nameof(aggregateCache));
         _aggregateOfflineStorage =
             aggregateOfflineStorage ?? throw new ArgumentNullException(nameof(aggregateOfflineStorage));
-        _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
     }
 
     public bool Exists(Guid aggregateIdentifier)
@@ -87,47 +83,19 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 
     public void Box(Guid aggregateIdentifier)
     {
-        (AggregateRoot aggregate, IReadOnlyCollection<IDomainEvent> events) =
-            GetAggregateAndEvents(aggregateIdentifier);
+        AggregateRoot aggregate = _aggregateCache.Get(aggregateIdentifier);
+        IReadOnlyCollection<DomainEventDataModel> events =
+            _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier);
 
         _aggregateOfflineStorage.Save(aggregate, events);
     }
 
     public async Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
     {
-        (AggregateRoot aggregate, IReadOnlyCollection<IDomainEvent> events) =
-            GetAggregateAndEvents(aggregateIdentifier);
+        AggregateRoot aggregate = _aggregateCache.Get(aggregateIdentifier);
+        IReadOnlyCollection<DomainEventDataModel> events =
+            _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier);
 
         await _aggregateOfflineStorage.SaveAsync(aggregate, events, cancellationToken);
-    }
-
-    private (AggregateRoot, IReadOnlyCollection<IDomainEvent>) GetAggregateAndEvents(Guid aggregateIdentifier)
-    {
-        AggregateRoot aggregate = _aggregateCache.Get(aggregateIdentifier);
-        List<IDomainEvent> events = _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier)
-            ?.Select(ConvertToEvent).ToList();
-
-        return (aggregate, events);
-    }
-
-    // todo: move to a separate class
-    private IDomainEvent ConvertToEvent(DomainEventDataModel domainEventDataModel)
-    {
-        object @event = domainEventDataModel.DomainEvent;
-
-        if (@event is string serializedEvent)
-        {
-            IDomainEvent deserialized =
-                _serializer.Deserialize<IDomainEvent>(serializedEvent, Type.GetType(domainEventDataModel.EventClass));
-
-            if (deserialized is null)
-            {
-                throw new UnknownEventTypeException(domainEventDataModel.EventType);
-            }
-        }
-
-        IDomainEvent castedDomainEvent = @event as IDomainEvent;
-
-        return castedDomainEvent;
     }
 }
