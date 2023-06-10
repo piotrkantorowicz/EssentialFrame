@@ -23,7 +23,7 @@ public class CommandMapperTests
     private readonly Faker _faker = new();
     private readonly Mock<ISerializer> _serializerMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
-    
+
     [SetUp]
     public void Setup()
     {
@@ -50,7 +50,7 @@ public class CommandMapperTests
         CommandDataModel result = commandMapper.Map(command);
 
         // Assert
-        Assert(result, command);
+        AssertCommand(result, command);
     }
 
     [Test]
@@ -69,7 +69,8 @@ public class CommandMapperTests
 
         foreach (CommandDataModel commandDataModel in result)
         {
-            Assert(commandDataModel, commands.Single(c => c.CommandIdentifier == commandDataModel.CommandIdentifier));
+            AssertCommand(commandDataModel,
+                commands.Single(c => c.CommandIdentifier == commandDataModel.CommandIdentifier));
         }
     }
 
@@ -87,7 +88,7 @@ public class CommandMapperTests
         ICommand result = commandMapper.Map(commandDataModel);
 
         // Assert
-        Assert(commandDataModel, result);
+        AssertCommand(commandDataModel, result);
     }
 
     [Test]
@@ -116,7 +117,7 @@ public class CommandMapperTests
         _serializerMock.Verify(
             s => s.Deserialize<ICommand>(commandDataModel.Command as string, typeof(ChangeTitleCommand)), Times.Once);
 
-        Assert(commandDataModel, result, _serializerMock.Object);
+        AssertCommand(commandDataModel, result, _serializerMock.Object);
     }
 
     [Test]
@@ -136,7 +137,7 @@ public class CommandMapperTests
 
         foreach (ICommand command in result)
         {
-            Assert(commandDataModels.Single(c => c.CommandIdentifier == command.CommandIdentifier), command);
+            AssertCommand(commandDataModels.Single(c => c.CommandIdentifier == command.CommandIdentifier), command);
         }
     }
 
@@ -178,7 +179,7 @@ public class CommandMapperTests
                 s => s.Deserialize<ICommand>(commandDataModel.Command as string, typeof(ChangeTitleCommand)),
                 Times.Once);
 
-            Assert(commandDataModel, command, _serializerMock.Object);
+            AssertCommand(commandDataModel, command, _serializerMock.Object);
         }
     }
 
@@ -197,28 +198,30 @@ public class CommandMapperTests
         return commands;
     }
 
-    private static void Assert(CommandDataModel expected, ICommand result, ISerializer serializer = null)
+    private static void AssertCommand(CommandDataModel commandDataModel, ICommand command,
+        ISerializer serializer = null)
     {
-        expected.Should().NotBeNull();
-        expected.CommandIdentifier.Should().Be(result.CommandIdentifier);
-        expected.CommandType.Should().Be(result.GetType().FullName);
-        expected.CommandClass.Should().Be(result.GetType().AssemblyQualifiedName);
+        commandDataModel.Should().NotBeNull();
+        commandDataModel.CommandIdentifier.Should().Be(command.CommandIdentifier);
+        commandDataModel.CommandType.Should().Be(command.GetType().FullName);
+        commandDataModel.CommandClass.Should().Be(command.GetType().AssemblyQualifiedName);
 
         if (serializer is null)
         {
-            expected.Command.Should().BeEquivalentTo(result);
+            commandDataModel.Command.Should().BeEquivalentTo(command);
         }
         else
         {
-            expected.Command.Should().BeEquivalentTo(serializer.Serialize(result));
+            commandDataModel.Command.Should().BeEquivalentTo(serializer.Serialize(command));
         }
 
-        expected.SendScheduled.Should().BeNull();
-        expected.SendStarted.Should().BeNull();
-        expected.SendCompleted.Should().BeNull();
-        expected.SendCancelled.Should().BeNull();
-        expected.SendStatus.Should().BeNull();
-        expected.ExecutionStatus.Should().BeNull();
-        expected.CreatedAt.Should().BeCloseTo(SystemClock.UtcNow, TimeSpan.FromMilliseconds(Defaults.DefaultCloseTo));
+        commandDataModel.SendScheduled.Should().BeNull();
+        commandDataModel.SendStarted.Should().BeNull();
+        commandDataModel.SendCompleted.Should().BeNull();
+        commandDataModel.SendCancelled.Should().BeNull();
+        commandDataModel.SendStatus.Should().BeNull();
+        commandDataModel.ExecutionStatus.Should().BeNull();
+        commandDataModel.CreatedAt.Should()
+            .BeCloseTo(SystemClock.UtcNow, TimeSpan.FromMilliseconds(Defaults.DefaultCloseTo));
     }
 }

@@ -10,11 +10,14 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
 {
     private readonly ISerializer _serializer;
     private readonly IDomainEventsStore _store;
+    private readonly IDomainEventMapper _domainEventMapper;
 
-    public DomainEventsRepository(IDomainEventsStore store, ISerializer serializer)
+    public DomainEventsRepository(IDomainEventsStore store, ISerializer serializer,
+        IDomainEventMapper domainEventMapper)
     {
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+        _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
     }
 
     public T Get<T>(Guid aggregate) where T : AggregateRoot
@@ -35,7 +38,7 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
         }
 
         IDomainEvent[] domainEvents = aggregate.FlushUncommittedChanges();
-        IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => new DomainEventDataModel(e));
+        IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => _domainEventMapper.Map(e));
 
         _store.Save(aggregate, domainEventDataModels);
 
@@ -52,31 +55,11 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
         }
 
         IDomainEvent[] domainEvents = aggregate.FlushUncommittedChanges();
-        IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => new DomainEventDataModel(e));
+        IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => _domainEventMapper.Map(e));
 
         await _store.SaveAsync(aggregate, domainEventDataModels, cancellationToken);
 
         return domainEvents;
-    }
-
-    public IDomainEvent ConvertToEvent(DomainEventDataModel domainEventDataModel)
-    {
-        object @event = domainEventDataModel.DomainEvent;
-
-        if (@event is string serializedEvent)
-        {
-            IDomainEvent deserialized =
-                _serializer.Deserialize<IDomainEvent>(serializedEvent, Type.GetType(domainEventDataModel.EventClass));
-
-            if (deserialized is null)
-            {
-                throw new UnknownEventTypeException(domainEventDataModel.EventType);
-            }
-        }
-
-        IDomainEvent castedDomainEvent = @event as IDomainEvent;
-
-        return castedDomainEvent;
     }
 
     private T Rehydrate<T>(Guid id) where T : AggregateRoot
@@ -99,7 +82,7 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
 
     private T RehydrateInternal<T>(Guid id, IEnumerable<DomainEventDataModel> eventsData) where T : AggregateRoot
     {
-        List<IDomainEvent> events = eventsData.Select(ConvertToEvent).ToList();
+        List<IDomainEvent> events = eventsData.Select(e => _domainEventMapper.Map(e)).ToList();
 
         if (!events.Any())
         {

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.Aggregates;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.DomainEvents;
 using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
 using EssentialFrame.Domain.Factories;
@@ -13,8 +14,8 @@ using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
 using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.Extensions;
 using EssentialFrame.Identity;
-using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -31,7 +32,7 @@ public class DefaultDomainEventStoreTests
         _eventsCacheMock = new Mock<ICache<Guid, DomainEventDataModel>>();
         _identityServiceMock = new Mock<IIdentityService>();
         _aggregateOfflineStorageMock = new Mock<IAggregateOfflineStorage>();
-        _serializerMock = new Mock<ISerializer>();
+        _domainEventMapper = new Mock<IDomainEventMapper>();
 
         _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new IdentityContext());
     }
@@ -43,7 +44,7 @@ public class DefaultDomainEventStoreTests
         _eventsCacheMock.Reset();
         _identityServiceMock.Reset();
         _aggregateOfflineStorageMock.Reset();
-        _serializerMock.Reset();
+        _domainEventMapper.Reset();
     }
 
     private readonly Faker _faker = new();
@@ -51,7 +52,7 @@ public class DefaultDomainEventStoreTests
     private Mock<ICache<Guid, DomainEventDataModel>> _eventsCacheMock;
     private Mock<IIdentityService> _identityServiceMock;
     private Mock<IAggregateOfflineStorage> _aggregateOfflineStorageMock;
-    private Mock<ISerializer> _serializerMock;
+    private Mock<IDomainEventMapper> _domainEventMapper;
 
     [Test]
     public void Exists_WhenAggregateIdentifierIsProvided_ShouldReturnTrue()
@@ -60,7 +61,7 @@ public class DefaultDomainEventStoreTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier)).Returns(true);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         bool result = domainEventStore.Exists(aggregateIdentifier);
@@ -76,7 +77,7 @@ public class DefaultDomainEventStoreTests
         Guid aggregateIdentifier = Guid.NewGuid();
         _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier)).Returns(true);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         bool result = await domainEventStore.ExistsAsync(aggregateIdentifier);
@@ -92,7 +93,7 @@ public class DefaultDomainEventStoreTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier)).Returns(false);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         bool result = domainEventStore.Exists(aggregateIdentifier);
@@ -108,7 +109,7 @@ public class DefaultDomainEventStoreTests
         Guid aggregateIdentifier = Guid.NewGuid();
         _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier)).Returns(false);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         bool result = await domainEventStore.ExistsAsync(aggregateIdentifier);
@@ -125,7 +126,7 @@ public class DefaultDomainEventStoreTests
         int aggregateVersion = _faker.Random.Int();
         _aggregateCacheMock.Setup(x => x.Exists(It.IsAny<Func<Guid, AggregateRoot, bool>>())).Returns(true);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         bool result = domainEventStore.Exists(aggregateIdentifier, aggregateVersion);
@@ -142,7 +143,7 @@ public class DefaultDomainEventStoreTests
         int aggregateVersion = _faker.Random.Int();
         _aggregateCacheMock.Setup(x => x.Exists(It.IsAny<Func<Guid, AggregateRoot, bool>>())).Returns(true);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         bool result = await domainEventStore.ExistsAsync(aggregateIdentifier, aggregateVersion);
@@ -159,7 +160,7 @@ public class DefaultDomainEventStoreTests
         int aggregateVersion = _faker.Random.Int();
         _aggregateCacheMock.Setup(x => x.Exists(It.IsAny<Func<Guid, AggregateRoot, bool>>())).Returns(false);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         bool result = domainEventStore.Exists(aggregateIdentifier, aggregateVersion);
@@ -176,7 +177,7 @@ public class DefaultDomainEventStoreTests
         int aggregateVersion = _faker.Random.Int();
         _aggregateCacheMock.Setup(x => x.Exists(It.IsAny<Func<Guid, AggregateRoot, bool>>())).Returns(false);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         bool result = await domainEventStore.ExistsAsync(aggregateIdentifier, aggregateVersion);
@@ -191,13 +192,12 @@ public class DefaultDomainEventStoreTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
-        List<IDomainEvent> domainEvents = GenerateEventsCollection(aggregateIdentifier);
-        List<DomainEventDataModel> domainEventsDms = domainEvents.Select(x => new DomainEventDataModel(x)).ToList();
+        List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
 
         _eventsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()))
             .Returns(domainEventsDms);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         IReadOnlyCollection<DomainEventDataModel> result = domainEventStore.Get(aggregateIdentifier, aggregateVersion);
@@ -212,14 +212,13 @@ public class DefaultDomainEventStoreTests
         // Arrange
         Guid aggregateIdentifier = Guid.NewGuid();
         int aggregateVersion = _faker.Random.Int();
-        List<IDomainEvent> domainEvents = GenerateEventsCollection(aggregateIdentifier);
-        List<DomainEventDataModel> domainEventsDms = domainEvents.Select(x => new DomainEventDataModel(x)).ToList();
+        List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
 
         _eventsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()))
             .Returns(domainEventsDms);
 
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         IReadOnlyCollection<DomainEventDataModel> result =
@@ -236,7 +235,7 @@ public class DefaultDomainEventStoreTests
         List<AggregateRoot> aggregates = GenerateAggregates();
         _aggregateCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, AggregateRoot, bool>>())).Returns(aggregates);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         IEnumerable<Guid> result = domainEventStore.GetDeleted();
@@ -252,7 +251,7 @@ public class DefaultDomainEventStoreTests
         List<AggregateRoot> aggregates = GenerateAggregates();
         _aggregateCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, AggregateRoot, bool>>())).Returns(aggregates);
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         IEnumerable<Guid> result = await domainEventStore.GetDeletedAsync();
@@ -269,8 +268,7 @@ public class DefaultDomainEventStoreTests
         int aggregateVersion = _faker.Random.Int();
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
-        List<IDomainEvent> domainEvents = GenerateEventsCollection(aggregateIdentifier);
-        List<DomainEventDataModel> domainEventsDms = domainEvents?.Select(x => new DomainEventDataModel(x)).ToList();
+        List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
         IEnumerable<KeyValuePair<Guid, DomainEventDataModel>> domainEventsDictionary =
             domainEventsDms?.Select(v => new KeyValuePair<Guid, DomainEventDataModel>(v.EventIdentifier, v));
 
@@ -279,7 +277,7 @@ public class DefaultDomainEventStoreTests
         _eventsCacheMock.Setup(x => x.AddMany(domainEventsDictionary));
 
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         domainEventStore.Save(aggregate, domainEventsDms);
@@ -297,8 +295,7 @@ public class DefaultDomainEventStoreTests
         int aggregateVersion = _faker.Random.Int();
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
-        List<IDomainEvent> domainEvents = GenerateEventsCollection(aggregateIdentifier);
-        List<DomainEventDataModel> domainEventsDms = domainEvents?.Select(x => new DomainEventDataModel(x)).ToList();
+        List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
         IEnumerable<KeyValuePair<Guid, DomainEventDataModel>> domainEventsDictionary =
             domainEventsDms?.Select(v => new KeyValuePair<Guid, DomainEventDataModel>(v.EventIdentifier, v));
 
@@ -307,7 +304,7 @@ public class DefaultDomainEventStoreTests
         _eventsCacheMock.Setup(x => x.AddMany(domainEventsDictionary));
 
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         await domainEventStore.SaveAsync(aggregate, domainEventsDms);
@@ -325,23 +322,22 @@ public class DefaultDomainEventStoreTests
         int aggregateVersion = _faker.Random.Int();
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
-        List<IDomainEvent> domainEvents = GenerateEventsCollection(aggregateIdentifier);
-        List<DomainEventDataModel> domainEventsDms = domainEvents?.Select(x => new DomainEventDataModel(x)).ToList();
+        List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
 
         _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregate);
         _eventsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()))
             .Returns(domainEventsDms);
-        _aggregateOfflineStorageMock.Setup(x => x.Save(aggregate, domainEvents));
+        _aggregateOfflineStorageMock.Setup(x => x.Save(aggregate, domainEventsDms));
 
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         domainEventStore.Box(aggregateIdentifier);
 
         // Assert
         _aggregateCacheMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
-        _aggregateOfflineStorageMock.Verify(x => x.Save(aggregate, domainEvents), Times.Once);
+        _aggregateOfflineStorageMock.Verify(x => x.Save(aggregate, domainEventsDms), Times.Once);
         _eventsCacheMock.Verify(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()), Times.Once);
     }
 
@@ -353,23 +349,22 @@ public class DefaultDomainEventStoreTests
         int aggregateVersion = _faker.Random.Int();
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
-        List<IDomainEvent> domainEvents = GenerateEventsCollection(aggregateIdentifier);
-        List<DomainEventDataModel> domainEventsDms = domainEvents?.Select(x => new DomainEventDataModel(x)).ToList();
+        List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
 
         _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregate);
         _eventsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()))
             .Returns(domainEventsDms);
-        _aggregateOfflineStorageMock.Setup(x => x.SaveAsync(aggregate, domainEvents, default));
+        _aggregateOfflineStorageMock.Setup(x => x.SaveAsync(aggregate, domainEventsDms, default));
 
         DefaultDomainEventsStore domainEventStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
-            _aggregateOfflineStorageMock.Object, _serializerMock.Object);
+            _aggregateOfflineStorageMock.Object);
 
         // Act
         await domainEventStore.BoxAsync(aggregateIdentifier);
 
         // Assert
         _aggregateCacheMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
-        _aggregateOfflineStorageMock.Verify(x => x.SaveAsync(aggregate, domainEvents, default), Times.Once);
+        _aggregateOfflineStorageMock.Verify(x => x.SaveAsync(aggregate, domainEventsDms, default), Times.Once);
         _eventsCacheMock.Verify(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()), Times.Once);
     }
 
@@ -388,7 +383,7 @@ public class DefaultDomainEventStoreTests
         return aggregates;
     }
 
-    private List<IDomainEvent> GenerateEventsCollection(Guid aggregateIdentifier)
+    private List<DomainEventDataModel> GenerateDomainEventsCollection(Guid aggregateIdentifier)
     {
         List<IDomainEvent> domainEvents = new()
         {
@@ -419,6 +414,17 @@ public class DefaultDomainEventStoreTests
                 _faker.Date.Future())
         };
 
-        return _faker.Random.ListItems(domainEvents, _faker.Random.Int(1, 10)).ToList();
+        List<DomainEventDataModel> domainEventDms = domainEvents.Select(e => new DomainEventDataModel
+        {
+            AggregateIdentifier = e.AggregateIdentifier,
+            AggregateVersion = e.AggregateVersion,
+            EventIdentifier = e.EventIdentifier,
+            EventType = e.GetTypeFullName(),
+            EventClass = e.GetClassName(),
+            DomainEvent = e,
+            CreatedAt = e.EventTime
+        }).ToList();
+
+        return _faker.Random.ListItems(domainEventDms, _faker.Random.Int(1, 10)).ToList();
     }
 }

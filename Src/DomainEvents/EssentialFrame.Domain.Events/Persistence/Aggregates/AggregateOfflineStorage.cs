@@ -1,33 +1,38 @@
 ﻿using System.IO.Abstractions;
 using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.Domain.Events.Exceptions;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.DomainEvents;
 using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
 using EssentialFrame.Files;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
 using Microsoft.Extensions.Logging;
 
-namespace EssentialFrame.Domain.Events.Persistence.DomainEvents;
+namespace EssentialFrame.Domain.Events.Persistence.Aggregates;
 
 internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
 {
     private const string EventsFileName = "events.json";
     private const string MetadataFileName = "metadata.txt";
     private const string IndexFileName = "boxes.csv";
-    private readonly IFileStorage _fileStorage;
 
+    private readonly IFileStorage _fileStorage;
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<AggregateOfflineStorage> _logger;
-    private readonly string _offlineStorageDirectory;
+    private readonly IDomainEventMapper _domainEventMapper;
     private readonly ISerializer _serializer;
+    private readonly string _offlineStorageDirectory;
 
-    public AggregateOfflineStorage(IFileStorage fileStorage, ISerializer serializer, IFileSystem fileSystem,
-        ILogger<AggregateOfflineStorage> logger, string offlineStorageDirectory = null)
+    public AggregateOfflineStorage(IFileStorage fileStorage, IFileSystem fileSystem,
+        ILogger<AggregateOfflineStorage> logger, IDomainEventMapper domainEventMapper, ISerializer serializer,
+        string offlineStorageDirectory = null)
     {
         _fileStorage = fileStorage ?? throw new ArgumentNullException(nameof(fileStorage));
-        _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
+        _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 
         offlineStorageDirectory ??= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "EssentialFrame", "OfflineStorage", "Aggregates");
@@ -35,7 +40,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         _offlineStorageDirectory = offlineStorageDirectory;
     }
 
-    public void Save(AggregateRoot aggregate, IReadOnlyCollection<IDomainEvent> events)
+    public void Save(AggregateRoot aggregate, IReadOnlyCollection<DomainEventDataModel> events)
     {
         try
         {
@@ -65,7 +70,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         }
     }
 
-    public async Task SaveAsync(AggregateRoot aggregate, IReadOnlyCollection<IDomainEvent> events,
+    public async Task SaveAsync(AggregateRoot aggregate, IReadOnlyCollection<DomainEventDataModel> events,
         CancellationToken cancellationToken = default)
     {
         try
@@ -99,10 +104,11 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         }
     }
 
-    private (string eventsContents, string metadataContents) CreateFileContents(AggregateRoot aggregate,
-        IReadOnlyCollection<IDomainEvent> events)
+    private (string serializedEvents, string metadata) CreateFileContents(AggregateRoot aggregate,
+        IReadOnlyCollection<DomainEventDataModel> events)
     {
-        string eventsContents = _serializer.Serialize(events);
+        IReadOnlyCollection<IDomainEvent> domainEvents = _domainEventMapper.Map(events);
+        string serializedEvents = _serializer.Serialize(domainEvents);
 
         Dictionary<string, string> metaData = new()
         {
@@ -116,6 +122,6 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
 
         string metaDataContents = string.Join(Environment.NewLine, metaData.Select(kvp => $"{kvp.Key}: {kvp.Value}"));
 
-        return (eventsContents, metaDataContents);
+        return (serializedEvents, metaDataContents);
     }
 }

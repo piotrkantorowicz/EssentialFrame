@@ -19,10 +19,11 @@ public class SnapshotRepository : ISnapshotRepository
     private readonly ISnapshotStore _snapshotStore;
     private readonly ISnapshotStrategy _snapshotStrategy;
     private readonly ISnapshotMapper _snapshotMapper;
+    private readonly IDomainEventMapper _domainEventMapper;
 
     public SnapshotRepository(IDomainEventsStore domainEventsStore, IDomainEventsRepository domainEventsRepository,
         ISnapshotStore snapshotStore, ISnapshotStrategy snapshotStrategy, ISerializer serializer,
-        ICache<Guid, AggregateRoot> cache, ISnapshotMapper snapshotMapper)
+        ICache<Guid, AggregateRoot> cache, ISnapshotMapper snapshotMapper, IDomainEventMapper domainEventMapper)
     {
         _domainEventsStore = domainEventsStore ?? throw new ArgumentNullException(nameof(domainEventsStore));
         _domainEventsRepository =
@@ -32,6 +33,7 @@ public class SnapshotRepository : ISnapshotRepository
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         _snapshotMapper = snapshotMapper ?? throw new ArgumentNullException(nameof(snapshotMapper));
+        _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
     }
 
     public T Get<T>(Guid aggregateId) where T : AggregateRoot
@@ -52,8 +54,7 @@ public class SnapshotRepository : ISnapshotRepository
         }
 
         IEnumerable<IDomainEvent> events = _domainEventsStore.Get(aggregateId, snapshotVersion)
-            .Select(e => _domainEventsRepository.ConvertToEvent(e))
-            .Where(desc => desc.AggregateVersion > snapshotVersion);
+            .Select(e => _domainEventMapper.Map(e)).Where(desc => desc.AggregateVersion > snapshotVersion);
 
         aggregate.Rehydrate(events);
 
@@ -81,7 +82,7 @@ public class SnapshotRepository : ISnapshotRepository
         IReadOnlyCollection<DomainEventDataModel> allEvents = await _domainEventsStore.GetAsync(aggregateId,
             snapshotVersion, cancellationToken);
 
-        IEnumerable<IDomainEvent> events = allEvents.Select(e => _domainEventsRepository.ConvertToEvent(e))
+        IEnumerable<IDomainEvent> events = allEvents.Select(e => _domainEventMapper.Map(e))
             .Where(desc => desc.AggregateVersion > snapshotVersion);
 
         aggregate.Rehydrate(events);
@@ -175,7 +176,7 @@ public class SnapshotRepository : ISnapshotRepository
     {
         SnapshotDataModel snapshotDataModel = _snapshotStore.Get(id);
         Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
-        
+
         if (snapshot == null)
         {
             return -1;
