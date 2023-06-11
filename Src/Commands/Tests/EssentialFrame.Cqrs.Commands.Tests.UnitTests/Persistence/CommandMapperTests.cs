@@ -4,9 +4,11 @@ using System.Linq;
 using Bogus;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence;
+using EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence.Models;
 using EssentialFrame.ExampleApp.Commands.Posts;
 using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.Extensions;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Tests.Utils;
@@ -15,13 +17,14 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
-namespace EssentialFrame.Cqrs.Commands.Tests.UnitTests.Store;
+namespace EssentialFrame.Cqrs.Commands.Tests.UnitTests.Persistence;
 
 [TestFixture]
 public class CommandMapperTests
 {
     private readonly Faker _faker = new();
     private readonly Mock<ISerializer> _serializerMock = new();
+    private readonly Mock<ICommandDataModelService> _commandDataModelServiceMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
 
     [SetUp]
@@ -34,32 +37,67 @@ public class CommandMapperTests
     public void TearDown()
     {
         _serializerMock.Reset();
+        _commandDataModelServiceMock.Reset();
         _identityServiceMock.Reset();
     }
 
     [Test]
-    public void Map_Always_ShouldMapCommand()
+    public void Map_WhenCommandIsNotSerialized_ShouldMapCommand()
     {
         // Arrange
         string title = _faker.Lorem.Sentence();
         bool isUppercase = _faker.Random.Bool();
         ChangeTitleCommand command = new(_identityServiceMock.Object.GetCurrent(), title, isUppercase);
-        CommandMapper commandMapper = new(_serializerMock.Object);
+        CommandDataModel commandDataModel = GenerateCommandDataModel(command);
+
+        _commandDataModelServiceMock.Setup(x => x.Create(command)).Returns(commandDataModel);
+
+        ICommandMapper commandMapper = new CommandMapper(_commandDataModelServiceMock.Object);
 
         // Act
         CommandDataModel result = commandMapper.Map(command);
 
         // Assert
+        _commandDataModelServiceMock.Verify(x => x.Create(command), Times.Once);
+
         AssertCommand(result, command);
     }
 
     [Test]
-    public void Map_Always_ShouldMapCollectionOfCommands()
+    public void Map_WhenCommandIsSerialized_ShouldMapCommand()
+    {
+        // Arrange
+        string title = _faker.Lorem.Sentence();
+        bool isUppercase = _faker.Random.Bool();
+        ChangeTitleCommand command = new(_identityServiceMock.Object.GetCurrent(), title, isUppercase);
+        CommandDataModel commandDataModel = GenerateCommandDataModel(command);
+
+        _commandDataModelServiceMock.Setup(x => x.Create(command, _serializerMock.Object)).Returns(commandDataModel);
+
+        ICommandMapper commandMapper = new CommandMapper(_commandDataModelServiceMock.Object);
+
+        // Act
+        CommandDataModel result = commandMapper.Map(command, _serializerMock.Object);
+
+        // Assert
+        _commandDataModelServiceMock.Verify(x => x.Create(command, _serializerMock.Object), Times.Once);
+
+        AssertCommand(result, command);
+    }
+
+    [Test]
+    public void Map_WhenCommandIsNotSerialized_ShouldMapCollectionOfCommands()
     {
         // Arrange
         IReadOnlyCollection<ICommand> commands = GenerateCommands();
-        CommandMapper commandMapper = new(_serializerMock.Object);
+        ICommandMapper commandMapper = new CommandMapper(_commandDataModelServiceMock.Object);
 
+        foreach (ICommand command in commands)
+        {
+            CommandDataModel commandDataModel = GenerateCommandDataModel(command);
+            _commandDataModelServiceMock.Setup(x => x.Create(command)).Returns(commandDataModel);
+        }
+        
         // Act
         IEnumerable<CommandDataModel> result = commandMapper.Map(commands);
 
@@ -69,8 +107,43 @@ public class CommandMapperTests
 
         foreach (CommandDataModel commandDataModel in result)
         {
-            AssertCommand(commandDataModel,
-                commands.Single(c => c.CommandIdentifier == commandDataModel.CommandIdentifier));
+            ICommand command = commands.Single(c => c.CommandIdentifier == commandDataModel.CommandIdentifier);
+
+            _commandDataModelServiceMock.Setup(x => x.Create(command)).Returns(commandDataModel);
+
+            AssertCommand(commandDataModel, command);
+        }
+    }
+
+    [Test]
+    public void Map_WhenCommandIsSerialized_ShouldMapCollectionOfCommands()
+    {
+        // Arrange
+        IReadOnlyCollection<ICommand> commands = GenerateCommands();
+        ICommandMapper commandMapper = new CommandMapper(_commandDataModelServiceMock.Object);
+
+        foreach (ICommand command in commands)
+        {
+            CommandDataModel commandDataModel = GenerateCommandDataModel(command);
+            _commandDataModelServiceMock.Setup(x => x.Create(command, _serializerMock.Object))
+                .Returns(commandDataModel);
+        }
+
+        // Act
+        IEnumerable<CommandDataModel> result = commandMapper.Map(commands, _serializerMock.Object);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(commands.Count);
+
+        foreach (CommandDataModel commandDataModel in result)
+        {
+            ICommand command = commands.Single(c => c.CommandIdentifier == commandDataModel.CommandIdentifier);
+
+            _commandDataModelServiceMock.Setup(x => x.Create(command, _serializerMock.Object))
+                .Returns(commandDataModel);
+
+            AssertCommand(commandDataModel, command);
         }
     }
 
@@ -81,8 +154,8 @@ public class CommandMapperTests
         string title = _faker.Lorem.Sentence();
         bool isUppercase = _faker.Random.Bool();
         ChangeTitleCommand command = new(_identityServiceMock.Object.GetCurrent(), title, isUppercase);
-        CommandDataModel commandDataModel = new(command);
-        CommandMapper commandMapper = new(_serializerMock.Object);
+        CommandDataModel commandDataModel = GenerateCommandDataModel(command);
+        ICommandMapper commandMapper = new CommandMapper(_commandDataModelServiceMock.Object);
 
         // Act
         ICommand result = commandMapper.Map(commandDataModel);
@@ -102,15 +175,15 @@ public class CommandMapperTests
 
         _serializerMock.Setup(s => s.Serialize<ICommand>(command)).Returns(serializedCommand);
 
-        CommandDataModel commandDataModel = new(command, _serializerMock.Object);
-        CommandMapper commandMapper = new(_serializerMock.Object);
+        CommandDataModel commandDataModel = GenerateCommandDataModel(command, _serializerMock.Object);
+        ICommandMapper commandMapper = new CommandMapper(_commandDataModelServiceMock.Object);
 
         _serializerMock
             .Setup(s => s.Deserialize<ICommand>(commandDataModel.Command as string, typeof(ChangeTitleCommand)))
             .Returns(command);
 
         // Act
-        ICommand result = commandMapper.Map(commandDataModel);
+        ICommand result = commandMapper.Map(commandDataModel, _serializerMock.Object);
 
         // Assert
         _serializerMock.Verify(s => s.Serialize<ICommand>(command), Times.Once);
@@ -125,8 +198,9 @@ public class CommandMapperTests
     {
         // Arrange
         IReadOnlyCollection<ICommand> commands = GenerateCommands();
-        List<CommandDataModel> commandDataModels = commands.Select(command => new CommandDataModel(command)).ToList();
-        CommandMapper commandMapper = new(_serializerMock.Object);
+        List<CommandDataModel> commandDataModels =
+            commands.Select(command => GenerateCommandDataModel(command)).ToList();
+        ICommandMapper commandMapper = new CommandMapper(_commandDataModelServiceMock.Object);
 
         // Act
         IEnumerable<ICommand> result = commandMapper.Map(commandDataModels);
@@ -152,7 +226,7 @@ public class CommandMapperTests
         {
             _serializerMock.Setup(s => s.Serialize(command)).Returns(_faker.Lorem.Sentences());
 
-            CommandDataModel commandDataModel = new(command, _serializerMock.Object);
+            CommandDataModel commandDataModel = GenerateCommandDataModel(command, _serializerMock.Object);
             commandDataModels.Add(commandDataModel);
 
             _serializerMock
@@ -160,10 +234,10 @@ public class CommandMapperTests
                 .Returns(command);
         }
 
-        CommandMapper commandMapper = new(_serializerMock.Object);
+        ICommandMapper commandMapper = new CommandMapper(_commandDataModelServiceMock.Object);
 
         // Act
-        IEnumerable<ICommand> result = commandMapper.Map(commandDataModels);
+        IEnumerable<ICommand> result = commandMapper.Map(commandDataModels, _serializerMock.Object);
 
         // Assert
         result.Should().NotBeNull();
@@ -181,6 +255,20 @@ public class CommandMapperTests
 
             AssertCommand(commandDataModel, command, _serializerMock.Object);
         }
+    }
+
+    private CommandDataModel GenerateCommandDataModel(ICommand command, ISerializer serializer = null)
+    {
+        CommandDataModel commandDataMode = new CommandDataModel
+        {
+            CommandIdentifier = command.CommandIdentifier,
+            CommandClass = command.GetClassName(),
+            CommandType = command.GetTypeFullName(),
+            Command = serializer is null ? command : serializer.Serialize(command),
+            CreatedAt = SystemClock.UtcNow
+        };
+
+        return commandDataMode;
     }
 
     private IReadOnlyCollection<ICommand> GenerateCommands()

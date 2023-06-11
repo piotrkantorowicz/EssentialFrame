@@ -4,22 +4,38 @@ using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence;
+using EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence.Models;
 using EssentialFrame.ExampleApp.Commands.Posts;
 using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Identity;
+using EssentialFrame.Time;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
-namespace EssentialFrame.Cqrs.Commands.Tests.UnitTests.Store;
+namespace EssentialFrame.Cqrs.Commands.Tests.UnitTests.Persistence;
 
 [TestFixture]
 public class DefaultCommandStoreTests
 {
+    private readonly Faker _faker = new();
+    private Mock<ICache<Guid, CommandDataModel>> _commandsCacheMock;
+    private Mock<IIdentityService> _identityServiceMock;
+    private CommandDataModel _commandDataModel;
+    
     [SetUp]
     public void SetUp()
     {
+        _commandDataModel = new CommandDataModel
+        {
+            CommandIdentifier = _faker.Random.Guid(),
+            CommandClass = typeof(ChangeTitleCommand).AssemblyQualifiedName,
+            CommandType = typeof(ChangeTitleCommand).FullName,
+            Command = _faker.Random.String(150, 300),
+            CreatedAt = SystemClock.UtcNow
+        };
+
         _commandsCacheMock = new Mock<ICache<Guid, CommandDataModel>>();
         _identityServiceMock = new Mock<IIdentityService>();
 
@@ -29,13 +45,10 @@ public class DefaultCommandStoreTests
     [TearDown]
     public void TearDown()
     {
+        _commandDataModel = null;
         _commandsCacheMock.Reset();
         _identityServiceMock.Reset();
     }
-
-    private readonly Faker _faker = new();
-    private Mock<ICache<Guid, CommandDataModel>> _commandsCacheMock;
-    private Mock<IIdentityService> _identityServiceMock;
 
     [Test]
     public void Exists_WhenCommandIdentifierIsProvided_ShouldReturnTrue()
@@ -43,7 +56,7 @@ public class DefaultCommandStoreTests
         // Arrange
         Guid commandIdentifier = _faker.Random.Guid();
         _commandsCacheMock.Setup(x => x.Exists(commandIdentifier)).Returns(true);
-        DefaultCommandStore commandStore = new(_commandsCacheMock.Object);
+        ICommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
         bool result = commandStore.Exists(commandIdentifier);
@@ -58,7 +71,7 @@ public class DefaultCommandStoreTests
         // Arrange
         Guid commandIdentifier = Guid.NewGuid();
         _commandsCacheMock.Setup(x => x.Exists(commandIdentifier)).Returns(true);
-        DefaultCommandStore commandStore = new(_commandsCacheMock.Object);
+        ICommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
         bool result = await commandStore.ExistsAsync(commandIdentifier);
@@ -72,18 +85,14 @@ public class DefaultCommandStoreTests
     {
         // Arrange
         Guid commandIds = _faker.Random.Guid();
-        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
-            _faker.Lorem.Word(), _faker.Random.Bool()));
-
-        _commandsCacheMock.Setup(x => x[commandIds]).Returns(commandDataModel);
-        DefaultCommandStore commandStore = new(_commandsCacheMock.Object);
+        _commandsCacheMock.Setup(x => x[commandIds]).Returns(_commandDataModel);
+        ICommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
         CommandDataModel result = commandStore.Get(commandIds);
 
         // Assert
-        result.Should().BeEquivalentTo(commandDataModel);
-        _identityServiceMock.VerifyAll();
+        result.Should().BeEquivalentTo(_commandDataModel);
     }
 
     [Test]
@@ -91,31 +100,24 @@ public class DefaultCommandStoreTests
     {
         // Arrange
         Guid commandIds = _faker.Random.Guid();
-        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
-            _faker.Lorem.Word(), _faker.Random.Bool()));
-
-        _commandsCacheMock.Setup(x => x[commandIds]).Returns(commandDataModel);
-        DefaultCommandStore commandStore = new(_commandsCacheMock.Object);
+        _commandsCacheMock.Setup(x => x[commandIds]).Returns(_commandDataModel);
+        ICommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
         CommandDataModel result = await commandStore.GetAsync(commandIds);
 
         // Assert
-        result.Should().BeEquivalentTo(commandDataModel);
-        _identityServiceMock.VerifyAll();
+        result.Should().BeEquivalentTo(_commandDataModel);
     }
 
     [Test]
     public void GetPossibleToSend_WhenDateTimeOffsetIsProvided_ShouldReturnCommandDataModel()
     {
         // Arrange
-        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
-            _faker.Lorem.Word(), _faker.Random.Bool()));
-
-        CommandDataModel[] commandDataModelsArray = { commandDataModel };
+        CommandDataModel[] commandDataModelsArray = { _commandDataModel };
         _commandsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, CommandDataModel, bool>>()))
             .Returns(commandDataModelsArray);
-        DefaultCommandStore commandStore = new(_commandsCacheMock.Object);
+        ICommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
         IReadOnlyCollection<CommandDataModel> result = commandStore.GetPossibleToSend(_faker.Date.RecentOffset());
@@ -128,13 +130,10 @@ public class DefaultCommandStoreTests
     public async Task GetPossibleToSendAsync_WhenDateTimeOffsetIsProvided_ShouldReturnCommandDataModel()
     {
         // Arrange
-        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
-            _faker.Lorem.Word(), _faker.Random.Bool()));
-
-        CommandDataModel[] commandDataModelsArray = { commandDataModel };
+        CommandDataModel[] commandDataModelsArray = { _commandDataModel };
         _commandsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, CommandDataModel, bool>>()))
             .Returns(commandDataModelsArray);
-        DefaultCommandStore commandStore = new(_commandsCacheMock.Object);
+        ICommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
         IReadOnlyCollection<CommandDataModel> result =
@@ -149,19 +148,14 @@ public class DefaultCommandStoreTests
     {
         // Arrange
         bool isNew = _faker.Random.Bool();
-
-        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
-            _faker.Lorem.Word(), _faker.Random.Bool()));
-
-        _commandsCacheMock.Setup(x => x.Add(commandDataModel.CommandIdentifier, commandDataModel));
-        DefaultCommandStore commandStore = new(_commandsCacheMock.Object);
+        _commandsCacheMock.Setup(x => x.Add(_commandDataModel.CommandIdentifier, _commandDataModel));
+        ICommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
-        commandStore.Save(commandDataModel, isNew);
+        commandStore.Save(_commandDataModel, isNew);
 
         // Assert
-        _commandsCacheMock.Verify(x => x.Add(commandDataModel.CommandIdentifier, commandDataModel), Times.Once);
-        _identityServiceMock.VerifyAll();
+        _commandsCacheMock.Verify(x => x.Add(_commandDataModel.CommandIdentifier, _commandDataModel), Times.Once);
     }
 
     [Test]
@@ -169,18 +163,13 @@ public class DefaultCommandStoreTests
     {
         // Arrange
         bool isNew = _faker.Random.Bool();
-
-        CommandDataModel commandDataModel = new(new ChangeTitleCommand(_identityServiceMock.Object.GetCurrent(),
-            _faker.Lorem.Word(), _faker.Random.Bool()));
-
-        _commandsCacheMock.Setup(x => x.Add(commandDataModel.CommandIdentifier, commandDataModel));
-        DefaultCommandStore commandStore = new(_commandsCacheMock.Object);
+        _commandsCacheMock.Setup(x => x.Add(_commandDataModel.CommandIdentifier, _commandDataModel));
+        ICommandStore commandStore = new DefaultCommandStore(_commandsCacheMock.Object);
 
         // Act
-        await commandStore.SaveAsync(commandDataModel, isNew);
+        await commandStore.SaveAsync(_commandDataModel, isNew);
 
         // Assert
-        _commandsCacheMock.Verify(x => x.Add(commandDataModel.CommandIdentifier, commandDataModel), Times.Once);
-        _identityServiceMock.VerifyAll();
+        _commandsCacheMock.Verify(x => x.Add(_commandDataModel.CommandIdentifier, _commandDataModel), Times.Once);
     }
 }

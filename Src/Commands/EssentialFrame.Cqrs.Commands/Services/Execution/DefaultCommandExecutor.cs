@@ -4,6 +4,7 @@ using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 using EssentialFrame.Cqrs.Commands.Services.Execution.Interfaces;
 using EssentialFrame.Extensions;
+using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Cqrs.Commands.Services.Execution;
 
@@ -55,6 +56,39 @@ internal sealed class DefaultCommandExecutor : ICommandExecutor, ICommandSchedul
         ICommandRepository commandStore = GetCommandsRepository(scope);
 
         await commandStore.StartExecutionAsync(command, cancellationToken);
+
+        IAsyncCommandHandler<TCommand> handler = FindHandler<TCommand, IAsyncCommandHandler<TCommand>>(command, scope);
+        ICommandResult commandResult = await handler.HandleAsync(command, cancellationToken);
+
+        await commandStore.CompleteExecutionAsync(command.CommandIdentifier, commandResult.IsSuccess,
+            cancellationToken);
+
+        return commandResult;
+    }
+
+    public ICommandResult SendAndStore<TCommand>(TCommand command, ISerializer serializer)
+        where TCommand : class, ICommand
+    {
+        using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
+        ICommandRepository commandStore = GetCommandsRepository(scope);
+
+        commandStore.StartExecution(command, serializer);
+
+        ICommandHandler<TCommand> handler = FindHandler<TCommand, ICommandHandler<TCommand>>(command, scope);
+        ICommandResult commandResult = handler.Handle(command);
+
+        commandStore.CompleteExecution(command.CommandIdentifier, commandResult.IsSuccess);
+
+        return commandResult;
+    }
+
+    public async Task<ICommandResult> SendAndStoreAsync<TCommand>(TCommand command, ISerializer serializer,
+        CancellationToken cancellationToken = default) where TCommand : class, ICommand
+    {
+        await using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
+        ICommandRepository commandStore = GetCommandsRepository(scope);
+
+        await commandStore.StartExecutionAsync(command, serializer, cancellationToken);
 
         IAsyncCommandHandler<TCommand> handler = FindHandler<TCommand, IAsyncCommandHandler<TCommand>>(command, scope);
         ICommandResult commandResult = await handler.HandleAsync(command, cancellationToken);

@@ -3,6 +3,7 @@ using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Exceptions;
 using EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence.Models;
+using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Cqrs.Commands.Persistence;
 
@@ -10,17 +11,22 @@ public sealed class CommandRepository : ICommandRepository
 {
     private readonly ICommandMapper _commandMapper;
     private readonly ICommandStore _commandStore;
+    private readonly ICommandDataModelService _commandDataModelService;
 
-    public CommandRepository(ICommandStore commandStore, ICommandMapper commandMapper)
+    public CommandRepository(ICommandStore commandStore, ICommandMapper commandMapper,
+        ICommandDataModelService commandDataModelService)
     {
         _commandStore = commandStore ?? throw new ArgumentNullException(nameof(commandStore));
         _commandMapper = commandMapper ?? throw new ArgumentNullException(nameof(commandMapper));
+
+        _commandDataModelService =
+            commandDataModelService ?? throw new ArgumentNullException(nameof(commandDataModelService));
     }
 
     public void StartExecution(ICommand command)
     {
         CommandDataModel commandDataModel = _commandMapper.Map(command);
-        commandDataModel.Start();
+        _commandDataModelService.Start(commandDataModel);
 
         _commandStore.Save(commandDataModel, true);
     }
@@ -28,7 +34,24 @@ public sealed class CommandRepository : ICommandRepository
     public async Task StartExecutionAsync(ICommand command, CancellationToken cancellationToken = default)
     {
         CommandDataModel commandDataModel = _commandMapper.Map(command);
-        commandDataModel.Start();
+        _commandDataModelService.Start(commandDataModel);
+
+        await _commandStore.SaveAsync(commandDataModel, true, cancellationToken);
+    }
+
+    public void StartExecution(ICommand command, ISerializer serializer)
+    {
+        CommandDataModel commandDataModel = _commandMapper.Map(command, serializer);
+        _commandDataModelService.Start(commandDataModel);
+
+        _commandStore.Save(commandDataModel, true);
+    }
+
+    public async Task StartExecutionAsync(ICommand command, ISerializer serializer,
+        CancellationToken cancellationToken = default)
+    {
+        CommandDataModel commandDataModel = _commandMapper.Map(command, serializer);
+        _commandDataModelService.Start(commandDataModel);
 
         await _commandStore.SaveAsync(commandDataModel, true, cancellationToken);
     }
@@ -42,7 +65,7 @@ public sealed class CommandRepository : ICommandRepository
             throw new CommandNotFoundException(commandIdentifier);
         }
 
-        commandDataModel.Cancel();
+        _commandDataModelService.Cancel(commandDataModel);
         _commandStore.Save(commandDataModel, false);
     }
 
@@ -55,7 +78,7 @@ public sealed class CommandRepository : ICommandRepository
             throw new CommandNotFoundException(commandIdentifier);
         }
 
-        commandDataModel.Cancel();
+        _commandDataModelService.Cancel(commandDataModel);
 
         await _commandStore.SaveAsync(commandDataModel, false, cancellationToken);
     }
@@ -63,7 +86,7 @@ public sealed class CommandRepository : ICommandRepository
     public void ScheduleExecution(ICommand command, DateTimeOffset at)
     {
         CommandDataModel commandDataModel = _commandMapper.Map(command);
-        commandDataModel.Schedule(at);
+        _commandDataModelService.Schedule(commandDataModel, at);
 
         _commandStore.Save(commandDataModel, true);
     }
@@ -72,7 +95,7 @@ public sealed class CommandRepository : ICommandRepository
         CancellationToken cancellationToken = default)
     {
         CommandDataModel commandDataModel = _commandMapper.Map(command);
-        commandDataModel.Start();
+        _commandDataModelService.Schedule(commandDataModel, at);
 
         await _commandStore.SaveAsync(commandDataModel, true, cancellationToken);
     }
@@ -86,7 +109,7 @@ public sealed class CommandRepository : ICommandRepository
             throw new CommandNotFoundException(commandIdentifier);
         }
 
-        commandDataModel.Complete(isSuccess);
+        _commandDataModelService.Complete(commandDataModel, isSuccess);
         _commandStore.Save(commandDataModel, false);
     }
 
@@ -100,7 +123,7 @@ public sealed class CommandRepository : ICommandRepository
             throw new CommandNotFoundException(commandIdentifier);
         }
 
-        commandDataModel.Complete(isSuccess);
+        _commandDataModelService.Complete(commandDataModel, isSuccess);
 
         await _commandStore.SaveAsync(commandDataModel, false, cancellationToken);
     }

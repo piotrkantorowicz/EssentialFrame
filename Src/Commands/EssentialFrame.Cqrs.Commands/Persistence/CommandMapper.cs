@@ -8,16 +8,22 @@ namespace EssentialFrame.Cqrs.Commands.Persistence;
 
 internal sealed class CommandMapper : ICommandMapper
 {
-    private readonly ISerializer _serializer;
+    private readonly ICommandDataModelService _commandDataModelService;
 
-    public CommandMapper(ISerializer serializer)
+    public CommandMapper(ICommandDataModelService commandDataModelService)
     {
-        _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+        _commandDataModelService =
+            commandDataModelService ?? throw new ArgumentNullException(nameof(commandDataModelService));
     }
 
     public CommandDataModel Map(ICommand command)
     {
-        return new CommandDataModel(command);
+        return _commandDataModelService.Create(command);
+    }
+
+    public CommandDataModel Map(ICommand command, ISerializer serializer)
+    {
+        return _commandDataModelService.Create(command, serializer);
     }
 
     public IReadOnlyCollection<CommandDataModel> Map(IEnumerable<ICommand> commands)
@@ -25,17 +31,22 @@ internal sealed class CommandMapper : ICommandMapper
         return commands.Select(Map).ToList();
     }
 
+    public IReadOnlyCollection<CommandDataModel> Map(IEnumerable<ICommand> commands, ISerializer serializer)
+    {
+        return commands.Select(c => Map(c, serializer)).ToList();
+    }
+
     public ICommand Map(CommandDataModel commandDataModel)
     {
-        object command = commandDataModel.Command;
+        return commandDataModel.Command as ICommand;
+    }
 
-        if (command is not string serializedCommand)
-        {
-            return command as ICommand;
-        }
+    public ICommand Map(CommandDataModel commandDataModel, ISerializer serializer)
+    {
+        string serializedCommand = commandDataModel.Command as string;
 
         ICommand deserialized =
-            _serializer.Deserialize<ICommand>(serializedCommand, Type.GetType(commandDataModel.CommandClass));
+            serializer.Deserialize<ICommand>(serializedCommand, Type.GetType(commandDataModel.CommandClass));
 
         if (deserialized is null)
         {
@@ -48,5 +59,10 @@ internal sealed class CommandMapper : ICommandMapper
     public IReadOnlyCollection<ICommand> Map(IEnumerable<CommandDataModel> commandDataModels)
     {
         return commandDataModels.Select(Map).ToList();
+    }
+
+    public IReadOnlyCollection<ICommand> Map(IEnumerable<CommandDataModel> commandDataModels, ISerializer serializer)
+    {
+        return commandDataModels.Select(c => Map(c, serializer)).ToList();
     }
 }
