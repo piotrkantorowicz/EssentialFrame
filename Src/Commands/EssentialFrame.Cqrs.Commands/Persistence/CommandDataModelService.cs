@@ -12,7 +12,7 @@ internal sealed class CommandDataModelService : ICommandDataModelService
 {
     public CommandDataModel Create(ICommand command)
     {
-        CommandDataModel commandDataModel = new CommandDataModel();
+        CommandDataModel commandDataModel = new();
 
         ValidateCommand(command);
         ValidateCommandType(command.GetTypeFullName());
@@ -29,7 +29,7 @@ internal sealed class CommandDataModelService : ICommandDataModelService
 
     public CommandDataModel Create(ICommand command, ISerializer serializer)
     {
-        CommandDataModel commandDataModel = new CommandDataModel();
+        CommandDataModel commandDataModel = new();
 
         ValidateCommand(command);
         ValidateCommandType(command.GetTypeFullName());
