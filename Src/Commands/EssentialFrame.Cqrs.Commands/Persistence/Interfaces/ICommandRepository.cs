@@ -1,4 +1,5 @@
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
+using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 
@@ -7,6 +8,10 @@ public interface ICommandRepository
     void StartExecution(ICommand command);
 
     Task StartExecutionAsync(ICommand command, CancellationToken cancellationToken = default);
+
+    void StartExecution(ICommand command, ISerializer serializer);
+
+    Task StartExecutionAsync(ICommand command, ISerializer serializer, CancellationToken cancellationToken = default);
 
     void CancelExecution(Guid commandIdentifier);
 
