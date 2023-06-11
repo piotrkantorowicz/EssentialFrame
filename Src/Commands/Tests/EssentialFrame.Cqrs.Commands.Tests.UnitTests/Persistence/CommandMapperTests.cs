@@ -259,7 +259,7 @@ public class CommandMapperTests
 
     private CommandDataModel GenerateCommandDataModel(ICommand command, ISerializer serializer = null)
     {
-        CommandDataModel commandDataMode = new CommandDataModel
+        CommandDataModel commandDataModel = new()
         {
             CommandIdentifier = command.CommandIdentifier,
             CommandClass = command.GetClassName(),
@@ -268,7 +268,7 @@ public class CommandMapperTests
             CreatedAt = SystemClock.UtcNow
         };
 
-        return commandDataMode;
+        return commandDataModel;
     }
 
     private IReadOnlyCollection<ICommand> GenerateCommands()
