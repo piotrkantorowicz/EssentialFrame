@@ -16,7 +16,7 @@ internal sealed class CommandDataModelService : ICommandDataModelService
 
         ValidateCommand(command);
         ValidateCommandType(command.GetTypeFullName());
-        ValidateCommandType(command.GetClassName());
+        ValidateCommandClass(command.GetClassName());
 
         commandDataModel.CommandIdentifier = command.CommandIdentifier;
         commandDataModel.CommandClass = command.GetClassName();
@@ -33,7 +33,7 @@ internal sealed class CommandDataModelService : ICommandDataModelService
 
         ValidateCommand(command);
         ValidateCommandType(command.GetTypeFullName());
-        ValidateCommandType(command.GetClassName());
+        ValidateCommandClass(command.GetClassName());
 
         commandDataModel.CommandIdentifier = command.CommandIdentifier;
         commandDataModel.CommandClass = command.GetClassName();
