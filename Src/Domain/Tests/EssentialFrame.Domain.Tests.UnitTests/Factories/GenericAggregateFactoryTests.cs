@@ -39,7 +39,7 @@ public sealed class GenericAggregateFactoryTests
 
         // Act
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-                identityService);
+            identityService);
 
         // Assert
         aggregate.Should().NotBeNull();

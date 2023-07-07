@@ -27,8 +27,7 @@ public class ChangeDescriptionDomainEvent : DomainEventBase
 
     public ChangeDescriptionDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier,
         IIdentityContext identityContext, int expectedVersion, string newDescription) : base(aggregateIdentifier,
-        eventIdentifier, identityContext,
-        expectedVersion)
+        eventIdentifier, identityContext, expectedVersion)
     {
         NewDescription = newDescription;
     }

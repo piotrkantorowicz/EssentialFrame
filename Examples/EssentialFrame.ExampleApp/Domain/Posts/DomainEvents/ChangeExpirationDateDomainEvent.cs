@@ -28,8 +28,7 @@ public class ChangeExpirationDateDomainEvent : DomainEventBase
 
     public ChangeExpirationDateDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier,
         IIdentityContext identityContext, int expectedVersion, DateTimeOffset newExpirationDate) : base(
-        aggregateIdentifier, eventIdentifier, identityContext,
-        expectedVersion)
+        aggregateIdentifier, eventIdentifier, identityContext, expectedVersion)
     {
         NewExpirationDate = newExpirationDate;
     }

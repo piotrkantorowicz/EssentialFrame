@@ -9,9 +9,9 @@ namespace EssentialFrame.Cqrs.Commands.Persistence;
 
 public sealed class CommandRepository : ICommandRepository
 {
+    private readonly ICommandDataModelService _commandDataModelService;
     private readonly ICommandMapper _commandMapper;
     private readonly ICommandStore _commandStore;
-    private readonly ICommandDataModelService _commandDataModelService;
 
     public CommandRepository(ICommandStore commandStore, ICommandMapper commandMapper,
         ICommandDataModelService commandDataModelService)

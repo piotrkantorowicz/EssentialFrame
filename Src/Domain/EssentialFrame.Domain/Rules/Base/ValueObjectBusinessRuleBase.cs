@@ -12,10 +12,11 @@ public abstract class ValueObjectBusinessRuleBase : IBusinessRule
         Parameters.Add(BusinessRulesUtils.ValueObjectType, valueObjectType);
     }
 
+    protected Type ValueObjectType { get; }
+
     public abstract string Message { get; }
 
     public IDictionary<string, object> Parameters { get; }
-    protected Type ValueObjectType { get; }
 
     public abstract bool IsBroken();
     public abstract void AddExtraParameters();

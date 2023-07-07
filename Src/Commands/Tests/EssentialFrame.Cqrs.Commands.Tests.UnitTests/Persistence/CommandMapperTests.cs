@@ -22,11 +22,6 @@ namespace EssentialFrame.Cqrs.Commands.Tests.UnitTests.Persistence;
 [TestFixture]
 public class CommandMapperTests
 {
-    private readonly Faker _faker = new();
-    private readonly Mock<ISerializer> _serializerMock = new();
-    private readonly Mock<ICommandDataModelService> _commandDataModelServiceMock = new();
-    private readonly Mock<IIdentityService> _identityServiceMock = new();
-
     [SetUp]
     public void Setup()
     {
@@ -40,6 +35,11 @@ public class CommandMapperTests
         _commandDataModelServiceMock.Reset();
         _identityServiceMock.Reset();
     }
+
+    private readonly Faker _faker = new();
+    private readonly Mock<ISerializer> _serializerMock = new();
+    private readonly Mock<ICommandDataModelService> _commandDataModelServiceMock = new();
+    private readonly Mock<IIdentityService> _identityServiceMock = new();
 
     [Test]
     public void Map_WhenCommandIsNotSerialized_ShouldMapCommand()
@@ -97,7 +97,7 @@ public class CommandMapperTests
             CommandDataModel commandDataModel = GenerateCommandDataModel(command);
             _commandDataModelServiceMock.Setup(x => x.Create(command)).Returns(commandDataModel);
         }
-        
+
         // Act
         IEnumerable<CommandDataModel> result = commandMapper.Map(commands);
 

@@ -87,8 +87,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         _fileSystemMock.Verify(
-            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()),
-            Times.Once);
+            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()), Times.Once);
 
         _fileStorageMock.Verify(
             x => x.Create(directoryPath, It.IsAny<string>(), _snapshotDataModel.AggregateState.ToString(), null),
@@ -113,13 +112,11 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         _fileSystemMock.Verify(
-            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()),
-            Times.Once);
+            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()), Times.Once);
 
         _fileStorageMock.Verify(
             x => x.CreateAsync(directoryPath, It.IsAny<string>(), _snapshotDataModel.AggregateState.ToString(), null,
-                default),
-            Times.Once);
+                default), Times.Once);
     }
 
     [Test]
@@ -141,8 +138,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         _fileSystemMock.Verify(
-            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()),
-            Times.Once);
+            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()), Times.Once);
 
         _fileStorageMock.Verify(
             x => x.Create(directoryPath, It.IsAny<string>(), _snapshotDataModel.AggregateState.ToString(), null),
@@ -168,13 +164,11 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         _fileSystemMock.Verify(
-            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()),
-            Times.Once);
+            x => x.Path.Combine(It.IsAny<string>(), _snapshotDataModel.AggregateIdentifier.ToString()), Times.Once);
 
         _fileStorageMock.Verify(
             x => x.CreateAsync(directoryPath, It.IsAny<string>(), _snapshotDataModel.AggregateState.ToString(), null,
-                default),
-            Times.Once);
+                default), Times.Once);
     }
 
     [Test]
@@ -204,8 +198,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         _fileSystemMock.Verify(
-            x => x.Path.Combine(It.IsAny<string>(), snapshotDataModel.AggregateIdentifier.ToString()),
-            Times.Once);
+            x => x.Path.Combine(It.IsAny<string>(), snapshotDataModel.AggregateIdentifier.ToString()), Times.Once);
 
         _serializerMock.Verify(x => x.Serialize(snapshotDataModel.AggregateState), Times.Once);
 
@@ -239,8 +232,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         _fileSystemMock.Verify(
-            x => x.Path.Combine(It.IsAny<string>(), snapshotDataModel.AggregateIdentifier.ToString()),
-            Times.Once);
+            x => x.Path.Combine(It.IsAny<string>(), snapshotDataModel.AggregateIdentifier.ToString()), Times.Once);
 
         _serializerMock.Verify(x => x.Serialize(snapshotDataModel.AggregateState), Times.Once);
 

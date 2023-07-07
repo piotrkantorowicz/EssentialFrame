@@ -19,10 +19,6 @@ namespace EssentialFrame.Domain.Events.Tests.UnitTests.Events;
 [TestFixture]
 public class DomainEventMapperTests
 {
-    private readonly Faker _faker = new();
-    private readonly Mock<IIdentityService> _identityServiceMock = new();
-    private readonly Mock<ISerializer> _serializerMock = new();
-
     [SetUp]
     public void Setup()
     {
@@ -35,6 +31,10 @@ public class DomainEventMapperTests
         _identityServiceMock.Reset();
         _serializerMock.Reset();
     }
+
+    private readonly Faker _faker = new();
+    private readonly Mock<IIdentityService> _identityServiceMock = new();
+    private readonly Mock<ISerializer> _serializerMock = new();
 
     [Test]
     public void Map_WhenEventIsNotSerialized_ShouldMapDomainEventToDomainEventDataModel()

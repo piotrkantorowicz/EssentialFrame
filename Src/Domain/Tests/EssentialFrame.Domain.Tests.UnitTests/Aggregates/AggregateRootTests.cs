@@ -62,10 +62,8 @@ public sealed class AggregateRootTests
             aggregateVersion, _identityServiceMock.Object);
 
         PostState expectedAggregateState = aggregate.CreateState(Title.Create(_faker.Lorem.Sentence(), false),
-            _faker.Lorem.Sentences(), _faker.Date.FutureOffset(), new HashSet<Image>
-            {
-                Image.Create(_faker.Random.Guid(), _faker.Lorem.Word(), _faker.Random.Bytes(300))
-            });
+            _faker.Lorem.Sentences(), _faker.Date.FutureOffset(),
+            new HashSet<Image> { Image.Create(_faker.Random.Guid(), _faker.Lorem.Word(), _faker.Random.Bytes(300)) });
 
         aggregate.RestoreState(expectedAggregateState);
 
@@ -323,10 +321,7 @@ public sealed class AggregateRootTests
         Guid imageId = _faker.Random.Guid();
         string imageName = _faker.Lorem.Word();
 
-        HashSet<Image> images = new()
-        {
-            Image.Create(imageId, _faker.Lorem.Word(), _faker.Random.Bytes(200))
-        };
+        HashSet<Image> images = new() { Image.Create(imageId, _faker.Lorem.Word(), _faker.Random.Bytes(200)) };
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 

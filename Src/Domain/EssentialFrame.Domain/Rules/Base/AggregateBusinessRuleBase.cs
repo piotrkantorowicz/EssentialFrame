@@ -14,13 +14,13 @@ public abstract class AggregateBusinessRuleBase : IBusinessRule
         Parameters.Add(BusinessRulesUtils.AggregateType, AggregateType.FullName);
     }
 
-    public abstract string Message { get; }
-
-    public IDictionary<string, object> Parameters { get; }
-
     protected Guid AggregateIdentifier { get; }
 
     protected Type AggregateType { get; }
+
+    public abstract string Message { get; }
+
+    public IDictionary<string, object> Parameters { get; }
 
     public abstract bool IsBroken();
     public abstract void AddExtraParameters();

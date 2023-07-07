@@ -8,8 +8,8 @@ namespace EssentialFrame.Domain.Events.Persistence.DomainEvents;
 internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 {
     private readonly ICache<Guid, AggregateRoot> _aggregateCache;
-    private readonly ICache<Guid, DomainEventDataModel> _eventsCache;
     private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
+    private readonly ICache<Guid, DomainEventDataModel> _eventsCache;
 
     public DefaultDomainEventsStore(ICache<Guid, DomainEventDataModel> eventsCache,
         ICache<Guid, AggregateRoot> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage)

@@ -13,13 +13,13 @@ namespace EssentialFrame.Domain.Events.Persistence.Snapshots;
 public class SnapshotRepository : ISnapshotRepository
 {
     private readonly ICache<Guid, AggregateRoot> _cache;
+    private readonly IDomainEventMapper _domainEventMapper;
     private readonly IDomainEventsRepository _domainEventsRepository;
     private readonly IDomainEventsStore _domainEventsStore;
     private readonly ISerializer _serializer;
+    private readonly ISnapshotMapper _snapshotMapper;
     private readonly ISnapshotStore _snapshotStore;
     private readonly ISnapshotStrategy _snapshotStrategy;
-    private readonly ISnapshotMapper _snapshotMapper;
-    private readonly IDomainEventMapper _domainEventMapper;
 
     public SnapshotRepository(IDomainEventsStore domainEventsStore, IDomainEventsRepository domainEventsRepository,
         ISnapshotStore snapshotStore, ISnapshotStrategy snapshotStrategy, ISerializer serializer,

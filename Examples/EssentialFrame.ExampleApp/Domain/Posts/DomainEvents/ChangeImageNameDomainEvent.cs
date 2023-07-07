@@ -29,8 +29,7 @@ public class ChangeImageNameDomainEvent : DomainEventBase
 
     public ChangeImageNameDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
         int expectedVersion, Guid imageId, string newImageName) : base(aggregateIdentifier, eventIdentifier,
-        identityContext,
-        expectedVersion)
+        identityContext, expectedVersion)
     {
         ImageId = imageId;
         NewImageName = newImageName;
