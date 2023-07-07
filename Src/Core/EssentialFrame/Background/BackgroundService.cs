@@ -13,6 +13,7 @@ public abstract class BackgroundService : IHostedService, IBackgroundService, ID
 
     public virtual void Dispose()
     {
+        GC.SuppressFinalize(this);
         _stoppingCts.Cancel();
     }
 
