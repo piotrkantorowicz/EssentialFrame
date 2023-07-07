@@ -16,13 +16,13 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
     private const string EventsFileName = "events.json";
     private const string MetadataFileName = "metadata.txt";
     private const string IndexFileName = "boxes.csv";
-    private readonly IDomainEventMapper _domainEventMapper;
-
+    
     private readonly IFileStorage _fileStorage;
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<AggregateOfflineStorage> _logger;
-    private readonly string _offlineStorageDirectory;
+    private readonly IDomainEventMapper _domainEventMapper;
     private readonly ISerializer _serializer;
+    private readonly string _offlineStorageDirectory;
 
     public AggregateOfflineStorage(IFileStorage fileStorage, IFileSystem fileSystem,
         ILogger<AggregateOfflineStorage> logger, IDomainEventMapper domainEventMapper, ISerializer serializer,
