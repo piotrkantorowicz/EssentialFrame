@@ -15,7 +15,12 @@ public class SerializerTests
 {
     private static readonly Faker Faker = new();
     private readonly ISerializer _serializer = new DefaultJsonSerializer();
-
+    
+    private readonly ISerializer _customSetupSerializer = new DefaultJsonSerializer(new JsonSerializerOptions
+    {
+        WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    });
+    
     private static readonly BasicSerializationTestObject BasicObject = new()
     {
         PrimaryId = Faker.Random.Guid(),
@@ -48,13 +53,8 @@ public class SerializerTests
     public void SerializeWithOptions_Always_ShouldSerializeObject(object serializedObject)
     {
         // Arrange
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
         // Act
-        string result = _serializer.Serialize(serializedObject, options);
+        string result = _customSetupSerializer.Serialize(serializedObject);
 
         // Assert
         result.Should().NotBeNullOrEmpty();
@@ -77,15 +77,11 @@ public class SerializerTests
     public void DeserializeBasicObjectWithOptions_Always_ShouldDeserializeObject()
     {
         // Arrange
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        string serializedObj = _serializer.Serialize(BasicObject, options);
+        // Act
+        string serializedObj = _customSetupSerializer.Serialize(BasicObject);
 
         // Act
-        SerializationTestObject result = _serializer.Deserialize<SerializationTestObject>(serializedObj, options);
+        SerializationTestObject result = _customSetupSerializer.Deserialize<SerializationTestObject>(serializedObj);
 
         // Assert
         result.Should().BeEquivalentTo(BasicObject);
@@ -109,17 +105,12 @@ public class SerializerTests
     public void DeserializeBasicObjectWithOptions_Always_ShouldDeserializeObjectWithCustomType()
     {
         // Arrange
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        string serializedObj = _serializer.Serialize(BasicObject);
+        // Act
+        string serializedObj = _customSetupSerializer.Serialize(BasicObject);
 
         // Act
         BasicSerializationTestObject result =
-            _serializer.Deserialize<BasicSerializationTestObject>(serializedObj, typeof(BasicSerializationTestObject),
-                options);
+            _customSetupSerializer.Deserialize<BasicSerializationTestObject>(serializedObj, typeof(BasicSerializationTestObject));
 
         // Assert
         result.Should().BeEquivalentTo(BasicObject);
@@ -143,15 +134,11 @@ public class SerializerTests
     public void DeserializeBasicObjectWithOptions_Always_ShouldDeserializeObjectWithUnspecifiedType()
     {
         // Arrange
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        string serializedObj = _serializer.Serialize(BasicObject);
+        // Act
+        string serializedObj = _customSetupSerializer.Serialize(BasicObject);
 
         // Act
-        object result = _serializer.Deserialize(serializedObj, typeof(SerializationTestObject), options);
+        object result = _customSetupSerializer.Deserialize(serializedObj, typeof(SerializationTestObject));
 
         // Assert
         result.Should().BeEquivalentTo(BasicObject);
@@ -174,15 +161,11 @@ public class SerializerTests
     public void DeserializeComplexObjectWithOptions_Always_ShouldDeserializeObject()
     {
         // Arrange
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        string serializedObj = _serializer.Serialize(ComplexObject, options);
+        // Act
+        string serializedObj = _customSetupSerializer.Serialize(ComplexObject);
 
         // Act
-        SerializationTestObject result = _serializer.Deserialize<SerializationTestObject>(serializedObj, options);
+        SerializationTestObject result = _customSetupSerializer.Deserialize<SerializationTestObject>(serializedObj);
 
         // Assert
         result.Should().BeEquivalentTo(ComplexObject);
@@ -207,16 +190,12 @@ public class SerializerTests
     public void DeserializeComplexObjectWithOptions_Always_ShouldDeserializeObjectWithCustomType()
     {
         // Arrange
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
+        // Act
         string serializedObj = _serializer.Serialize(ComplexObject);
 
         // Act
         SerializationTestObject result =
-            _serializer.Deserialize<SerializationTestObject>(serializedObj, typeof(SerializationTestObject), options);
+            _customSetupSerializer.Deserialize<SerializationTestObject>(serializedObj, typeof(SerializationTestObject));
 
         // Assert
         result.Should().BeEquivalentTo(ComplexObject);
@@ -239,15 +218,11 @@ public class SerializerTests
     public void DeserializeComplexObjectWithOptions_Always_ShouldDeserializeObjectWithUnspecifiedType()
     {
         // Arrange
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        string serializedObj = _serializer.Serialize(ComplexObject);
+        // Act
+        string serializedObj = _customSetupSerializer.Serialize(ComplexObject);
 
         // Act
-        object result = _serializer.Deserialize(serializedObj, typeof(SerializationTestObject), options);
+        object result = _customSetupSerializer.Deserialize(serializedObj, typeof(SerializationTestObject));
 
         // Assert
         result.Should().BeEquivalentTo(ComplexObject);

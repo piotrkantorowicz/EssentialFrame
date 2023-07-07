@@ -6,47 +6,32 @@ namespace EssentialFrame.Serialization;
 
 public class DefaultJsonSerializer : ISerializer
 {
-    public T Deserialize<T>(string value)
+    private readonly JsonSerializerOptions _serializerOptions;
+    
+    public DefaultJsonSerializer(JsonSerializerOptions serializerOptions = null)
     {
-        return JsonSerializer.Deserialize<T>(value);
+        _serializerOptions = serializerOptions;
     }
 
-    public T Deserialize<T>(string value, JsonSerializerOptions options)
+    public T Deserialize<T>(string value)
     {
-        return JsonSerializer.Deserialize<T>(value, options);
+        return JsonSerializer.Deserialize<T>(value, _serializerOptions);
     }
 
     public T Deserialize<T>(string value, Type type) where T : class
     {
-        object deserialized = JsonSerializer.Deserialize(value, type);
-
-        return deserialized as T;
-    }
-
-    public T Deserialize<T>(string value, Type type, JsonSerializerOptions options) where T : class
-    {
-        object deserialized = JsonSerializer.Deserialize(value, type, options);
+        object deserialized = JsonSerializer.Deserialize(value, type, _serializerOptions);
 
         return deserialized as T;
     }
 
     public object Deserialize(string value, Type type)
     {
-        return JsonSerializer.Deserialize(value, type);
-    }
-
-    public object Deserialize(string value, Type type, JsonSerializerOptions options)
-    {
-        return JsonSerializer.Deserialize(value, type, options);
+        return JsonSerializer.Deserialize(value, type, _serializerOptions);
     }
 
     public string Serialize<T>(T value)
     {
-        return JsonSerializer.Serialize(value);
-    }
-
-    public string Serialize<T>(T value, JsonSerializerOptions options)
-    {
-        return JsonSerializer.Serialize(value, options);
+        return JsonSerializer.Serialize(value, _serializerOptions);
     }
 }
