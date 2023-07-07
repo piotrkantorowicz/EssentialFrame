@@ -14,13 +14,13 @@ public abstract class EntityBusinessRuleBase : IBusinessRule
         Parameters.Add(BusinessRulesUtils.EntityType, entityType.FullName);
     }
 
-    public abstract string Message { get; }
-
-    public IDictionary<string, object> Parameters { get; }
-
     protected Guid EntityIdentifier { get; }
 
     protected Type EntityType { get; }
+
+    public abstract string Message { get; }
+
+    public IDictionary<string, object> Parameters { get; }
 
     public abstract bool IsBroken();
     public abstract void AddExtraParameters();

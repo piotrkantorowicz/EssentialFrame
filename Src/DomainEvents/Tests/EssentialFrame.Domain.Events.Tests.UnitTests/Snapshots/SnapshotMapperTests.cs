@@ -14,9 +14,6 @@ namespace EssentialFrame.Domain.Events.Tests.UnitTests.Snapshots;
 [TestFixture]
 public class SnapshotMapperTests
 {
-    private readonly Faker _faker = new();
-    private readonly Mock<IIdentityService> _identityServiceMock = new();
-
     [SetUp]
     public void Setup()
     {
@@ -28,6 +25,9 @@ public class SnapshotMapperTests
     {
         _identityServiceMock.Reset();
     }
+
+    private readonly Faker _faker = new();
+    private readonly Mock<IIdentityService> _identityServiceMock = new();
 
     [Test]
     public void Map_Always_ShouldMapSnapshotToSnapshotDataModel()

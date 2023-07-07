@@ -19,11 +19,6 @@ namespace EssentialFrame.Cqrs.Commands.Tests.UnitTests.Persistence;
 [TestFixture]
 public class DefaultCommandStoreTests
 {
-    private readonly Faker _faker = new();
-    private Mock<ICache<Guid, CommandDataModel>> _commandsCacheMock;
-    private Mock<IIdentityService> _identityServiceMock;
-    private CommandDataModel _commandDataModel;
-    
     [SetUp]
     public void SetUp()
     {
@@ -49,6 +44,11 @@ public class DefaultCommandStoreTests
         _commandsCacheMock.Reset();
         _identityServiceMock.Reset();
     }
+
+    private readonly Faker _faker = new();
+    private Mock<ICache<Guid, CommandDataModel>> _commandsCacheMock;
+    private Mock<IIdentityService> _identityServiceMock;
+    private CommandDataModel _commandDataModel;
 
     [Test]
     public void Exists_WhenCommandIdentifierIsProvided_ShouldReturnTrue()

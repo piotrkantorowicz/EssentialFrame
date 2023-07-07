@@ -397,13 +397,15 @@ public class DefaultDomainEventStoreTests
                 Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
             new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
-            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), new HashSet<Image>
+            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+                new HashSet<Image>
                 {
                     Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(389))
                 }),
             new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 _faker.Lorem.Sentences()),
-            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), new HashSet<Image>
+            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+                new HashSet<Image>
                 {
                     Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(2346)),
                     Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(982))

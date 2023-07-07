@@ -114,8 +114,7 @@ public sealed class DomainEventTests
 
         // Act
         @event = new ChangeDescriptionDomainEvent(aggregateIdentifier, eventIdentifier, identityContext,
-            aggregateVersion,
-            description);
+            aggregateVersion, description);
 
         // Assert
         AssertIdentity(identityContext, @event);

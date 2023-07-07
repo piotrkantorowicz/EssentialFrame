@@ -37,7 +37,7 @@ public class AggregateOfflineStorageTests
     {
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
         _logger = NullLoggerFactory.Instance.CreateLogger<AggregateOfflineStorage>();
-        
+
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 

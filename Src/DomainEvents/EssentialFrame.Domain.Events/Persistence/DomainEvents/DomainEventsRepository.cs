@@ -8,9 +8,9 @@ namespace EssentialFrame.Domain.Events.Persistence.DomainEvents;
 
 public sealed class DomainEventsRepository : IDomainEventsRepository
 {
+    private readonly IDomainEventMapper _domainEventMapper;
     private readonly ISerializer _serializer;
     private readonly IDomainEventsStore _store;
-    private readonly IDomainEventMapper _domainEventMapper;
 
     public DomainEventsRepository(IDomainEventsStore store, ISerializer serializer,
         IDomainEventMapper domainEventMapper)

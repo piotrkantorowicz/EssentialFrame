@@ -20,11 +20,6 @@ namespace EssentialFrame.Cqrs.Commands.Tests.UnitTests.Persistence;
 [TestFixture]
 public class CommandDataModelServiceTests
 {
-    private readonly Faker _faker = new();
-    private readonly Mock<ISerializer> _serializerMock = new();
-    private readonly Mock<IIdentityService> _identityServiceMock = new();
-    private CommandDataModel _commandDataModel;
-
     [SetUp]
     public void Setup()
     {
@@ -47,6 +42,11 @@ public class CommandDataModelServiceTests
         _serializerMock.Reset();
         _identityServiceMock.Reset();
     }
+
+    private readonly Faker _faker = new();
+    private readonly Mock<ISerializer> _serializerMock = new();
+    private readonly Mock<IIdentityService> _identityServiceMock = new();
+    private CommandDataModel _commandDataModel;
 
     [Test]
     public void Create_WhenCommandIsProvided_ShouldReturnCommandDataModel()
