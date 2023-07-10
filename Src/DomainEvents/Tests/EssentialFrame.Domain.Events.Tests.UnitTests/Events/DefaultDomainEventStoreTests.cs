@@ -266,8 +266,7 @@ public class DefaultDomainEventStoreTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
         IEnumerable<KeyValuePair<Guid, DomainEventDataModel>> domainEventsDictionary =
             domainEventsDms?.Select(v => new KeyValuePair<Guid, DomainEventDataModel>(v.EventIdentifier, v));
@@ -293,8 +292,7 @@ public class DefaultDomainEventStoreTests
         // Arrange
         Guid aggregateIdentifier = Guid.NewGuid();
         int aggregateVersion = _faker.Random.Int();
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
         IEnumerable<KeyValuePair<Guid, DomainEventDataModel>> domainEventsDictionary =
             domainEventsDms?.Select(v => new KeyValuePair<Guid, DomainEventDataModel>(v.EventIdentifier, v));
@@ -320,8 +318,7 @@ public class DefaultDomainEventStoreTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
 
         _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregate);
@@ -347,8 +344,7 @@ public class DefaultDomainEventStoreTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
 
         _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregate);
@@ -372,12 +368,9 @@ public class DefaultDomainEventStoreTests
     {
         List<AggregateRoot> aggregates = new()
         {
-            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000),
-                _identityServiceMock.Object),
-            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000),
-                _identityServiceMock.Object),
-            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000),
-                _identityServiceMock.Object)
+            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000)),
+            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000)),
+            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000))
         };
 
         return aggregates;
@@ -385,35 +378,33 @@ public class DefaultDomainEventStoreTests
 
     private List<DomainEventDataModel> GenerateDomainEventsCollection(Guid aggregateIdentifier)
     {
+        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
+
         List<IDomainEvent> domainEvents = new()
         {
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Lorem.Sentences()),
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, identityContext, _faker.Lorem.Sentences()),
+            new ChangeTitleDomainEvent(aggregateIdentifier, identityContext,
                 Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Lorem.Sentences()),
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, identityContext, _faker.Lorem.Sentences()),
+            new ChangeTitleDomainEvent(aggregateIdentifier, identityContext,
                 Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ChangeTitleDomainEvent(aggregateIdentifier, identityContext,
                 Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
-            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new AddImagesDomainEvent(aggregateIdentifier, identityContext,
                 new HashSet<Image>
                 {
                     Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(389))
                 }),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Lorem.Sentences()),
-            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, identityContext, _faker.Lorem.Sentences()),
+            new AddImagesDomainEvent(aggregateIdentifier, identityContext,
                 new HashSet<Image>
                 {
                     Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(2346)),
                     Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(982))
                 }),
-            new ChangeImageNameDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Random.Guid(), _faker.Lorem.Word()),
-            new ChangeExpirationDateDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Date.Future())
+            new ChangeImageNameDomainEvent(aggregateIdentifier, identityContext, _faker.Random.Guid(),
+                _faker.Lorem.Word()),
+            new ChangeExpirationDateDomainEvent(aggregateIdentifier, identityContext, _faker.Date.Future())
         };
 
         List<DomainEventDataModel> domainEventDms = domainEvents.Select(e => new DomainEventDataModel

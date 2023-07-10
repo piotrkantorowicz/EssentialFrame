@@ -202,6 +202,7 @@ public sealed class DomainEventTests
         @event.AggregateVersion.Should().Be(0);
         @event.NewImages.Should().BeSameAs(images);
 
+
         // Act
         @event = new AddImagesDomainEvent(aggregateIdentifier, eventIdentifier, identityContext, images);
 

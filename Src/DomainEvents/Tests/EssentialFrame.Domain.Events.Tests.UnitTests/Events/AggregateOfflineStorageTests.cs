@@ -35,20 +35,21 @@ public class AggregateOfflineStorageTests
     [SetUp]
     public void SetUp()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
         _logger = NullLoggerFactory.Instance.CreateLogger<AggregateOfflineStorage>();
 
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
+        Mock<IIdentityService> identityServiceMock = new Mock<IIdentityService>();
 
-        _aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-            _identityServiceMock.Object);
+        identityServiceMock.Setup(identityService => identityService.GetCurrent()).Returns(new IdentityContext());
+
+        _aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         _domainEvents = new List<IDomainEvent>
         {
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ChangeTitleDomainEvent(aggregateIdentifier, identityServiceMock.Object.GetCurrent(),
                 Title.Create(_faker.Lorem.Sentence(), true)),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, identityServiceMock.Object.GetCurrent(),
                 _faker.Lorem.Sentences())
         };
 
@@ -70,7 +71,6 @@ public class AggregateOfflineStorageTests
         _fileStorageMock.Reset();
         _serializerMock.Reset();
         _fileSystemMock.Reset();
-        _identityServiceMock.Reset();
         _domainEventMapperMock.Reset();
         _logger = null;
     }
@@ -79,7 +79,6 @@ public class AggregateOfflineStorageTests
     private readonly Mock<IFileStorage> _fileStorageMock = new();
     private readonly Mock<ISerializer> _serializerMock = new();
     private readonly Mock<IFileSystem> _fileSystemMock = new();
-    private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IDomainEventMapper> _domainEventMapperMock = new();
 
     private ILogger<AggregateOfflineStorage> _logger;

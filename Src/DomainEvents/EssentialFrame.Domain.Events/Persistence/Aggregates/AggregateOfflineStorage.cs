@@ -16,13 +16,13 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
     private const string EventsFileName = "events.json";
     private const string MetadataFileName = "metadata.txt";
     private const string IndexFileName = "boxes.csv";
-    
+    private readonly IDomainEventMapper _domainEventMapper;
+
     private readonly IFileStorage _fileStorage;
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<AggregateOfflineStorage> _logger;
-    private readonly IDomainEventMapper _domainEventMapper;
-    private readonly ISerializer _serializer;
     private readonly string _offlineStorageDirectory;
+    private readonly ISerializer _serializer;
 
     public AggregateOfflineStorage(IFileStorage fileStorage, IFileSystem fileSystem,
         ILogger<AggregateOfflineStorage> logger, IDomainEventMapper domainEventMapper, ISerializer serializer,
@@ -53,7 +53,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
             _fileStorage.Create(aggregateDirectory, MetadataFileName, metaDataContents);
 
             string indexFileContents =
-                $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{aggregate.GetIdentity().Tenant.Name}\n";
+                $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB.\n";
 
             _fileStorage.Create(aggregateDirectory, IndexFileName, indexFileContents);
         }
@@ -87,7 +87,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
                 cancellationToken: cancellationToken);
 
             string indexFileContents =
-                $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{aggregate.GetIdentity().Tenant.Name}\n";
+                $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB.\n";
 
             await _fileStorage.CreateAsync(aggregateDirectory, IndexFileName, indexFileContents,
                 cancellationToken: cancellationToken);

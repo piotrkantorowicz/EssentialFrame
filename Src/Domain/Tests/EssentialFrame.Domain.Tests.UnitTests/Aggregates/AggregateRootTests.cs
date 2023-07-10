@@ -38,8 +38,7 @@ public sealed class AggregateRootTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         // Act
         PostState state = aggregate.CreateState();
@@ -58,8 +57,7 @@ public sealed class AggregateRootTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         PostState expectedAggregateState = aggregate.CreateState(Title.Create(_faker.Lorem.Sentence(), false),
             _faker.Lorem.Sentences(), _faker.Date.FutureOffset(),
@@ -75,7 +73,6 @@ public sealed class AggregateRootTests
 
         // Assert
         aggregate.State.Should().BeOfType(typeof(PostState));
-
         PostState aggregateState = (PostState)aggregate.State;
         AssertState(aggregateState, expectedAggregateState);
 
@@ -95,29 +92,28 @@ public sealed class AggregateRootTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
-
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         Title expectedTitle = Title.Create(_faker.Lorem.Sentence(), true);
         string expectedDescription = _faker.Lorem.Sentences();
         DateTimeOffset expectedExpiration = _faker.Date.FutureOffset();
+        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
 
         // Act
-        aggregate.ChangeTitle(expectedTitle);
+        aggregate.ChangeTitle(expectedTitle, identityContext);
 
         // Assert
         PostState aggregateState = (PostState)aggregate.State;
         aggregateState.Title.Should().Be(expectedTitle);
 
         // Act
-        aggregate.ChangeDescription(expectedDescription);
+        aggregate.ChangeDescription(expectedDescription, identityContext);
 
         // Assert
         aggregateState = (PostState)aggregate.State;
         aggregateState.Description.Should().Be(expectedDescription);
 
         // Act
-        aggregate.ExtendExpirationDate(expectedExpiration);
+        aggregate.ExtendExpirationDate(expectedExpiration, identityContext);
 
         // Assert
         aggregateState = (PostState)aggregate.State;
@@ -130,19 +126,19 @@ public sealed class AggregateRootTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
+
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
-
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         Title expectedTitle = Title.Create(_faker.Lorem.Sentence(), true);
         string expectedDescription = _faker.Lorem.Sentences();
         DateTimeOffset expectedExpiration = _faker.Date.FutureOffset();
+        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
 
         // Act
-        aggregate.ChangeTitle(expectedTitle);
-        aggregate.ChangeDescription(expectedDescription);
-        aggregate.ExtendExpirationDate(expectedExpiration);
+        aggregate.ChangeTitle(expectedTitle, identityContext);
+        aggregate.ChangeDescription(expectedDescription, identityContext);
+        aggregate.ExtendExpirationDate(expectedExpiration, identityContext);
 
         // Assert
         IDomainEvent[] changes = aggregate.GetUncommittedChanges();
@@ -158,17 +154,16 @@ public sealed class AggregateRootTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
-
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         Title expectedTitle = Title.Create(_faker.Lorem.Sentence(), true);
         string expectedDescription = _faker.Lorem.Sentences();
         DateTimeOffset expectedExpiration = _faker.Date.FutureOffset();
+        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
 
         // Act
-        aggregate.ChangeTitle(expectedTitle);
-        aggregate.ChangeDescription(expectedDescription);
-        aggregate.ExtendExpirationDate(expectedExpiration);
+        aggregate.ChangeTitle(expectedTitle, identityContext);
+        aggregate.ChangeDescription(expectedDescription, identityContext);
+        aggregate.ExtendExpirationDate(expectedExpiration, identityContext);
 
         // Assert
         IDomainEvent[] changes = aggregate.FlushUncommittedChanges();
@@ -271,23 +266,6 @@ public sealed class AggregateRootTests
     }
 
     [Test]
-    public void GetIdentity_WhenIdentityContextMissing_ShouldThrowMissingIdentityContextException()
-    {
-        // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
-        const int aggregateVersion = 0;
-
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
-
-        // Act
-        Action action = () => aggregate.GetIdentity();
-
-        // Assert
-        action.Should().ThrowExactly<MissingIdentityContextException>().WithMessage(
-            $"This aggregate ({aggregate.GetTypeFullName()}) has missing identity context. Consider to build your aggregates via constructor allows to pass an identity parameter.");
-    }
-
-    [Test]
     public void
         CreateNewAggregateState_WithOutdatedExpirationDate_ShouldThrowCannotCreateOutdatedPostRuleValidationException()
     {
@@ -325,25 +303,26 @@ public sealed class AggregateRootTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
-
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         PostState aggregateState = aggregate.CreateState(Title.Create(_faker.Lorem.Word(), true),
             _faker.Lorem.Sentences(), expiration, images);
+        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
 
         aggregate.RestoreState(aggregateState);
 
         await Task.Delay(Defaults.DefaultWaitTime + Defaults.DefaultWaitTimeOffset);
 
         // Act
-        Action changeTitleAction = () => aggregate.ChangeTitle(title);
-        Action changeDescriptionAction = () => aggregate.ChangeDescription(description);
-        Action extendExpirationAction = () => aggregate.ExtendExpirationDate(expiration);
-        Action changeImageNameAction = () => aggregate.ChangeImageName(imageId, imageName);
-        Action addImagesAction = () => aggregate.AddImages(new HashSet<Image>
-        {
-            Image.Create(_faker.Random.Guid(), _faker.Lorem.Word(), _faker.Random.Bytes(200))
-        });
+        Action changeTitleAction = () => aggregate.ChangeTitle(title, identityContext);
+        Action changeDescriptionAction = () => aggregate.ChangeDescription(description, identityContext);
+        Action extendExpirationAction = () => aggregate.ExtendExpirationDate(expiration, identityContext);
+        Action changeImageNameAction = () => aggregate.ChangeImageName(imageId, imageName, identityContext);
+        Action addImagesAction = () =>
+            aggregate.AddImages(
+                new HashSet<Image>
+                {
+                    Image.Create(_faker.Random.Guid(), _faker.Lorem.Word(), _faker.Random.Bytes(200))
+                }, identityContext);
 
         // Assert
         string message =
@@ -376,8 +355,8 @@ public sealed class AggregateRootTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
 
         PostState aggregateState = aggregate.CreateState(Title.Create(_faker.Lorem.Word(), true),
             _faker.Lorem.Sentences(), expiration, null);
@@ -387,7 +366,7 @@ public sealed class AggregateRootTests
         await Task.Delay(Defaults.DefaultWaitTime + Defaults.DefaultWaitTimeOffset);
 
         // Act
-        Action extendExpirationAction = () => aggregate.ExtendExpirationDate(newExpiration);
+        Action extendExpirationAction = () => aggregate.ExtendExpirationDate(newExpiration, identityContext);
 
         // Assert
         extendExpirationAction.Should().NotThrow();
@@ -407,18 +386,18 @@ public sealed class AggregateRootTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         PostState aggregateState = aggregate.CreateState(Title.Create(_faker.Lorem.Word(), true),
             _faker.Lorem.Sentences(), expiration, images);
 
+        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
         aggregate.RestoreState(aggregateState);
 
-        Action addImagesAction = () => aggregate.AddImages(new HashSet<Image>
-        {
-            Image.Create(_faker.Random.Guid(), imageName, _faker.Random.Bytes(200))
-        });
+        Action addImagesAction = () =>
+            aggregate.AddImages(
+                new HashSet<Image> { Image.Create(_faker.Random.Guid(), imageName, _faker.Random.Bytes(200)) },
+                identityContext);
 
         // Assert
         addImagesAction.Should().ThrowExactly<TargetInvocationException>()
@@ -445,15 +424,16 @@ public sealed class AggregateRootTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         PostState aggregateState = aggregate.CreateState(Title.Create(_faker.Lorem.Word(), true),
             _faker.Lorem.Sentences(), expiration, images);
 
+        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
+
         aggregate.RestoreState(aggregateState);
 
-        Action addImagesAction = () => aggregate.ChangeImageName(imageId, duplicateImageName);
+        Action addImagesAction = () => aggregate.ChangeImageName(imageId, duplicateImageName, identityContext);
 
         addImagesAction.Should().ThrowExactly<TargetInvocationException>()
             .WithInnerException<BusinessRuleValidationException>().WithMessage(

@@ -5,7 +5,7 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Persistence.DomainEvents;
 
-public class DomainEventMapper : IDomainEventMapper
+internal sealed class DomainEventMapper : IDomainEventMapper
 {
     public DomainEventDataModel Map(IDomainEvent domainEvent)
     {

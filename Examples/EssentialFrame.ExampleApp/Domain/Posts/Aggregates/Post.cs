@@ -15,11 +15,6 @@ public sealed class Post : AggregateRoot
     {
     }
 
-    private Post(Guid aggregateIdentifier, int aggregateVersion, IIdentityService identityService) : base(
-        aggregateIdentifier, aggregateVersion, identityService)
-    {
-    }
-
     public override PostState CreateState()
     {
         return PostState.Create(AggregateIdentifier, GetType());
@@ -45,33 +40,33 @@ public sealed class Post : AggregateRoot
         }
     }
 
-    public void ChangeTitle(Title title)
+    public void ChangeTitle(Title title, IIdentityContext identityContext = null)
     {
-        ChangeTitleDomainEvent @event = new(AggregateIdentifier, GetIdentity(), title);
+        ChangeTitleDomainEvent @event = new(AggregateIdentifier, identityContext, title);
         Apply(@event);
     }
 
-    public void ChangeDescription(string description)
+    public void ChangeDescription(string description, IIdentityContext identityContext = null)
     {
-        ChangeDescriptionDomainEvent @event = new(AggregateIdentifier, GetIdentity(), description);
+        ChangeDescriptionDomainEvent @event = new(AggregateIdentifier, identityContext, description);
         Apply(@event);
     }
 
-    public void ExtendExpirationDate(DateTimeOffset newExpirationDate)
+    public void ExtendExpirationDate(DateTimeOffset newExpirationDate, IIdentityContext identityContext = null)
     {
-        ChangeExpirationDateDomainEvent @event = new(AggregateIdentifier, GetIdentity(), newExpirationDate);
+        ChangeExpirationDateDomainEvent @event = new(AggregateIdentifier, identityContext, newExpirationDate);
         Apply(@event);
     }
 
-    public void AddImages(HashSet<Image> images)
+    public void AddImages(HashSet<Image> images, IIdentityContext identityContext = null)
     {
-        AddImagesDomainEvent @event = new(AggregateIdentifier, GetIdentity(), images);
+        AddImagesDomainEvent @event = new(AggregateIdentifier, identityContext, images);
         Apply(@event);
     }
 
-    public void ChangeImageName(Guid imageId, string name)
+    public void ChangeImageName(Guid imageId, string name, IIdentityContext identityContext = null)
     {
-        ChangeImageNameDomainEvent @event = new(AggregateIdentifier, GetIdentity(), imageId, name);
+        ChangeImageNameDomainEvent @event = new(AggregateIdentifier, identityContext, imageId, name);
         Apply(@event);
     }
 }

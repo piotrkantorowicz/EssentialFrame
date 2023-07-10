@@ -3,7 +3,7 @@ using EssentialFrame.Domain.Snapshots;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots;
 
-public class SnapshotMapper : ISnapshotMapper
+internal sealed class SnapshotMapper : ISnapshotMapper
 {
     public SnapshotDataModel Map(Snapshot snapshot)
     {
