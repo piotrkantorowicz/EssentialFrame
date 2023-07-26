@@ -1,23 +1,27 @@
 ﻿using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.Domain.Events.Exceptions;
-using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Factories;
-using EssentialFrame.Serialization.Interfaces;
+using EssentialFrame.Identity;
 
-namespace EssentialFrame.Domain.Events.Persistence.DomainEvents;
+namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
 
-public sealed class DomainEventsRepository : IDomainEventsRepository
+public sealed class AggregateRepository : IAggregateRepository
 {
+    private readonly IAggregateMapper _aggregateMapper;
     private readonly IDomainEventMapper _domainEventMapper;
-    private readonly ISerializer _serializer;
-    private readonly IDomainEventsStore _store;
+    private readonly IIdentityService _identityService;
+    private readonly IAggregateStore _store;
 
-    public DomainEventsRepository(IDomainEventsStore store, ISerializer serializer,
-        IDomainEventMapper domainEventMapper)
+    public AggregateRepository(IAggregateStore store, IDomainEventMapper domainEventMapper,
+        IAggregateMapper aggregateMapper, IIdentityService identityService)
     {
         _store = store ?? throw new ArgumentNullException(nameof(store));
-        _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
+        _aggregateMapper = aggregateMapper ?? throw new ArgumentNullException(nameof(aggregateMapper));
+        _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
     }
 
     public T Get<T>(Guid aggregate) where T : AggregateRoot
@@ -37,10 +41,11 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
             throw new ConcurrencyException(aggregate.AggregateIdentifier);
         }
 
+        AggregateDataModel aggregateDataModel = _aggregateMapper.Map(aggregate);
         IDomainEvent[] domainEvents = aggregate.FlushUncommittedChanges();
         IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => _domainEventMapper.Map(e));
 
-        _store.Save(aggregate, domainEventDataModels);
+        _store.Save(aggregateDataModel, domainEventDataModels);
 
         return domainEvents;
     }
@@ -54,10 +59,11 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
             throw new ConcurrencyException(aggregate.AggregateIdentifier);
         }
 
+        AggregateDataModel aggregateDataModel = _aggregateMapper.Map(aggregate);
         IDomainEvent[] domainEvents = aggregate.FlushUncommittedChanges();
         IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => _domainEventMapper.Map(e));
 
-        await _store.SaveAsync(aggregate, domainEventDataModels, cancellationToken);
+        await _store.SaveAsync(aggregateDataModel, domainEventDataModels, cancellationToken);
 
         return domainEvents;
     }
@@ -89,7 +95,14 @@ public sealed class DomainEventsRepository : IDomainEventsRepository
             throw new AggregateNotFoundException(typeof(T), id);
         }
 
-        T aggregate = GenericAggregateFactory<T>.CreateAggregate(id, 0);
+        AggregateDataModel aggregateDataModel = _store.Get(id);
+
+        if (aggregateDataModel.IsDeleted)
+        {
+            throw new AggregateDeletedException(id, typeof(T));
+        }
+
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(id, 0, _identityService);
         aggregate.Rehydrate(events);
 
         return aggregate;

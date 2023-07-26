@@ -1,9 +1,10 @@
 ﻿using EssentialFrame.Domain.Events.Exceptions;
-using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 using EssentialFrame.Extensions;
 using EssentialFrame.Serialization.Interfaces;
 
-namespace EssentialFrame.Domain.Events.Persistence.DomainEvents;
+namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers;
 
 public class DomainEventMapper : IDomainEventMapper
 {

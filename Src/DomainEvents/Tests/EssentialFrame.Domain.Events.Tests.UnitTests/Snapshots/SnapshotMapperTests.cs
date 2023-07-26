@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bogus;
-using EssentialFrame.Domain.Events.Persistence.Snapshots;
+using EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers;
+using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.Snapshots;
 using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Identity;

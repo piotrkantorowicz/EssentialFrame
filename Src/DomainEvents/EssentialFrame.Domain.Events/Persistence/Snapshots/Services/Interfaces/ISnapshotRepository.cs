@@ -1,6 +1,6 @@
 using EssentialFrame.Domain.Aggregates;
 
-namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
+namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 
 public interface ISnapshotRepository
 {

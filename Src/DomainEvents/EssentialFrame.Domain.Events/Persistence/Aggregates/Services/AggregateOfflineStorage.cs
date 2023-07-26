@@ -1,28 +1,27 @@
 ﻿using System.IO.Abstractions;
-using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.Domain.Events.Exceptions;
-using EssentialFrame.Domain.Events.Persistence.Aggregates.Interfaces;
-using EssentialFrame.Domain.Events.Persistence.DomainEvents;
-using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Files;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
 using Microsoft.Extensions.Logging;
 
-namespace EssentialFrame.Domain.Events.Persistence.Aggregates;
+namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
 
 internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
 {
     private const string EventsFileName = "events.json";
     private const string MetadataFileName = "metadata.txt";
     private const string IndexFileName = "boxes.csv";
-    
+    private readonly IDomainEventMapper _domainEventMapper;
+
     private readonly IFileStorage _fileStorage;
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<AggregateOfflineStorage> _logger;
-    private readonly IDomainEventMapper _domainEventMapper;
-    private readonly ISerializer _serializer;
     private readonly string _offlineStorageDirectory;
+    private readonly ISerializer _serializer;
 
     public AggregateOfflineStorage(IFileStorage fileStorage, IFileSystem fileSystem,
         ILogger<AggregateOfflineStorage> logger, IDomainEventMapper domainEventMapper, ISerializer serializer,
@@ -40,7 +39,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         _offlineStorageDirectory = offlineStorageDirectory;
     }
 
-    public void Save(AggregateRoot aggregate, IReadOnlyCollection<DomainEventDataModel> events)
+    public void Save(AggregateDataModel aggregate, IReadOnlyCollection<DomainEventDataModel> events)
     {
         try
         {
@@ -53,7 +52,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
             _fileStorage.Create(aggregateDirectory, MetadataFileName, metaDataContents);
 
             string indexFileContents =
-                $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{aggregate.GetIdentity().Tenant.Name}\n";
+                $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{aggregate.TenantIdentifier}\n";
 
             _fileStorage.Create(aggregateDirectory, IndexFileName, indexFileContents);
         }
@@ -70,7 +69,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         }
     }
 
-    public async Task SaveAsync(AggregateRoot aggregate, IReadOnlyCollection<DomainEventDataModel> events,
+    public async Task SaveAsync(AggregateDataModel aggregate, IReadOnlyCollection<DomainEventDataModel> events,
         CancellationToken cancellationToken = default)
     {
         try
@@ -87,7 +86,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
                 cancellationToken: cancellationToken);
 
             string indexFileContents =
-                $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{aggregate.GetIdentity().Tenant.Name}\n";
+                $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{aggregate.TenantIdentifier}\n";
 
             await _fileStorage.CreateAsync(aggregateDirectory, IndexFileName, indexFileContents,
                 cancellationToken: cancellationToken);
@@ -104,7 +103,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         }
     }
 
-    private (string serializedEvents, string metadata) CreateFileContents(AggregateRoot aggregate,
+    private (string serializedEvents, string metadata) CreateFileContents(AggregateDataModel aggregate,
         IReadOnlyCollection<DomainEventDataModel> events)
     {
         IReadOnlyCollection<IDomainEvent> domainEvents = _domainEventMapper.Map(events);

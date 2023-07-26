@@ -1,4 +1,6 @@
-﻿namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
+﻿using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
+
+namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 
 public interface ISnapshotOfflineStorage
 {

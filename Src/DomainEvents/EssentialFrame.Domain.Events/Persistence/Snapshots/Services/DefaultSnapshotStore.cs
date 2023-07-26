@@ -1,8 +1,9 @@
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.Events.Exceptions;
-using EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
+using EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 
-namespace EssentialFrame.Domain.Events.Persistence.Snapshots;
+namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
 
 internal sealed class DefaultSnapshotStore : ISnapshotStore
 {

@@ -1,6 +1,6 @@
 ﻿using EssentialFrame.Domain.Aggregates;
 
-namespace EssentialFrame.Domain.Events.Core.Interfaces;
+namespace EssentialFrame.Domain.Events.Core.Snapshots.Interfaces;
 
 public interface ISnapshotStrategy
 {

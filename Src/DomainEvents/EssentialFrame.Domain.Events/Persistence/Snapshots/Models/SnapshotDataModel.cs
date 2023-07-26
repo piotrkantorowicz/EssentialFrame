@@ -1,4 +1,4 @@
-﻿namespace EssentialFrame.Domain.Events.Persistence.Snapshots;
+﻿namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
 
 public class SnapshotDataModel
 {

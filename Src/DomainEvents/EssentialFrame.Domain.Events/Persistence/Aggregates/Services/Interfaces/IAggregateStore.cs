@@ -1,8 +1,8 @@
-﻿using EssentialFrame.Domain.Aggregates;
+﻿using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 
-namespace EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 
-public interface IDomainEventsStore
+public interface IAggregateStore
 {
     bool Exists(Guid aggregateIdentifier);
 
@@ -11,6 +11,10 @@ public interface IDomainEventsStore
     bool Exists(Guid aggregateIdentifier, int version);
 
     Task<bool> ExistsAsync(Guid aggregateIdentifier, int version, CancellationToken cancellationToken = default);
+
+    AggregateDataModel Get(Guid aggregateIdentifier);
+
+    Task<AggregateDataModel> GetAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
 
     IReadOnlyCollection<DomainEventDataModel> Get(Guid aggregateIdentifier, int version);
 
@@ -21,9 +25,9 @@ public interface IDomainEventsStore
 
     Task<IEnumerable<Guid>> GetDeletedAsync(CancellationToken cancellationToken = default);
 
-    void Save(AggregateRoot aggregate, IEnumerable<DomainEventDataModel> events);
+    void Save(AggregateDataModel aggregate, IEnumerable<DomainEventDataModel> events);
 
-    Task SaveAsync(AggregateRoot aggregate, IEnumerable<DomainEventDataModel> events,
+    Task SaveAsync(AggregateDataModel aggregate, IEnumerable<DomainEventDataModel> events,
         CancellationToken cancellationToken = default);
 
     void Box(Guid aggregateIdentifier);

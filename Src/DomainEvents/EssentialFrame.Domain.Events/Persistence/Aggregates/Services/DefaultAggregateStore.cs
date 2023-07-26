@@ -1,18 +1,17 @@
 using EssentialFrame.Cache.Interfaces;
-using EssentialFrame.Domain.Aggregates;
-using EssentialFrame.Domain.Events.Persistence.Aggregates.Interfaces;
-using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 
-namespace EssentialFrame.Domain.Events.Persistence.DomainEvents;
+namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
 
-internal sealed class DefaultDomainEventsStore : IDomainEventsStore
+internal sealed class DefaultAggregateStore : IAggregateStore
 {
-    private readonly ICache<Guid, AggregateRoot> _aggregateCache;
+    private readonly ICache<Guid, AggregateDataModel> _aggregateCache;
     private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
     private readonly ICache<Guid, DomainEventDataModel> _eventsCache;
 
-    public DefaultDomainEventsStore(ICache<Guid, DomainEventDataModel> eventsCache,
-        ICache<Guid, AggregateRoot> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage)
+    public DefaultAggregateStore(ICache<Guid, DomainEventDataModel> eventsCache,
+        ICache<Guid, AggregateDataModel> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage)
     {
         _eventsCache = eventsCache ?? throw new ArgumentNullException(nameof(eventsCache));
         _aggregateCache = aggregateCache ?? throw new ArgumentNullException(nameof(aggregateCache));
@@ -42,6 +41,17 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
         return await Task.FromResult(Exists(aggregateIdentifier, version));
     }
 
+    public AggregateDataModel Get(Guid aggregateIdentifier)
+    {
+        return _aggregateCache.Get(aggregateIdentifier);
+    }
+
+    public async Task<AggregateDataModel> GetAsync(Guid aggregateIdentifier,
+        CancellationToken cancellationToken = default)
+    {
+        return await Task.FromResult(Get(aggregateIdentifier));
+    }
+
     public IReadOnlyCollection<DomainEventDataModel> Get(Guid aggregateIdentifier, int version)
     {
         return _eventsCache.GetMany((_, v) =>
@@ -64,7 +74,7 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
         return await Task.FromResult(GetDeleted());
     }
 
-    public void Save(AggregateRoot aggregate, IEnumerable<DomainEventDataModel> events)
+    public void Save(AggregateDataModel aggregate, IEnumerable<DomainEventDataModel> events)
     {
         IEnumerable<KeyValuePair<Guid, DomainEventDataModel>> domainEventDataModels =
             events?.Select(v => new KeyValuePair<Guid, DomainEventDataModel>(v.EventIdentifier, v));
@@ -73,7 +83,7 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
         _eventsCache.AddMany(domainEventDataModels);
     }
 
-    public async Task SaveAsync(AggregateRoot aggregate, IEnumerable<DomainEventDataModel> events,
+    public async Task SaveAsync(AggregateDataModel aggregate, IEnumerable<DomainEventDataModel> events,
         CancellationToken cancellationToken = default)
     {
         Save(aggregate, events);
@@ -83,7 +93,8 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 
     public void Box(Guid aggregateIdentifier)
     {
-        AggregateRoot aggregate = _aggregateCache.Get(aggregateIdentifier);
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
         IReadOnlyCollection<DomainEventDataModel> events =
             _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier);
 
@@ -92,7 +103,8 @@ internal sealed class DefaultDomainEventsStore : IDomainEventsStore
 
     public async Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
     {
-        AggregateRoot aggregate = _aggregateCache.Get(aggregateIdentifier);
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
         IReadOnlyCollection<DomainEventDataModel> events =
             _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier);
 

@@ -6,12 +6,11 @@ using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 using Bogus;
-using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.Domain.Events.Exceptions;
-using EssentialFrame.Domain.Events.Persistence.Aggregates;
-using EssentialFrame.Domain.Events.Persistence.Aggregates.Interfaces;
-using EssentialFrame.Domain.Events.Persistence.DomainEvents;
-using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Factories;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
@@ -41,8 +40,17 @@ public class AggregateOfflineStorageTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        _aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
             _identityServiceMock.Object);
+
+        _aggregateDataModel = new AggregateDataModel
+        {
+            AggregateIdentifier = aggregateIdentifier,
+            AggregateVersion = aggregateVersion,
+            DeletedDate = aggregate.DeletedDate,
+            IsDeleted = aggregate.IsDeleted,
+            TenantIdentifier = aggregate.GetIdentity()?.Tenant?.Identifier ?? Guid.Empty
+        };
 
         _domainEvents = new List<IDomainEvent>
         {
@@ -82,8 +90,8 @@ public class AggregateOfflineStorageTests
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IDomainEventMapper> _domainEventMapperMock = new();
 
+    private AggregateDataModel _aggregateDataModel;
     private ILogger<AggregateOfflineStorage> _logger;
-    private AggregateRoot _aggregate;
     private IReadOnlyCollection<DomainEventDataModel> _domainEventDataModels;
     private IReadOnlyCollection<IDomainEvent> _domainEvents;
 
@@ -109,7 +117,8 @@ public class AggregateOfflineStorageTests
 
         fileInfoMock.Setup(x => x.Length).Returns(_faker.Random.Long(1, 5000));
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _aggregate.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x =>
+                x.Path.Combine(It.IsAny<string>(), _aggregateDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null))
@@ -119,7 +128,7 @@ public class AggregateOfflineStorageTests
         _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        aggregateOfflineStorage.Save(_aggregate, _domainEventDataModels);
+        aggregateOfflineStorage.Save(_aggregateDataModel, _domainEventDataModels);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -143,7 +152,8 @@ public class AggregateOfflineStorageTests
 
         fileInfoMock.Setup(x => x.Length).Returns(_faker.Random.Long(1, 5000));
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _aggregate.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x =>
+                x.Path.Combine(It.IsAny<string>(), _aggregateDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileStorageMock
@@ -154,7 +164,7 @@ public class AggregateOfflineStorageTests
         _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        await aggregateOfflineStorage.SaveAsync(_aggregate, _domainEventDataModels);
+        await aggregateOfflineStorage.SaveAsync(_aggregateDataModel, _domainEventDataModels);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -182,7 +192,7 @@ public class AggregateOfflineStorageTests
 
         fileInfoMock.Setup(x => x.Length).Returns(_faker.Random.Long(1, 5000));
 
-        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _aggregate.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _aggregateDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null))
@@ -192,7 +202,7 @@ public class AggregateOfflineStorageTests
         _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        aggregateOfflineStorage.Save(_aggregate, _domainEventDataModels);
+        aggregateOfflineStorage.Save(_aggregateDataModel, _domainEventDataModels);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -219,7 +229,7 @@ public class AggregateOfflineStorageTests
 
         fileInfoMock.Setup(x => x.Length).Returns(_faker.Random.Long(1, 5000));
 
-        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _aggregate.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x => x.Path.Combine(offlineDirectory, _aggregateDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileStorageMock
@@ -230,7 +240,7 @@ public class AggregateOfflineStorageTests
         _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        await aggregateOfflineStorage.SaveAsync(_aggregate, _domainEventDataModels);
+        await aggregateOfflineStorage.SaveAsync(_aggregateDataModel, _domainEventDataModels);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -253,18 +263,19 @@ public class AggregateOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _aggregate.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x =>
+                x.Path.Combine(It.IsAny<string>(), _aggregateDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null))
             .Throws(Activator.CreateInstance(exception) as Exception);
 
         // Act
-        Action action = () => aggregateOfflineStorage.Save(_aggregate, _domainEventDataModels);
+        Action action = () => aggregateOfflineStorage.Save(_aggregateDataModel, _domainEventDataModels);
 
         // Assert
         action.Should().ThrowExactly<AggregateBoxingFailedException>().WithMessage(
-                $"Unable to box aggregate ({_aggregate.GetTypeFullName()}) with id: ({_aggregate.AggregateIdentifier}). See inner exception for more details.")
+                $"Unable to box aggregate ({_aggregateDataModel.GetTypeFullName()}) with id: ({_aggregateDataModel.AggregateIdentifier}). See inner exception for more details.")
             .WithInnerExceptionExactly(exception);
     }
 
@@ -278,7 +289,8 @@ public class AggregateOfflineStorageTests
 
         string directoryPath = _faker.System.DirectoryPath();
 
-        _fileSystemMock.Setup(x => x.Path.Combine(It.IsAny<string>(), _aggregate.AggregateIdentifier.ToString()))
+        _fileSystemMock.Setup(x =>
+                x.Path.Combine(It.IsAny<string>(), _aggregateDataModel.AggregateIdentifier.ToString()))
             .Returns(directoryPath);
 
         _fileStorageMock
@@ -286,11 +298,12 @@ public class AggregateOfflineStorageTests
             .ThrowsAsync(Activator.CreateInstance(exception) as Exception);
 
         // Act
-        Func<Task> action = async () => await aggregateOfflineStorage.SaveAsync(_aggregate, _domainEventDataModels);
+        Func<Task> action = async () =>
+            await aggregateOfflineStorage.SaveAsync(_aggregateDataModel, _domainEventDataModels);
 
         // Assert
         await action.Should().ThrowExactlyAsync<AggregateBoxingFailedException>().WithMessage(
-                $"Unable to box aggregate ({_aggregate.GetTypeFullName()}) with id: ({_aggregate.AggregateIdentifier}). See inner exception for more details.")
+                $"Unable to box aggregate ({_aggregateDataModel.GetTypeFullName()}) with id: ({_aggregateDataModel.AggregateIdentifier}). See inner exception for more details.")
             .WithInnerExceptionExactly(exception);
     }
 }

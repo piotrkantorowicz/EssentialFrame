@@ -1,6 +1,7 @@
-﻿using EssentialFrame.Serialization.Interfaces;
+﻿using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
+using EssentialFrame.Serialization.Interfaces;
 
-namespace EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 
 public interface IDomainEventMapper
 {

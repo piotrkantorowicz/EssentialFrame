@@ -1,8 +1,8 @@
 ﻿using EssentialFrame.Domain.Aggregates;
 
-namespace EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 
-public interface IDomainEventsRepository
+public interface IAggregateRepository
 {
     T Get<T>(Guid id) where T : AggregateRoot;
 

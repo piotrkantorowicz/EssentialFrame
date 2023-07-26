@@ -1,6 +1,7 @@
-﻿using EssentialFrame.Domain.Snapshots;
+﻿using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
+using EssentialFrame.Domain.Snapshots;
 
-namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
+namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers.Interfaces;
 
 public interface ISnapshotMapper
 {

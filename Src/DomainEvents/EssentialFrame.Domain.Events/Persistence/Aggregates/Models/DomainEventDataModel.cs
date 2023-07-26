@@ -1,4 +1,4 @@
-namespace EssentialFrame.Domain.Events.Persistence.DomainEvents;
+namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 
 public class DomainEventDataModel
 {

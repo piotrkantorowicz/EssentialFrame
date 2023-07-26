@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
-using EssentialFrame.Domain.Events.Persistence.DomainEvents;
-using EssentialFrame.Domain.Events.Persistence.DomainEvents.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
 using EssentialFrame.ExampleApp.Identity;

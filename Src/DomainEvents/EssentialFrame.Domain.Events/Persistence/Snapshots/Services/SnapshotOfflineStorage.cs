@@ -1,11 +1,12 @@
 ﻿using System.IO.Abstractions;
 using EssentialFrame.Domain.Events.Exceptions;
-using EssentialFrame.Domain.Events.Persistence.Snapshots.Interfaces;
+using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
+using EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 using EssentialFrame.Files;
 using EssentialFrame.Serialization.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace EssentialFrame.Domain.Events.Persistence.Snapshots;
+namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
 
 internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
 {
