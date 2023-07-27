@@ -12,7 +12,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
-namespace EssentialFrame.Domain.Events.Tests.UnitTests.Snapshots;
+namespace EssentialFrame.Domain.Events.Tests.UnitTests.Persistence.Snapshots;
 
 [TestFixture]
 public class DefaultSnapshotStoreTests

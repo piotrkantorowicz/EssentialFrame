@@ -26,7 +26,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework;
 
-namespace EssentialFrame.Domain.Events.Tests.UnitTests.Events;
+namespace EssentialFrame.Domain.Events.Tests.UnitTests.Persistence.Aggregates;
 
 [TestFixture]
 public class AggregateOfflineStorageTests

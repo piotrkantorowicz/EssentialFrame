@@ -21,10 +21,10 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
-namespace EssentialFrame.Domain.Events.Tests.UnitTests.Events;
+namespace EssentialFrame.Domain.Events.Tests.UnitTests.Persistence.Aggregates;
 
 [TestFixture]
-public class DefaultDomainEventStoreTests
+public class DefaultAggregateStoreTests
 {
     [SetUp]
     public void SetUp()
@@ -190,6 +190,60 @@ public class DefaultDomainEventStoreTests
         result.Should().BeFalse();
     }
 
+    [Test]
+    public void Get_WhenAggregateIdentifierIsProvided_ShouldReturnAggregate()
+    {
+        // Arrange
+        Guid aggregateIdentifier = _faker.Random.Guid();
+
+        AggregateDataModel aggregateDataModel = new AggregateDataModel
+        {
+            AggregateIdentifier = _faker.Random.Guid(),
+            AggregateVersion = _faker.Random.Int(),
+            DeletedDate = null,
+            IsDeleted = false,
+            TenantIdentifier = _faker.Random.Guid()
+        };
+
+        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
+
+        DefaultAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
+            _aggregateOfflineStorageMock.Object);
+
+        // Act
+        AggregateDataModel result = aggregateStore.Get(aggregateIdentifier);
+
+        // Assert
+        result.Should().BeEquivalentTo(aggregateDataModel);
+    }
+
+    [Test]
+    public async Task GetAsync_WhenAggregateIdentifierIsProvided_ShouldReturnAggregate()
+    {
+        // Arrange
+        Guid aggregateIdentifier = _faker.Random.Guid();
+
+        AggregateDataModel aggregateDataModel = new AggregateDataModel
+        {
+            AggregateIdentifier = _faker.Random.Guid(),
+            AggregateVersion = _faker.Random.Int(),
+            DeletedDate = _faker.Date.Future(),
+            IsDeleted = true,
+            TenantIdentifier = _faker.Random.Guid()
+        };
+
+        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
+
+        DefaultAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
+            _aggregateOfflineStorageMock.Object);
+
+        // Act
+        AggregateDataModel result = await aggregateStore.GetAsync(aggregateIdentifier);
+
+        // Assert
+        result.Should().BeEquivalentTo(aggregateDataModel);
+    }
+    
     [Test]
     public void Get_WhenAggregateIdentifierIsProvided_ShouldReturnDomainEvents()
     {
