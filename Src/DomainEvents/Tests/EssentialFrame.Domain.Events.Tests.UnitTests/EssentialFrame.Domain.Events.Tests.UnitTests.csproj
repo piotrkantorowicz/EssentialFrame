@@ -33,8 +33,4 @@
         <ProjectReference Include="..\..\EssentialFrame.Domain.Events\EssentialFrame.Domain.Events.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Persistence\"/>
-    </ItemGroup>
-
 </Project>
