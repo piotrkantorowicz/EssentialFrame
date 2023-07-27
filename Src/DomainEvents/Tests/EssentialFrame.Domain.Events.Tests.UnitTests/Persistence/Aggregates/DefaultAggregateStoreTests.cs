@@ -196,7 +196,7 @@ public class DefaultAggregateStoreTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
 
-        AggregateDataModel aggregateDataModel = new AggregateDataModel
+        AggregateDataModel aggregateDataModel = new()
         {
             AggregateIdentifier = _faker.Random.Guid(),
             AggregateVersion = _faker.Random.Int(),
@@ -223,7 +223,7 @@ public class DefaultAggregateStoreTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
 
-        AggregateDataModel aggregateDataModel = new AggregateDataModel
+        AggregateDataModel aggregateDataModel = new()
         {
             AggregateIdentifier = _faker.Random.Guid(),
             AggregateVersion = _faker.Random.Int(),
