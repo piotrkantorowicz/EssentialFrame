@@ -7,7 +7,7 @@ namespace EssentialFrame.Serialization;
 public class DefaultJsonSerializer : ISerializer
 {
     private readonly JsonSerializerOptions _serializerOptions;
-    
+
     public DefaultJsonSerializer(JsonSerializerOptions serializerOptions = null)
     {
         _serializerOptions = serializerOptions;

@@ -15,12 +15,12 @@ public class SerializerTests
 {
     private static readonly Faker Faker = new();
     private readonly ISerializer _serializer = new DefaultJsonSerializer();
-    
+
     private readonly ISerializer _customSetupSerializer = new DefaultJsonSerializer(new JsonSerializerOptions
     {
         WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     });
-    
+
     private static readonly BasicSerializationTestObject BasicObject = new()
     {
         PrimaryId = Faker.Random.Guid(),
@@ -110,7 +110,8 @@ public class SerializerTests
 
         // Act
         BasicSerializationTestObject result =
-            _customSetupSerializer.Deserialize<BasicSerializationTestObject>(serializedObj, typeof(BasicSerializationTestObject));
+            _customSetupSerializer.Deserialize<BasicSerializationTestObject>(serializedObj,
+                typeof(BasicSerializationTestObject));
 
         // Assert
         result.Should().BeEquivalentTo(BasicObject);
