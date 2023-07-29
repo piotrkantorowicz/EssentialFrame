@@ -55,15 +55,17 @@ public abstract class ValueObject
 
     protected virtual void CheckRule(ValueObjectBusinessRuleBase rule, bool useExtraParameters = true)
     {
-        if (rule.IsBroken())
+        if (!rule.IsBroken())
         {
-            if (useExtraParameters)
-            {
-                rule.AddExtraParameters();
-            }
-
-            throw new BusinessRuleValidationException(rule);
+            return;
         }
+
+        if (useExtraParameters)
+        {
+            rule.AddExtraParameters();
+        }
+
+        throw new BusinessRuleValidationException(rule);
     }
 
     protected abstract IEnumerable<object> GetEqualityComponents();

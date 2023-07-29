@@ -21,14 +21,16 @@ public abstract class AggregateState
 
     protected virtual void CheckRule(AggregateBusinessRuleBase rule, bool useExtraParameters = true)
     {
-        if (rule.IsBroken())
+        if (!rule.IsBroken())
         {
-            if (useExtraParameters)
-            {
-                rule.AddExtraParameters();
-            }
-
-            throw new BusinessRuleValidationException(rule);
+            return;
         }
+
+        if (useExtraParameters)
+        {
+            rule.AddExtraParameters();
+        }
+
+        throw new BusinessRuleValidationException(rule);
     }
 }

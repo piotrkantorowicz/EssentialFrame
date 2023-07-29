@@ -14,14 +14,16 @@ public abstract class Entity
 
     protected virtual void CheckRule(EntityBusinessRuleBase rule, bool useExtraParameters = true)
     {
-        if (rule.IsBroken())
+        if (!rule.IsBroken())
         {
-            if (useExtraParameters)
-            {
-                rule.AddExtraParameters();
-            }
-
-            throw new BusinessRuleValidationException(rule);
+            return;
         }
+
+        if (useExtraParameters)
+        {
+            rule.AddExtraParameters();
+        }
+
+        throw new BusinessRuleValidationException(rule);
     }
 }

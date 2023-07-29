@@ -16,9 +16,9 @@ namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
 
 public class SnapshotRepository : ISnapshotRepository
 {
+    private readonly ICache<Guid, AggregateRoot> _cache;
     private readonly IAggregateRepository _aggregateRepository;
     private readonly IAggregateStore _aggregateStore;
-    private readonly ICache<Guid, AggregateRoot> _cache;
     private readonly IDomainEventMapper _domainEventMapper;
     private readonly IIdentityService _identityService;
     private readonly ISerializer _serializer;
