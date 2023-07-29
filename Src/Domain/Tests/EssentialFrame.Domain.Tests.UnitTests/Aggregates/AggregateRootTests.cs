@@ -9,6 +9,7 @@ using EssentialFrame.Domain.Factories;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities;
+using EssentialFrame.ExampleApp.Domain.Posts.Rules;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
 using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Extensions;
@@ -304,8 +305,12 @@ public sealed class AggregateRootTests
         Action action = () => aggregate.CreateState(title, description, expiration, null);
 
         // Assert
-        action.Should().ThrowExactly<BusinessRuleValidationException>().WithMessage(
-            $"Cannot create ({aggregate.GetTypeFullName()}) with identifier ({aggregateIdentifier}) with outdated expiration date: {expiration}.");
+        string message =
+            $"Cannot create ({aggregate.GetTypeFullName()}) with identifier ({aggregateIdentifier}) with outdated expiration date: {expiration}.";
+
+        action.Should().ThrowExactly<BusinessRuleValidationException>().WithMessage(message).Where(x =>
+            x.BrokenRule is CannotCreateOutdatedPostRule &&
+            x.BrokenRule.Parameters.ContainsKey(nameof(PostState.Expiration)) && x.Details == message);
     }
 
     [Test]
@@ -350,19 +355,29 @@ public sealed class AggregateRootTests
             $"This ({aggregate.GetTypeFullName()}) with identifier ({aggregateIdentifier}) has been already expired. Expiration date time ({expiration})";
 
         changeTitleAction.Should().ThrowExactly<TargetInvocationException>()
-            .WithInnerException<BusinessRuleValidationException>().WithMessage(message);
+            .WithInnerException<BusinessRuleValidationException>().WithMessage(message).Where(x =>
+                x.BrokenRule is ExpiredPostCannotBeUpdatedRule &&
+                x.BrokenRule.Parameters.ContainsKey(nameof(PostState.Expiration)) && x.Details == message);
 
         changeDescriptionAction.Should().ThrowExactly<TargetInvocationException>()
-            .WithInnerException<BusinessRuleValidationException>().WithMessage(message);
+            .WithInnerException<BusinessRuleValidationException>().WithMessage(message).Where(x =>
+                x.BrokenRule is ExpiredPostCannotBeUpdatedRule &&
+                x.BrokenRule.Parameters.ContainsKey(nameof(PostState.Expiration)) && x.Details == message);
 
         extendExpirationAction.Should().ThrowExactly<TargetInvocationException>()
-            .WithInnerException<BusinessRuleValidationException>().WithMessage(message);
+            .WithInnerException<BusinessRuleValidationException>().WithMessage(message).Where(x =>
+                x.BrokenRule is ExpiredPostCannotBeUpdatedRule &&
+                x.BrokenRule.Parameters.ContainsKey(nameof(PostState.Expiration)) && x.Details == message);
 
         changeImageNameAction.Should().ThrowExactly<TargetInvocationException>()
-            .WithInnerException<BusinessRuleValidationException>().WithMessage(message);
+            .WithInnerException<BusinessRuleValidationException>().WithMessage(message).Where(x =>
+                x.BrokenRule is ExpiredPostCannotBeUpdatedRule &&
+                x.BrokenRule.Parameters.ContainsKey(nameof(PostState.Expiration)) && x.Details == message);
 
         addImagesAction.Should().ThrowExactly<TargetInvocationException>()
-            .WithInnerException<BusinessRuleValidationException>().WithMessage(message);
+            .WithInnerException<BusinessRuleValidationException>().WithMessage(message).Where(x =>
+                x.BrokenRule is ExpiredPostCannotBeUpdatedRule &&
+                x.BrokenRule.Parameters.ContainsKey(nameof(PostState.Expiration)) && x.Details == message);
     }
 
     [Test]

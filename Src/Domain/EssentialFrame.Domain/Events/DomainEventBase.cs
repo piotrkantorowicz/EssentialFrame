@@ -12,10 +12,10 @@ public abstract class DomainEventBase : IDomainEvent
 
     private DomainEventBase(IIdentityContext identityContext) : this()
     {
-        TenantIdentity = identityContext.Tenant.Identifier;
-        UserIdentity = identityContext.User.Identifier;
-        ServiceIdentity = identityContext.Service.GetFullIdentifier();
-        CorrelationIdentity = identityContext.Correlation.Identifier;
+        TenantIdentity = identityContext?.Tenant?.Identifier ?? Guid.Empty;
+        UserIdentity = identityContext?.User?.Identifier ?? Guid.Empty;
+        CorrelationIdentity = identityContext?.Correlation?.Identifier ?? Guid.Empty;
+        ServiceIdentity = identityContext?.Service?.GetFullIdentifier();
     }
 
     protected DomainEventBase(Guid aggregateIdentifier, IIdentityContext identityContext) : this(identityContext)
@@ -24,9 +24,8 @@ public abstract class DomainEventBase : IDomainEvent
     }
 
     protected DomainEventBase(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext) : this(
-        identityContext)
+        aggregateIdentifier, identityContext)
     {
-        AggregateIdentifier = aggregateIdentifier;
         EventIdentifier = eventIdentifier;
     }
 
