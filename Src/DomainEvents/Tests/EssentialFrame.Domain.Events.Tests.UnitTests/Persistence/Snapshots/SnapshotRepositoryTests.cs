@@ -568,7 +568,7 @@ public class SnapshotRepositoryTests
         _snapshotMapperMock.Verify(x => x.Map(snapshotDataModel), Times.Once);
         result.Should().BeEquivalentTo(aggregate);
     }
-
+    
     [Test]
     public async Task UnboxAsync_CorrectAggregateIdentifierProvided_ShouldUnboxAggregate()
     {

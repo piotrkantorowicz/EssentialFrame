@@ -81,7 +81,7 @@ public sealed class AggregateRepository : IAggregateRepository
         T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id, 0,
             _identityService);
 
-        if (!eventsData.Any())
+        if (eventsData?.Any() != true)
         {
             throw new AggregateNotFoundException(typeof(T), aggregateDataModel?.AggregateIdentifier ?? id);
         }
@@ -108,7 +108,7 @@ public sealed class AggregateRepository : IAggregateRepository
         T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id, 0,
             _identityService);
 
-        if (!eventsData.Any())
+        if (eventsData?.Any() != true)
         {
             throw new AggregateNotFoundException(typeof(T), aggregateDataModel?.AggregateIdentifier ?? id);
         }
