@@ -50,7 +50,6 @@ public abstract class DomainEventBase : IDomainEvent
         }
 
         AggregateVersion = aggregateVersion;
-        EventTime = SystemClock.UtcNow;
     }
 
     public Guid EventIdentifier { get; } = Guid.NewGuid();

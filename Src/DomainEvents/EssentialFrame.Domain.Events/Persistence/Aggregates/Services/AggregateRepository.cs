@@ -13,12 +13,12 @@ public sealed class AggregateRepository : IAggregateRepository
     private readonly IAggregateMapper _aggregateMapper;
     private readonly IDomainEventMapper _domainEventMapper;
     private readonly IIdentityService _identityService;
-    private readonly IAggregateStore _store;
+    private readonly IAggregateStore _aggregateStore;
 
-    public AggregateRepository(IAggregateStore store, IDomainEventMapper domainEventMapper,
+    public AggregateRepository(IAggregateStore aggregateStore, IDomainEventMapper domainEventMapper,
         IAggregateMapper aggregateMapper, IIdentityService identityService)
     {
-        _store = store ?? throw new ArgumentNullException(nameof(store));
+        _aggregateStore = aggregateStore ?? throw new ArgumentNullException(nameof(aggregateStore));
         _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
         _aggregateMapper = aggregateMapper ?? throw new ArgumentNullException(nameof(aggregateMapper));
         _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
@@ -36,16 +36,16 @@ public sealed class AggregateRepository : IAggregateRepository
 
     public IDomainEvent[] Save<T>(T aggregate, int? version) where T : AggregateRoot
     {
-        if (version != null && _store.Exists(aggregate.AggregateIdentifier, version.Value))
+        if (version != null && _aggregateStore.Exists(aggregate.AggregateIdentifier, version.Value))
         {
             throw new ConcurrencyException(aggregate.AggregateIdentifier);
         }
 
         AggregateDataModel aggregateDataModel = _aggregateMapper.Map(aggregate);
         IDomainEvent[] domainEvents = aggregate.FlushUncommittedChanges();
-        IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => _domainEventMapper.Map(e));
+        IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
 
-        _store.Save(aggregateDataModel, domainEventDataModels);
+        _aggregateStore.Save(aggregateDataModel, domainEventDataModels);
 
         return domainEvents;
     }
@@ -54,24 +54,41 @@ public sealed class AggregateRepository : IAggregateRepository
         CancellationToken cancellationToken = default) where T : AggregateRoot
     {
         if (version != null &&
-            await _store.ExistsAsync(aggregate.AggregateIdentifier, version.Value, cancellationToken))
+            await _aggregateStore.ExistsAsync(aggregate.AggregateIdentifier, version.Value, cancellationToken))
         {
             throw new ConcurrencyException(aggregate.AggregateIdentifier);
         }
 
         AggregateDataModel aggregateDataModel = _aggregateMapper.Map(aggregate);
         IDomainEvent[] domainEvents = aggregate.FlushUncommittedChanges();
-        IEnumerable<DomainEventDataModel> domainEventDataModels = domainEvents.Select(e => _domainEventMapper.Map(e));
+        IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
 
-        await _store.SaveAsync(aggregateDataModel, domainEventDataModels, cancellationToken);
+        await _aggregateStore.SaveAsync(aggregateDataModel, domainEventDataModels, cancellationToken);
 
         return domainEvents;
     }
 
     private T Rehydrate<T>(Guid id) where T : AggregateRoot
     {
-        IReadOnlyCollection<DomainEventDataModel> events = _store.Get(id, -1);
-        T aggregate = RehydrateInternal<T>(id, events);
+        AggregateDataModel aggregateDataModel = _aggregateStore.Get(id);
+        IReadOnlyCollection<DomainEventDataModel> eventsData = _aggregateStore.Get(id, -1);
+
+        if (aggregateDataModel?.IsDeleted == true)
+        {
+            throw new AggregateDeletedException(aggregateDataModel.AggregateIdentifier, typeof(T));
+        }
+
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id, 0,
+            _identityService);
+
+        if (!eventsData.Any())
+        {
+            throw new AggregateNotFoundException(typeof(T), aggregateDataModel?.AggregateIdentifier ?? id);
+        }
+
+        List<IDomainEvent> events = _domainEventMapper.Map(eventsData).ToList();
+
+        aggregate.Rehydrate(events);
 
         return aggregate;
     }
@@ -79,30 +96,25 @@ public sealed class AggregateRepository : IAggregateRepository
     private async Task<T> RehydrateAsync<T>(Guid id, CancellationToken cancellationToken = default)
         where T : AggregateRoot
     {
-        IReadOnlyCollection<DomainEventDataModel> events = await _store.GetAsync(id, -1, cancellationToken);
+        AggregateDataModel aggregateDataModel = await _aggregateStore.GetAsync(id, cancellationToken);
+        IReadOnlyCollection<DomainEventDataModel>
+            eventsData = await _aggregateStore.GetAsync(id, -1, cancellationToken);
 
-        T aggregate = RehydrateInternal<T>(id, events);
-
-        return aggregate;
-    }
-
-    private T RehydrateInternal<T>(Guid id, IEnumerable<DomainEventDataModel> eventsData) where T : AggregateRoot
-    {
-        List<IDomainEvent> events = eventsData.Select(e => _domainEventMapper.Map(e)).ToList();
-
-        if (!events.Any())
+        if (aggregateDataModel?.IsDeleted == true)
         {
-            throw new AggregateNotFoundException(typeof(T), id);
+            throw new AggregateDeletedException(aggregateDataModel.AggregateIdentifier, typeof(T));
         }
 
-        AggregateDataModel aggregateDataModel = _store.Get(id);
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id, 0,
+            _identityService);
 
-        if (aggregateDataModel.IsDeleted)
+        if (!eventsData.Any())
         {
-            throw new AggregateDeletedException(id, typeof(T));
+            throw new AggregateNotFoundException(typeof(T), aggregateDataModel?.AggregateIdentifier ?? id);
         }
 
-        T aggregate = GenericAggregateFactory<T>.CreateAggregate(id, 0, _identityService);
+        List<IDomainEvent> events = _domainEventMapper.Map(eventsData).ToList();
+
         aggregate.Rehydrate(events);
 
         return aggregate;

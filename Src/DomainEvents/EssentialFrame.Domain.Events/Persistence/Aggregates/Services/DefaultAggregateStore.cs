@@ -7,8 +7,8 @@ namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
 internal sealed class DefaultAggregateStore : IAggregateStore
 {
     private readonly ICache<Guid, AggregateDataModel> _aggregateCache;
-    private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
     private readonly ICache<Guid, DomainEventDataModel> _eventsCache;
+    private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
 
     public DefaultAggregateStore(ICache<Guid, DomainEventDataModel> eventsCache,
         ICache<Guid, AggregateDataModel> aggregateCache, IAggregateOfflineStorage aggregateOfflineStorage)
