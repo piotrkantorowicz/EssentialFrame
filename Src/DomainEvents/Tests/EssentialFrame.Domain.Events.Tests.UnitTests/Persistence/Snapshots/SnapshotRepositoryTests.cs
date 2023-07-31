@@ -74,7 +74,7 @@ public class SnapshotRepositoryTests
 
         _snapshotsCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregate);
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -98,7 +98,7 @@ public class SnapshotRepositoryTests
 
         _snapshotsCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregate);
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -140,7 +140,7 @@ public class SnapshotRepositoryTests
 
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels)).Returns(events);
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -183,7 +183,7 @@ public class SnapshotRepositoryTests
 
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels)).Returns(events);
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -213,7 +213,7 @@ public class SnapshotRepositoryTests
 
         _aggregateRepositoryMock.Setup(x => x.Get<Post>(aggregateIdentifier)).Returns(aggregate);
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -243,7 +243,7 @@ public class SnapshotRepositoryTests
 
         _aggregateRepositoryMock.Setup(x => x.GetAsync<Post>(aggregateIdentifier, default)).ReturnsAsync(aggregate);
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -273,7 +273,7 @@ public class SnapshotRepositoryTests
         _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.Save(aggregate, null));
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -304,7 +304,7 @@ public class SnapshotRepositoryTests
         _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.SaveAsync(aggregate, null, default));
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -335,7 +335,7 @@ public class SnapshotRepositoryTests
         _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.Save(aggregate, aggregate.AggregateVersion));
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -367,7 +367,7 @@ public class SnapshotRepositoryTests
         _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.Save(aggregate, aggregate.AggregateVersion));
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -398,7 +398,7 @@ public class SnapshotRepositoryTests
         _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.SaveAsync(aggregate, aggregate.AggregateVersion, default));
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -429,7 +429,7 @@ public class SnapshotRepositoryTests
         _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.SaveAsync(aggregate, aggregate.AggregateVersion, default));
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -466,7 +466,7 @@ public class SnapshotRepositoryTests
         _snapshotMapperMock.Setup(x => x.Map(It.IsAny<Snapshot>())).Returns(snapshotDataModel);
         _snapshotStoreMock.Setup(x => x.Save(snapshotDataModel));
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -509,7 +509,7 @@ public class SnapshotRepositoryTests
         _snapshotMapperMock.Setup(x => x.Map(It.IsAny<Snapshot>())).Returns(snapshotDataModel);
         _snapshotStoreMock.Setup(x => x.SaveAsync(snapshotDataModel, default));
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -555,7 +555,7 @@ public class SnapshotRepositoryTests
         _snapshotStoreMock.Setup(x => x.Unbox(aggregateIdentifier)).Returns(snapshotDataModel);
         _snapshotMapperMock.Setup(x => x.Map(snapshotDataModel)).Returns(snapshot);
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
@@ -596,7 +596,7 @@ public class SnapshotRepositoryTests
         _snapshotStoreMock.Setup(x => x.UnboxAsync(aggregateIdentifier, default)).ReturnsAsync(snapshotDataModel);
         _snapshotMapperMock.Setup(x => x.Map(snapshotDataModel)).Returns(snapshot);
 
-        SnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
+        ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object, _identityServiceMock.Object);
