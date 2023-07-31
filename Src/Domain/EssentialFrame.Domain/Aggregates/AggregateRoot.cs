@@ -70,7 +70,6 @@ public abstract class AggregateRoot
         lock (_changes)
         {
             IDomainEvent[] changes = _changes.ToArray();
-
             int i = 0;
 
             foreach (IDomainEvent change in changes)

@@ -13,15 +13,13 @@ public interface ISnapshotRepository
     Task<IDomainEvent[]> SaveAsync<T>(T aggregate, int? version = null, int? timeout = null,
         CancellationToken cancellationToken = default) where T : AggregateRoot;
 
-    void Box<T>(T aggregate) where T : AggregateRoot;
+    void Box<T>(T aggregate, bool useSerializer = false) where T : AggregateRoot;
 
-    Task BoxAsync<T>(T aggregate, CancellationToken cancellationToken = default) where T : AggregateRoot;
+    Task BoxAsync<T>(T aggregate, bool useSerializer = false, CancellationToken cancellationToken = default)
+        where T : AggregateRoot;
 
-    T Unbox<T>(Guid aggregateId) where T : AggregateRoot;
+    T Unbox<T>(Guid aggregateId, bool useSerializer = false) where T : AggregateRoot;
 
-    Task<T> UnboxAsync<T>(Guid aggregateId, CancellationToken cancellationToken = default) where T : AggregateRoot;
-
-    void Ping();
-
-    Task PingAsync(CancellationToken cancellationToken = default);
+    Task<T> UnboxAsync<T>(Guid aggregateId, bool useSerializer = false, CancellationToken cancellationToken = default)
+        where T : AggregateRoot;
 }
