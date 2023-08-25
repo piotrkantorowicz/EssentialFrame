@@ -18,7 +18,7 @@ public struct SortOrder
             !sortDirection.Equals(SortDirections.Descending, StringComparison.InvariantCultureIgnoreCase))
         {
             throw new ArgumentException(
-                $"Sort direction must be equals to {SortDirections.Ascending} or {SortDirections.Descending} other values are not supported.",
+                $"Sort direction must be equals to {SortDirections.Ascending} or {SortDirections.Descending} other values are not supported",
                 sortDirection);
         }
 

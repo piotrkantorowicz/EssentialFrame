@@ -5,9 +5,9 @@ using Bogus;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
@@ -44,7 +44,7 @@ public class DomainEventMapperTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         ChangeTitleDomainEvent domainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-            Title.Create(_faker.Lorem.Sentence(), _faker.Random.Bool()));
+            Title.Default(_faker.Lorem.Sentence()));
 
         // Act
         DomainEventDataModel result = _mapper.Map(domainEvent);
@@ -59,10 +59,10 @@ public class DomainEventMapperTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         string serializedEvent = _faker.Random.String(_faker.Random.Int(100, 300));
-        
+
         ChangeTitleDomainEvent domainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-            Title.Create(_faker.Lorem.Sentence(), _faker.Random.Bool()));
-        
+            Title.Default(_faker.Lorem.Sentence()));
+
         _serializerMock.Setup(s => s.Serialize<IDomainEvent>(domainEvent)).Returns(serializedEvent);
 
         // Act
@@ -79,9 +79,9 @@ public class DomainEventMapperTests
     {
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
-        
+
         ChangeTitleDomainEvent domainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-            Title.Create(_faker.Lorem.Sentence(), _faker.Random.Bool()));
+            Title.Default(_faker.Lorem.Sentence()));
 
         // Act
         IEnumerable<DomainEventDataModel> result = _mapper.Map(new List<IDomainEvent> { domainEvent });
@@ -98,10 +98,10 @@ public class DomainEventMapperTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         string serializedEvent = _faker.Random.String(_faker.Random.Int(100, 300));
-        
+
         ChangeTitleDomainEvent domainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-            Title.Create(_faker.Lorem.Sentence(), _faker.Random.Bool()));
-        
+            Title.Default(_faker.Lorem.Sentence()));
+
         _serializerMock.Setup(s => s.Serialize<IDomainEvent>(domainEvent)).Returns(serializedEvent);
 
         // Act
@@ -123,7 +123,7 @@ public class DomainEventMapperTests
         Guid aggregateIdentifier = _faker.Random.Guid();
 
         ChangeTitleDomainEvent domainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-            Title.Create(_faker.Lorem.Sentence(), _faker.Random.Bool()));
+            Title.Default(_faker.Lorem.Sentence()));
 
         DomainEventDataModel domainEventDataModel = new()
         {
@@ -149,8 +149,9 @@ public class DomainEventMapperTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         string serializedEvent = _faker.Random.String(_faker.Random.Int(100, 300));
+
         ChangeTitleDomainEvent domainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-            Title.Create(_faker.Lorem.Sentence(), _faker.Random.Bool()));
+            Title.Default(_faker.Lorem.Sentence()));
 
         DomainEventDataModel domainEventDataModel = new()
         {
@@ -187,7 +188,7 @@ public class DomainEventMapperTests
         Guid aggregateIdentifier = _faker.Random.Guid();
 
         ChangeTitleDomainEvent domainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-            Title.Create(_faker.Lorem.Sentence(), _faker.Random.Bool()));
+            Title.Default(_faker.Lorem.Sentence()));
 
         DomainEventDataModel domainEventDataModel = new()
         {
@@ -215,8 +216,9 @@ public class DomainEventMapperTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         string serializedEvent = _faker.Random.String(_faker.Random.Int(100, 300));
+
         ChangeTitleDomainEvent domainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-            Title.Create(_faker.Lorem.Sentence(), _faker.Random.Bool()));
+            Title.Default(_faker.Lorem.Sentence()));
 
         DomainEventDataModel domainEventDataModel = new()
         {

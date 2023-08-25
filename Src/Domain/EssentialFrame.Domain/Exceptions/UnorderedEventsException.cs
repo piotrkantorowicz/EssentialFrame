@@ -6,7 +6,7 @@ namespace EssentialFrame.Domain.Exceptions;
 public class UnorderedEventsException : EssentialFrameException
 {
     public UnorderedEventsException(Guid aggregate) : base(
-        $"The events for this aggregate are not in the expected order ({aggregate}).")
+        $"The events for this aggregate are not in the expected order ({aggregate})")
     {
     }
 }

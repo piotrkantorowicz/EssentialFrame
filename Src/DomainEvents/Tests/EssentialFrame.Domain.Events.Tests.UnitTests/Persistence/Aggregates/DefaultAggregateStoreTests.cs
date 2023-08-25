@@ -10,11 +10,15 @@ using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Factories;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
-using EssentialFrame.ExampleApp.Domain.Posts.Entities;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
 using EssentialFrame.Identity;
 using FluentAssertions;
@@ -243,7 +247,7 @@ public class DefaultAggregateStoreTests
         // Assert
         result.Should().BeEquivalentTo(aggregateDataModel);
     }
-    
+
     [Test]
     public void Get_WhenAggregateIdentifierIsProvided_ShouldReturnDomainEvents()
     {
@@ -254,6 +258,7 @@ public class DefaultAggregateStoreTests
 
         _eventsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()))
             .Returns(domainEventsDms);
+        
         DefaultAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
@@ -333,7 +338,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.GetIdentity()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = aggregate.GetIdentityContext()?.Tenant?.Identifier ?? Guid.Empty
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
@@ -370,7 +375,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.GetIdentity()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = aggregate.GetIdentityContext()?.Tenant?.Identifier ?? Guid.Empty
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
@@ -408,7 +413,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.GetIdentity()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = aggregate.GetIdentityContext()?.Tenant?.Identifier ?? Guid.Empty
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
@@ -446,7 +451,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.GetIdentity()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = aggregate.GetIdentityContext()?.Tenant?.Identifier ?? Guid.Empty
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
@@ -486,7 +491,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = a.AggregateVersion,
             DeletedDate = a.DeletedDate,
             IsDeleted = a.IsDeleted,
-            TenantIdentifier = a.GetIdentity()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = a.GetIdentityContext()?.Tenant?.Identifier ?? Guid.Empty
         }).ToList();
 
         return aggregateDataModels;
@@ -497,32 +502,38 @@ public class DefaultAggregateStoreTests
         List<IDomainEvent> domainEvents = new()
         {
             new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Lorem.Sentences()),
+                Description.Create(_faker.Lorem.Sentences())),
             new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
+                Title.Default(_faker.Lorem.Sentence())),
             new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Lorem.Sentences()),
+                Description.Create(_faker.Lorem.Sentences())),
             new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
+                Title.Default(_faker.Lorem.Sentence())),
             new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
+                Title.Default(_faker.Lorem.Sentence())),
             new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 new HashSet<Image>
                 {
-                    Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(389))
+                    Image.Create(_faker.Random.Guid(),
+                        Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
+                        BytesContent.Create(_faker.Random.Bytes(389)))
                 }),
             new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Lorem.Sentences()),
+                Description.Create(_faker.Lorem.Sentences())),
             new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 new HashSet<Image>
                 {
-                    Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(2346)),
-                    Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(982))
+                    Image.Create(_faker.Random.Guid(),
+                        Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
+                        BytesContent.Create(_faker.Random.Bytes(2346))),
+                    Image.Create(_faker.Random.Guid(),
+                        Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
+                        BytesContent.Create(_faker.Random.Bytes(982)))
                 }),
             new ChangeImageNameDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Random.Guid(), _faker.Lorem.Word()),
+                _faker.Random.Guid(), Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)))),
             new ChangeExpirationDateDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Date.Future())
+                Date.Create(_faker.Date.Future()))
         };
 
         List<DomainEventDataModel> domainEventDms = domainEvents.Select(e => new DomainEventDataModel

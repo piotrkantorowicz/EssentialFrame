@@ -4,7 +4,7 @@ using Bogus;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.Snapshots;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.Identity;
 using FluentAssertions;
 using Moq;

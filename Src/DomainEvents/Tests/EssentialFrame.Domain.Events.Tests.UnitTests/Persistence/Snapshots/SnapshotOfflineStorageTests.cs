@@ -8,7 +8,7 @@ using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.Files;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
@@ -264,7 +264,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         action.Should().ThrowExactly<SnapshotBoxingFailedException>().WithMessage(
-                $"Unexpected error while boxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while boxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details")
             .WithInnerExceptionExactly(exception);
     }
 
@@ -291,7 +291,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         await action.Should().ThrowExactlyAsync<SnapshotBoxingFailedException>().WithMessage(
-                $"Unexpected error while boxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while boxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details")
             .WithInnerExceptionExactly(exception);
     }
 
@@ -430,7 +430,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         action.Should().ThrowExactly<SnapshotUnboxingFailedException>().WithMessage(
-                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details")
             .WithInnerExceptionExactly<FileNotFoundException>().WithMessage(fileNotFoundException.Message);
     }
 
@@ -462,7 +462,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         await action.Should().ThrowExactlyAsync<SnapshotUnboxingFailedException>().WithMessage(
-                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details")
             .WithInnerExceptionExactly(fileNotFoundException.GetType()).WithMessage(fileNotFoundException.Message);
     }
 
@@ -490,7 +490,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         action.Should().ThrowExactly<SnapshotUnboxingFailedException>().WithMessage(
-                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details")
             .WithInnerExceptionExactly(exception);
     }
 
@@ -519,7 +519,7 @@ public class SnapshotOfflineStorageTests
 
         // Assert
         await action.Should().ThrowExactlyAsync<SnapshotUnboxingFailedException>().WithMessage(
-                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details.")
+                $"Unexpected error while unboxing snapshot for aggregate with id: ({_snapshotDataModel.AggregateIdentifier}). See inner exception for more details")
             .WithInnerExceptionExactly(exception);
     }
 }

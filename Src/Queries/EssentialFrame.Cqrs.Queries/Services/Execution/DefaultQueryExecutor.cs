@@ -26,7 +26,7 @@ internal sealed class DefaultQueryExecutor : IQueryExecutor
         if (!isHandlerFound)
         {
             throw new DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
-                                                    "Most likely it is not properly registered in container.");
+                                                    "Most likely it is not properly registered in container");
         }
 
         MethodInfo handlerMethod = handlerType.GetMethod(nameof(IQueryHandler<IQuery<TResult>, TResult>.Handle));
@@ -35,7 +35,7 @@ internal sealed class DefaultQueryExecutor : IQueryExecutor
         {
             throw new MissingMethodException(
                 $"Handler method for command or query: ({query.GetTypeFullName()}) hasn't been found. " +
-                "It occurred, because likely handler hasn't has method implementation.");
+                "It occurred, because likely handler hasn't has method implementation");
         }
 
         return (TResult)handlerMethod.Invoke(queryHandler, new object[] { query });
@@ -51,7 +51,7 @@ internal sealed class DefaultQueryExecutor : IQueryExecutor
         if (!isHandlerFound)
         {
             throw new DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
-                                                    "Most likely it is not properly registered in container.");
+                                                    "Most likely it is not properly registered in container");
         }
 
         return queryHandler.Handle(query);
@@ -67,7 +67,7 @@ internal sealed class DefaultQueryExecutor : IQueryExecutor
         if (!isHandlerFound)
         {
             throw new DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
-                                                    "Most likely it is not properly registered in container.");
+                                                    "Most likely it is not properly registered in container");
         }
 
         MethodInfo handlerMethod =
@@ -77,7 +77,7 @@ internal sealed class DefaultQueryExecutor : IQueryExecutor
         {
             throw new MissingMethodException(
                 $"Handler method for command or query: ({query.GetTypeFullName()}) hasn't been found. " +
-                "It occurred, because likely handler hasn't has method implementation.");
+                "It occurred, because likely handler hasn't has method implementation");
         }
 
         return await (handlerMethod.Invoke(queryHandler, new object[] { query, cancellationToken }) as Task<TResult>)!;
@@ -93,7 +93,7 @@ internal sealed class DefaultQueryExecutor : IQueryExecutor
         if (!isHandlerFound)
         {
             throw new DependencyResolutionException($"Unable to resolve handler for {query.GetTypeFullName()}. " +
-                                                    "Most likely it is not properly registered in container.");
+                                                    "Most likely it is not properly registered in container");
         }
 
         return await queryHandler.HandleAsync(query, cancellationToken);

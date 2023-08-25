@@ -1,5 +1,5 @@
 using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.Domain.Rules;
 
 namespace EssentialFrame.Domain.ValueObjects;
 
@@ -53,7 +53,7 @@ public abstract class ValueObject
         return !(a == b);
     }
 
-    protected virtual void CheckRule(ValueObjectBusinessRuleBase rule, bool useExtraParameters = true)
+    protected virtual void CheckRule(IBusinessRule rule, bool useExtraParameters = true)
     {
         if (!rule.IsBroken())
         {

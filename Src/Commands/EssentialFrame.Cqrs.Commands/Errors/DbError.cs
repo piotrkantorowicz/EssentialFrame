@@ -6,7 +6,7 @@ public class DbError : ICommandError
 {
     public DbError(string details)
     {
-        Message = "Database error occurred.";
+        Message = "Database error occurred";
         Details = details;
     }
 

@@ -2,9 +2,10 @@
 using Bogus;
 using EssentialFrame.Domain.Events.Core.Snapshots;
 using EssentialFrame.Domain.Factories;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
 using FluentAssertions;
 using Moq;
@@ -42,9 +43,9 @@ public class SnapshotStrategyTests
             GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
                 _identityServiceMock.Object);
 
-        aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
-        aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), true));
-        aggregate.ChangeDescription(_faker.Lorem.Sentences());
+        aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
+        aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
+        aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
 
         // Act
         bool result = new SnapshotStrategy(Interval).ShouldTakeSnapShot(aggregate);
@@ -64,8 +65,8 @@ public class SnapshotStrategyTests
             GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
                 _identityServiceMock.Object);
 
-        aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
-        aggregate.ChangeDescription(_faker.Lorem.Sentences());
+        aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
+        aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
 
         // Act
         bool result = new SnapshotStrategy(Interval).ShouldTakeSnapShot(aggregate);

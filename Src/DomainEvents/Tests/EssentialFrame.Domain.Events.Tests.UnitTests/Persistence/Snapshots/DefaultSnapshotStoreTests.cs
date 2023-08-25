@@ -6,7 +6,7 @@ using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.Identity;
 using FluentAssertions;
 using Moq;
@@ -245,7 +245,7 @@ public class DefaultSnapshotStoreTests
 
         // Assert
         act.Should().ThrowExactly<SnapshotBoxingFailedException>().WithMessage(
-            $"Unable to box snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details.");
+            $"Unable to box snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details");
     }
 
     [Test]
@@ -261,7 +261,7 @@ public class DefaultSnapshotStoreTests
 
         // Assert
         await act.Should().ThrowExactlyAsync<SnapshotBoxingFailedException>().WithMessage(
-            $"Unable to box snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details.");
+            $"Unable to box snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details");
     }
 
     [Test]
@@ -313,7 +313,7 @@ public class DefaultSnapshotStoreTests
 
         // Assert
         act.Should().ThrowExactly<SnapshotUnboxingFailedException>().WithMessage(
-            $"Unable to unbox snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details.");
+            $"Unable to unbox snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details");
     }
 
     [Test]
@@ -330,7 +330,7 @@ public class DefaultSnapshotStoreTests
 
         // Assert
         await act.Should().ThrowExactlyAsync<SnapshotUnboxingFailedException>().WithMessage(
-            $"Unable to unbox snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details.");
+            $"Unable to unbox snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details");
     }
 
     private SnapshotDataModel GetSnapshotDataModel(Guid aggregateIdentifier)

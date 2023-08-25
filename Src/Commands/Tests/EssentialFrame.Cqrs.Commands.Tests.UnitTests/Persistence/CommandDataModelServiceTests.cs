@@ -5,8 +5,8 @@ using EssentialFrame.Cqrs.Commands.Persistence;
 using EssentialFrame.Cqrs.Commands.Persistence.Const;
 using EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence.Models;
-using EssentialFrame.ExampleApp.Commands.Posts;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Application.Identity;
+using EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeTitle;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Tests.Utils;
@@ -52,7 +52,10 @@ public class CommandDataModelServiceTests
     public void Create_WhenCommandIsProvided_ShouldReturnCommandDataModel()
     {
         // Arrange
-        ChangeTitleCommand command = new(_identityServiceMock.Object.GetCurrent(), _faker.Random.String(10, 20),
+        Guid aggregateIdentifier = _faker.Random.Guid();
+
+        ChangeTitleCommand command = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            _faker.Random.String(10, 20),
             _faker.Random.Bool());
 
         ICommandDataModelService commandDataModelService = new CommandDataModelService();
@@ -79,14 +82,17 @@ public class CommandDataModelServiceTests
         Action act = () => commandDataModelService.Create(null);
 
         // Assert
-        act.Should().Throw<ArgumentException>().WithMessage("Command class cannot be null.");
+        act.Should().Throw<ArgumentException>().WithMessage("Command class cannot be null");
     }
 
     [Test]
     public void Create_WhenCommandAndSerializerAreProvided_ShouldReturnCommandDataModel()
     {
         // Arrange
-        ChangeTitleCommand command = new(_identityServiceMock.Object.GetCurrent(), _faker.Random.String(10, 20),
+        Guid aggregateIdentifier = _faker.Random.Guid();
+
+        ChangeTitleCommand command = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            _faker.Random.String(10, 20),
             _faker.Random.Bool());
 
         string serializedCommand = _faker.Random.String(10, 35);
@@ -118,7 +124,7 @@ public class CommandDataModelServiceTests
         Action act = () => commandDataModelService.Create(null, _serializerMock.Object);
 
         // Assert
-        act.Should().Throw<ArgumentException>().WithMessage("Command class cannot be null.");
+        act.Should().Throw<ArgumentException>().WithMessage("Command class cannot be null");
     }
 
     [Test]

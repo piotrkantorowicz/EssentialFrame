@@ -16,10 +16,11 @@ using EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 using EssentialFrame.Domain.Factories;
 using EssentialFrame.Domain.Snapshots;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
@@ -568,7 +569,7 @@ public class SnapshotRepositoryTests
         _snapshotMapperMock.Verify(x => x.Map(snapshotDataModel), Times.Once);
         result.Should().BeEquivalentTo(aggregate);
     }
-    
+
     [Test]
     public async Task UnboxAsync_CorrectAggregateIdentifierProvided_ShouldUnboxAggregate()
     {
@@ -615,11 +616,11 @@ public class SnapshotRepositoryTests
         List<IDomainEvent> domainEvents = new()
         {
             new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
-                _faker.Lorem.Sentences()),
+                Description.Create(_faker.Lorem.Sentences())),
             new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
-                Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
+                Title.Default(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)))),
             new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
-                _faker.Lorem.Sentences())
+                Description.Create(_faker.Lorem.Sentences()))
         };
 
         return domainEvents;
