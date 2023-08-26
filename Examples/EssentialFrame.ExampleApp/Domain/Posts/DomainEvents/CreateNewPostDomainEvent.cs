@@ -9,9 +9,9 @@ using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 
-public class CreateNewPostEvent : DomainEvent
+public class CreateNewPostDomainEvent : DomainEvent
 {
-    public CreateNewPostEvent(Guid aggregateIdentifier, IIdentityContext identityContext, Title title,
+    public CreateNewPostDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, Title title,
         Description description, Date expiration, HashSet<Image> images) : base(aggregateIdentifier, identityContext)
     {
         Title = title;
@@ -20,7 +20,7 @@ public class CreateNewPostEvent : DomainEvent
         Images = images;
     }
 
-    public CreateNewPostEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
+    public CreateNewPostDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
         Title title, Description description, Date expiration, HashSet<Image> images) : base(aggregateIdentifier,
         eventIdentifier, identityContext)
     {
@@ -30,7 +30,7 @@ public class CreateNewPostEvent : DomainEvent
         Images = images;
     }
 
-    public CreateNewPostEvent(Guid aggregateIdentifier, IIdentityContext identityContext, int expectedVersion,
+    public CreateNewPostDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, int expectedVersion,
         Title title, Description description, Date expiration, HashSet<Image> images) : base(aggregateIdentifier,
         identityContext, expectedVersion)
     {
@@ -40,7 +40,7 @@ public class CreateNewPostEvent : DomainEvent
         Images = images;
     }
 
-    public CreateNewPostEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
+    public CreateNewPostDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
         int expectedVersion, Title title, Description description, Date expiration, HashSet<Image> images) : base(
         aggregateIdentifier, eventIdentifier, identityContext, expectedVersion)
     {

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using EssentialFrame.Domain.Exceptions;
 
 namespace EssentialFrame.Domain.ValueObjects;
 
@@ -9,20 +10,21 @@ public abstract record Enumeration<T> : IComparable<T> where T : Enumeration<T>
 
     static Enumeration()
     {
-        AllItems = new Lazy<Dictionary<int, T>>(() =>
-        {
-            return typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+        AllItems = new Lazy<Dictionary<int, T>>(() => typeof(T)
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
                 .Where(x => x.FieldType == typeof(T)).Select(x => x.GetValue(null)).Cast<T>()
-                .ToDictionary(x => x.Value, x => x);
-        });
+            .ToDictionary(x => x.Value, x => x));
+            
         AllItemsByName = new Lazy<Dictionary<string, T>>(() =>
         {
             Dictionary<string, T> items = new(AllItems.Value.Count);
+            
             foreach (KeyValuePair<int, T> item in AllItems.Value)
             {
                 if (!items.TryAdd(item.Value.DisplayName, item.Value))
                 {
-                    throw new Exception($"DisplayName needs to be unique. '{item.Value.DisplayName}' already exists");
+                    throw new EnumerationDisplayNameMustBeUniqueException(typeof(Enumeration<T>),
+                        item.Value.DisplayName);
                 }
             }
 

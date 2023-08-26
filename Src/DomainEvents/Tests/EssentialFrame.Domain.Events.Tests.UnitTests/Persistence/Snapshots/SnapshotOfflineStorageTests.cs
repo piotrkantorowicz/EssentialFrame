@@ -60,7 +60,7 @@ public class SnapshotOfflineStorageTests
     private ILogger<SnapshotOfflineStorage> _logger;
     private SnapshotDataModel _snapshotDataModel;
 
-    private static object[] _possibleExceptions =
+    private static readonly object[] PossibleExceptions =
     {
         new object[] { typeof(OutOfMemoryException) }, new object[] { typeof(ArgumentException) },
         new object[] { typeof(ArgumentNullException) }, new object[] { typeof(PathTooLongException) },
@@ -242,7 +242,7 @@ public class SnapshotOfflineStorageTests
     }
 
     [Test]
-    [TestCaseSource(nameof(_possibleExceptions))]
+    [TestCaseSource(nameof(PossibleExceptions))]
     public void Save_WhenExceptionOccurs_ShouldCatchAndThrowAggregateBoxingFailedException(Type exception)
     {
         // Arrange
@@ -269,7 +269,7 @@ public class SnapshotOfflineStorageTests
     }
 
     [Test]
-    [TestCaseSource(nameof(_possibleExceptions))]
+    [TestCaseSource(nameof(PossibleExceptions))]
     public async Task SaveAsync_WhenExceptionOccurs_ShouldCatchAndThrowAggregateBoxingFailedException(Type exception)
     {
         // Arrange
@@ -467,7 +467,7 @@ public class SnapshotOfflineStorageTests
     }
 
     [Test]
-    [TestCaseSource(nameof(_possibleExceptions))]
+    [TestCaseSource(nameof(PossibleExceptions))]
     public void Restore_WhenExceptionOccurs_ShouldThrowAggregateUnBoxingFailedException(Type exception)
     {
         // Arrange
@@ -495,7 +495,7 @@ public class SnapshotOfflineStorageTests
     }
 
     [Test]
-    [TestCaseSource(nameof(_possibleExceptions))]
+    [TestCaseSource(nameof(PossibleExceptions))]
     public async Task RestoreAsync_WhenExceptionOccurs_ShouldThrowAggregateUnBoxingFailedException(Type exception)
     {
         // Arrange

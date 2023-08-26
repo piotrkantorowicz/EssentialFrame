@@ -19,6 +19,7 @@ using EssentialFrame.Domain.Snapshots;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
@@ -128,7 +129,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier, AggregateVersion = 3, AggregateState = aggregate.State
+            AggregateIdentifier = aggregateIdentifier, AggregateVersion = events.Count, AggregateState = aggregate.State
         };
 
         Snapshot snapshot = new(snapshotDataModel.AggregateIdentifier, snapshotDataModel.AggregateVersion,
@@ -136,9 +137,7 @@ public class SnapshotRepositoryTests
 
         _snapshotStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         _snapshotMapperMock.Setup(x => x.Map(snapshotDataModel)).Returns(snapshot);
-
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier, snapshot.AggregateVersion)).Returns(eventDataModels);
-
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels)).Returns(events);
 
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
@@ -170,7 +169,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier, AggregateVersion = 3, AggregateState = aggregate.State
+            AggregateIdentifier = aggregateIdentifier, AggregateVersion = events.Count, AggregateState = aggregate.State
         };
 
         Snapshot snapshot = new(snapshotDataModel.AggregateIdentifier, snapshotDataModel.AggregateVersion,
@@ -615,11 +614,14 @@ public class SnapshotRepositoryTests
     {
         List<IDomainEvent> domainEvents = new()
         {
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
+            new CreateNewPostDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
+                Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+                Date.Create(_faker.Date.FutureOffset()), null),
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
                 Description.Create(_faker.Lorem.Sentences())),
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
+            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
                 Title.Default(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)))),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 4,
                 Description.Create(_faker.Lorem.Sentences()))
         };
 

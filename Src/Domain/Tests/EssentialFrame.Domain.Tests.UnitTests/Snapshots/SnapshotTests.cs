@@ -39,6 +39,9 @@ public class SnapshotTests
         Description expectedDescription = Description.Create(_faker.Lorem.Sentences());
         Date expectedExpiration = Date.Create(_faker.Date.FutureOffset());
 
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
         aggregate.ChangeTitle(expectedTitle);
         aggregate.ChangeDescription(expectedDescription);
         aggregate.ExtendExpirationDate(expectedExpiration);

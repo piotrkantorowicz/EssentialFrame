@@ -96,7 +96,7 @@ public class AggregateOfflineStorageTests
     private IReadOnlyCollection<DomainEventDataModel> _domainEventDataModels;
     private IReadOnlyCollection<IDomainEvent> _domainEvents;
 
-    private static object[] _possibleExceptions =
+    private static readonly object[] PossibleExceptions =
     {
         new object[] { typeof(OutOfMemoryException) }, new object[] { typeof(ArgumentException) },
         new object[] { typeof(ArgumentNullException) }, new object[] { typeof(PathTooLongException) },
@@ -255,7 +255,7 @@ public class AggregateOfflineStorageTests
     }
 
     [Test]
-    [TestCaseSource(nameof(_possibleExceptions))]
+    [TestCaseSource(nameof(PossibleExceptions))]
     public void Save_WhenExceptionOccurs_ShouldCatchAndThrowAggregateBoxingFailedException(Type exception)
     {
         // Arrange
@@ -281,7 +281,7 @@ public class AggregateOfflineStorageTests
     }
 
     [Test]
-    [TestCaseSource(nameof(_possibleExceptions))]
+    [TestCaseSource(nameof(PossibleExceptions))]
     public async Task SaveAsync_WhenExceptionOccurs_ShouldCatchAndThrowAggregateBoxingFailedException(Type exception)
     {
         // Arrange

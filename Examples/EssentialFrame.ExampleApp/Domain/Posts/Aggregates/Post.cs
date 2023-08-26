@@ -45,9 +45,11 @@ public sealed class Post : AggregateRoot
 
     public void Create(Title title, Description description, Date expirationDate, HashSet<Image> images)
     {
-        CreateNewPostEvent @event = new(AggregateIdentifier, GetIdentityContext(), title, description, expirationDate,
+        CreateNewPostDomainEvent domainEvent = new(AggregateIdentifier, GetIdentityContext(), title, description,
+            expirationDate,
             images);
-        Apply(@event);
+
+        Apply(domainEvent);
     }
 
     public void ChangeTitle(Title title)

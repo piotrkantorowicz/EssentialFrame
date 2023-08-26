@@ -35,8 +35,7 @@ public class AggregateRepositoryTests
     private readonly Mock<IDomainEventMapper> _domainEventMapperMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IAggregateStore> _aggregateStoreMock = new();
-
-
+    
     [SetUp]
     public void SetUp()
     {
@@ -311,6 +310,9 @@ public class AggregateRepositoryTests
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
 
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
         aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
         aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
         aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()));
@@ -356,6 +358,9 @@ public class AggregateRepositoryTests
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
 
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
         aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
         aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
         aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()));
@@ -385,6 +390,9 @@ public class AggregateRepositoryTests
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
 
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
         aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
         aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
         aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()));
@@ -430,6 +438,9 @@ public class AggregateRepositoryTests
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
 
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
         aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
         aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
         aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()));
@@ -457,9 +468,12 @@ public class AggregateRepositoryTests
         
         List<IDomainEvent> domainEvents = new()
         {
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
+            new CreateNewPostDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
+                Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+                Date.Create(_faker.Date.FutureOffset()), null),
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
                 Description.Create(_faker.Lorem.Sentences())),
-            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
+            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
                 new HashSet<Image>
                 {
                     Image.Create(imageId, Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
@@ -468,9 +482,9 @@ public class AggregateRepositoryTests
                         Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
                         BytesContent.Create(_faker.Random.Bytes(982)))
                 }),
-            new ChangeImageNameDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3, imageId,
+            new ChangeImageNameDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 4, imageId,
                 Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)))),
-            new ChangeExpirationDateDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 4,
+            new ChangeExpirationDateDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 5,
                 Date.Create(_faker.Date.Future()))
         };
 

@@ -16,6 +16,8 @@ public sealed class PostState : AggregateState
     private readonly Guid _aggregateIdentifier;
     private readonly Type _aggregateType;
 
+    private bool _isCreated;
+
     private PostState(Guid aggregateId, Type aggregateType)
     {
         _aggregateIdentifier = aggregateId;
@@ -23,7 +25,9 @@ public sealed class PostState : AggregateState
 
         Images = new HashSet<Image>();
     }
-    
+
+    public Guid AuthorIdentifier { get; private set; }
+
     public Title Title { get; private set; }
 
     public Description Description { get; private set; }
@@ -32,27 +36,34 @@ public sealed class PostState : AggregateState
 
     public HashSet<Image> Images { get; }
 
-    internal static PostState Create(Guid postId, Type type)
+    internal static PostState Create(Guid postIdentifier, Type type)
     {
-        PostState state = new(postId, type);
+        PostState state = new(postIdentifier, type);
 
         return state;
     }
 
-    public void When(CreateNewPostEvent @event)
+    public void When(CreateNewPostDomainEvent domainEvent)
     {
-        CheckRule(new CannotCreateOutdatedPostRule(_aggregateIdentifier, _aggregateType, @event.Expiration));
+        CheckRule(new CannotCreateOutdatedPostRule(_aggregateIdentifier, _aggregateType, domainEvent.Expiration));
 
-        Title = @event.Title;
-        Description = @event.Description;
-        Expiration = @event.Expiration;
+        Title = domainEvent.Title;
+        Description = domainEvent.Description;
+        Expiration = domainEvent.Expiration;
+        AuthorIdentifier = domainEvent.UserIdentity;
 
-        AddImages(@event.Images ?? new HashSet<Image>());
+        AddImages(domainEvent.Images ?? new HashSet<Image>());
+
+        _isCreated = true;
     }
 
     public void When(ChangeTitleDomainEvent @event)
     {
         CheckRule(new ExpiredPostCannotBeUpdatedRule(_aggregateIdentifier, _aggregateType, Expiration));
+        CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
+
+        CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType, @event.UserIdentity,
+            AuthorIdentifier));
 
         Title = @event.NewTitle;
     }
@@ -60,6 +71,10 @@ public sealed class PostState : AggregateState
     public void When(ChangeDescriptionDomainEvent @event)
     {
         CheckRule(new ExpiredPostCannotBeUpdatedRule(_aggregateIdentifier, _aggregateType, Expiration));
+        CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
+
+        CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType, @event.UserIdentity,
+            AuthorIdentifier));
 
         Description = @event.NewDescription;
     }
@@ -67,6 +82,10 @@ public sealed class PostState : AggregateState
     public void When(ChangeExpirationDateDomainEvent @event)
     {
         CheckRule(new ExpiredPostCannotBeUpdatedRule(_aggregateIdentifier, _aggregateType, @event.NewExpirationDate));
+        CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
+
+        CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType, @event.UserIdentity,
+            AuthorIdentifier));
 
         Expiration = @event.NewExpirationDate;
     }
@@ -74,6 +93,10 @@ public sealed class PostState : AggregateState
     public void When(AddImagesDomainEvent @event)
     {
         CheckRule(new ExpiredPostCannotBeUpdatedRule(_aggregateIdentifier, _aggregateType, Expiration));
+        CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
+
+        CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType, @event.UserIdentity,
+            AuthorIdentifier));
 
         AddImages(@event.NewImages);
     }
@@ -81,6 +104,10 @@ public sealed class PostState : AggregateState
     public void When(ChangeImageNameDomainEvent @event)
     {
         CheckRule(new ExpiredPostCannotBeUpdatedRule(_aggregateIdentifier, _aggregateType, Expiration));
+        CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
+
+        CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType, @event.UserIdentity,
+            AuthorIdentifier));
 
         CheckRule(new PostMustHaveOnlyUniqueImagesRule(_aggregateIdentifier, _aggregateType, @event.NewImageName,
             Images.Select(i => i.Name).ToArray()));
@@ -88,13 +115,17 @@ public sealed class PostState : AggregateState
         Image image = Images.FirstOrDefault(i => i.ImageIdentifier == @event.ImageId);
 
         CheckRule(new PostImageMustExistsWhenUpdatingOrDeletingRule(_aggregateIdentifier, _aggregateType, image));
-        
+
         image?.UpdateName(@event.NewImageName);
     }
 
-    public void When(DeleteImagesEvent @event)
+    public void When(DeleteImagesDomainEvent @event)
     {
         CheckRule(new ExpiredPostCannotBeUpdatedRule(_aggregateIdentifier, _aggregateType, Expiration));
+        CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
+
+        CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType, @event.UserIdentity,
+            AuthorIdentifier));
 
         foreach (Image image in @event.ImagesIds.Select(imageId =>
                      Images.FirstOrDefault(i => i.ImageIdentifier == imageId)))
