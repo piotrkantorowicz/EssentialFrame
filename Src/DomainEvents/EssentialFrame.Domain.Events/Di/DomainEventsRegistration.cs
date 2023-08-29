@@ -16,7 +16,6 @@ internal static class DomainEventsRegistration
         ContainerBuilder containerBuilder = essentialFrameBuilder.Builder;
 
         containerBuilder.RegisterType<AggregateRepository>().As<IAggregateRepository>().InstancePerLifetimeScope();
-
         containerBuilder.RegisterType<SnapshotRepository>().As<ISnapshotRepository>().InstancePerLifetimeScope();
         containerBuilder.RegisterType<SnapshotStrategy>().As<ISnapshotStrategy>().InstancePerLifetimeScope();
 

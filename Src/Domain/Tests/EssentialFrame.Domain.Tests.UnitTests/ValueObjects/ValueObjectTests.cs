@@ -1,7 +1,7 @@
 using System;
 using Bogus;
 using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -17,8 +17,8 @@ public sealed class ValueObjectTests
     {
         // Arrange
         string value = _faker.Lorem.Sentence();
-        Title title1 = Title.Create(value, true);
-        Title title2 = Title.Create(value, true);
+        Title title1 = Title.Default(value);
+        Title title2 = Title.Default(value);
 
         // Act
         bool isEqual = title1.Equals(title2);
@@ -37,8 +37,8 @@ public sealed class ValueObjectTests
     public void Equals_WhenObjectsHaveDifferentValues_ShouldBeFalse()
     {
         // Arrange
-        Title title1 = Title.Create(_faker.Lorem.Sentence(), true);
-        Title title2 = Title.Create(_faker.Lorem.Sentence(), false);
+        Title title1 = Title.Default(_faker.Lorem.Sentence());
+        Title title2 = Title.Default(_faker.Lorem.Sentence());
 
         // Act
         bool isEqual = title1.Equals(title2);
@@ -58,13 +58,12 @@ public sealed class ValueObjectTests
     {
         // Arrange
         string value = string.Empty;
-        bool uppercase = _faker.Random.Bool();
 
         // Act
-        Action action = () => Title.Create(value, uppercase);
+        Action action = () => Title.Default(value);
 
         // Assert
         action.Should().Throw<BusinessRuleValidationException>().WithMessage(
-            $"Unable to set value for ({typeof(Title).FullName}), because value cannot be empty.");
+            $"Unable to set value for ({typeof(Title).FullName}), because value cannot be empty");
     }
 }

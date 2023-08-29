@@ -3,8 +3,8 @@ using System.Reflection;
 using Bogus;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Factories;
+using EssentialFrame.ExampleApp.Application.Identity.Services;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
-using EssentialFrame.ExampleApp.Identity.Services;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -46,7 +46,7 @@ public sealed class GenericAggregateFactoryTests
         // Assert
         createAggregateAction.Should().ThrowExactly<TargetInvocationException>()
             .WithInnerException<MissingAggregateIdentifierException>().WithMessage(
-                $"The aggregate identifier is missing from the aggregate instance ({typeof(Post).FullName}).");
+                $"The aggregate identifier is missing from the aggregate instance ({typeof(Post).FullName})");
     }
 
     [Test]
@@ -65,7 +65,7 @@ public sealed class GenericAggregateFactoryTests
         aggregate.Should().NotBeNull();
         aggregate.AggregateIdentifier.Should().Be(aggregateIdentifier);
         aggregate.AggregateVersion.Should().Be(aggregateVersion);
-        aggregate.GetIdentity().Should().BeEquivalentTo(identityService.GetCurrent());
+        aggregate.GetIdentityContext().Should().BeEquivalentTo(identityService.GetCurrent());
     }
 
     [Test]
@@ -84,6 +84,6 @@ public sealed class GenericAggregateFactoryTests
         // Assert
         createAggregateAction.Should().ThrowExactly<TargetInvocationException>()
             .WithInnerException<MissingAggregateIdentifierException>().WithMessage(
-                $"The aggregate identifier is missing from the aggregate instance ({typeof(Post).FullName}).");
+                $"The aggregate identifier is missing from the aggregate instance ({typeof(Post).FullName})");
     }
 }

@@ -1,10 +1,12 @@
 using System;
 using Bogus;
 using EssentialFrame.Domain.Factories;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Snapshots;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
@@ -33,10 +35,13 @@ public class SnapshotTests
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
 
-        Title expectedTitle = Title.Create(_faker.Lorem.Sentence(), true);
-        string expectedDescription = _faker.Lorem.Sentences();
-        DateTimeOffset expectedExpiration = _faker.Date.FutureOffset();
+        Title expectedTitle = Title.Default(_faker.Lorem.Sentence());
+        Description expectedDescription = Description.Create(_faker.Lorem.Sentences());
+        Date expectedExpiration = Date.Create(_faker.Date.FutureOffset());
 
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
         aggregate.ChangeTitle(expectedTitle);
         aggregate.ChangeDescription(expectedDescription);
         aggregate.ExtendExpirationDate(expectedExpiration);

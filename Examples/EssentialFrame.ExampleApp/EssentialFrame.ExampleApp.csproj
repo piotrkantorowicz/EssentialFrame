@@ -9,11 +9,12 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Src\Core\EssentialFrame\EssentialFrame.csproj"/>
         <ProjectReference Include="..\..\Src\Commands\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
+        <ProjectReference Include="..\..\Src\Commands\Validations\EssentialFrame.Cqrs.Commands.Validations\EssentialFrame.Cqrs.Commands.Validations.csproj"/>
+        <ProjectReference Include="..\..\Src\Core\Tests\EssentialFrame.Tests.UnitTests\EssentialFrame.Tests.UnitTests.csproj"/>
+        <ProjectReference Include="..\..\Src\DomainEvents\EssentialFrame.Domain.Events\EssentialFrame.Domain.Events.csproj"/>
         <ProjectReference Include="..\..\Src\Domain\EssentialFrame.Domain\EssentialFrame.Domain.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Domain\Posts\"/>
-    </ItemGroup>
+
 
 </Project>

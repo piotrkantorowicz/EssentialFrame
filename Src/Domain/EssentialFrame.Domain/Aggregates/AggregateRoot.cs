@@ -16,7 +16,7 @@ public abstract class AggregateRoot
         {
             throw new MissingAggregateIdentifierException(GetType());
         }
-
+        
         AggregateIdentifier = aggregateIdentifier;
         AggregateVersion = aggregateVersion;
     }
@@ -47,7 +47,7 @@ public abstract class AggregateRoot
     public abstract AggregateState CreateState();
     public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
 
-    public IIdentityContext GetIdentity()
+    public IIdentityContext GetIdentityContext()
     {
         if (_identityService is null)
         {

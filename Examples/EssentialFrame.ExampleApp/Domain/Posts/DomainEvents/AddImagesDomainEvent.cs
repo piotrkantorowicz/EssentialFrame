@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.Events;
-using EssentialFrame.ExampleApp.Domain.Posts.Entities;
+using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 
-public class AddImagesDomainEvent : DomainEventBase
+public class AddImagesDomainEvent : DomainEvent
 {
     public AddImagesDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, HashSet<Image> newImages) :
         base(aggregateIdentifier, identityContext)

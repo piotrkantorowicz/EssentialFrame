@@ -6,8 +6,8 @@ using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence;
 using EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence.Models;
-using EssentialFrame.ExampleApp.Commands.Posts;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Application.Identity;
+using EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeTitle;
 using EssentialFrame.Extensions;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
@@ -45,9 +45,11 @@ public class CommandMapperTests
     public void Map_WhenCommandIsNotSerialized_ShouldMapCommand()
     {
         // Arrange
+        Guid aggregateIdentifier = _faker.Random.Guid();
         string title = _faker.Lorem.Sentence();
         bool isUppercase = _faker.Random.Bool();
-        ChangeTitleCommand command = new(_identityServiceMock.Object.GetCurrent(), title, isUppercase);
+        ChangeTitleCommand command = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), title,
+            isUppercase);
         CommandDataModel commandDataModel = GenerateCommandDataModel(command);
 
         _commandDataModelServiceMock.Setup(x => x.Create(command)).Returns(commandDataModel);
@@ -67,9 +69,11 @@ public class CommandMapperTests
     public void Map_WhenCommandIsSerialized_ShouldMapCommand()
     {
         // Arrange
+        Guid aggregateIdentifier = _faker.Random.Guid();
         string title = _faker.Lorem.Sentence();
         bool isUppercase = _faker.Random.Bool();
-        ChangeTitleCommand command = new(_identityServiceMock.Object.GetCurrent(), title, isUppercase);
+        ChangeTitleCommand command = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), title,
+            isUppercase);
         CommandDataModel commandDataModel = GenerateCommandDataModel(command);
 
         _commandDataModelServiceMock.Setup(x => x.Create(command, _serializerMock.Object)).Returns(commandDataModel);
@@ -151,9 +155,11 @@ public class CommandMapperTests
     public void Map_WhenCommandDataIsNotSerialized_ShouldMapCommandDataModel()
     {
         // Arrange
+        Guid aggregateIdentifier = _faker.Random.Guid();
         string title = _faker.Lorem.Sentence();
         bool isUppercase = _faker.Random.Bool();
-        ChangeTitleCommand command = new(_identityServiceMock.Object.GetCurrent(), title, isUppercase);
+        ChangeTitleCommand command = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), title,
+            isUppercase);
         CommandDataModel commandDataModel = GenerateCommandDataModel(command);
         ICommandMapper commandMapper = new CommandMapper(_commandDataModelServiceMock.Object);
 
@@ -168,10 +174,12 @@ public class CommandMapperTests
     public void Map_WhenCommandDataIsSerialized_ShouldMapCommandDataModel()
     {
         // Arrange
+        Guid aggregateIdentifier = _faker.Random.Guid();
         string title = _faker.Lorem.Sentence();
         bool isUppercase = _faker.Random.Bool();
         string serializedCommand = _faker.Lorem.Sentences();
-        ChangeTitleCommand command = new(_identityServiceMock.Object.GetCurrent(), title, isUppercase);
+        ChangeTitleCommand command = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), title,
+            isUppercase);
 
         _serializerMock.Setup(s => s.Serialize<ICommand>(command)).Returns(serializedCommand);
 
@@ -274,13 +282,14 @@ public class CommandMapperTests
     private IReadOnlyCollection<ICommand> GenerateCommands()
     {
         List<ICommand> commands = new();
+        Guid aggregateIdentifier = _faker.Random.Guid();
         string title = _faker.Lorem.Sentence();
         bool isUppercase = _faker.Random.Bool();
         IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
 
         for (int i = 0; i < _faker.Random.Int(1, 20); i++)
         {
-            commands.Add(new ChangeTitleCommand(identityContext, title, isUppercase));
+            commands.Add(new ChangeTitleCommand(aggregateIdentifier, identityContext, title, isUppercase));
         }
 
         return commands;

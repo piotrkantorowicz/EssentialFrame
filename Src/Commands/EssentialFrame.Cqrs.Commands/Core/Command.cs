@@ -5,11 +5,7 @@ namespace EssentialFrame.Cqrs.Commands.Core;
 
 public abstract class Command : ICommand
 {
-    protected Command()
-    {
-    }
-
-    protected Command(IIdentityContext identityContext) : this()
+    protected Command(IIdentityContext identityContext)
     {
         TenantIdentity = identityContext.Tenant.Identifier;
         UserIdentity = identityContext.User.Identifier;
@@ -29,13 +25,13 @@ public abstract class Command : ICommand
         CommandIdentifier = commandIdentifier;
     }
 
-    protected Command(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
-        int expectedVersion) : this(aggregateIdentifier, commandIdentifier, identityContext)
+    protected Command(Guid aggregateIdentifier, Guid commandIdentifier, int expectedVersion,
+        IIdentityContext identityContext) : this(aggregateIdentifier, commandIdentifier, identityContext)
     {
         ExpectedVersion = expectedVersion;
     }
 
-    public Guid AggregateIdentifier { get; }
+    public Guid AggregateIdentifier { get; } = Guid.NewGuid();
 
     public int? ExpectedVersion { get; }
 

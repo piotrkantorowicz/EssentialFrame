@@ -10,11 +10,15 @@ using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Factories;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
-using EssentialFrame.ExampleApp.Domain.Posts.Entities;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
 using EssentialFrame.Identity;
 using FluentAssertions;
@@ -31,8 +35,7 @@ public class AggregateRepositoryTests
     private readonly Mock<IDomainEventMapper> _domainEventMapperMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IAggregateStore> _aggregateStoreMock = new();
-
-
+    
     [SetUp]
     public void SetUp()
     {
@@ -66,14 +69,14 @@ public class AggregateRepositoryTests
             IsDeleted = false,
             TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
-
-        List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
+        
         List<DomainEventDataModel> eventDataModels = GenerateDomainEventDataModelsCollection(aggregateIdentifier);
 
-        aggregate.Rehydrate(events);
+        aggregate.Rehydrate(GenerateDomainEventsCollection(aggregateIdentifier));
 
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier, -1)).Returns(eventDataModels);
-        _domainEventMapperMock.Setup(x => x.Map(eventDataModels)).Returns(events);
+        _domainEventMapperMock.Setup(x => x.Map(eventDataModels))
+            .Returns(GenerateDomainEventsCollection(aggregateIdentifier));
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
@@ -125,7 +128,7 @@ public class AggregateRepositoryTests
 
         // Assert
         getAggregateAction.Should().Throw<AggregateDeletedException>().WithMessage(
-            $"Unable to get aggregate ({aggregate.GetTypeFullName()}) with id: ({aggregateIdentifier}), because it has been deleted.");
+            $"Unable to get aggregate ({aggregate.GetTypeFullName()}) with id: ({aggregateIdentifier}), because it has been deleted");
 
         _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier, -1), Times.Once);
         _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
@@ -156,6 +159,7 @@ public class AggregateRepositoryTests
 
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier, -1))
             .Returns((IReadOnlyCollection<DomainEventDataModel>)null);
+        
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
@@ -166,7 +170,7 @@ public class AggregateRepositoryTests
 
         // Assert
         getAggregateAction.Should().Throw<AggregateNotFoundException>().WithMessage(
-            $"This aggregate does not exist ({aggregate.GetTypeFullName()} {aggregateIdentifier}) because there are no events for it.");
+            $"This aggregate does not exist ({aggregate.GetTypeFullName()} {aggregateIdentifier}) because there are no events for it");
 
         _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier, -1), Times.Once);
         _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
@@ -191,14 +195,14 @@ public class AggregateRepositoryTests
             TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
-        List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
         List<DomainEventDataModel> eventDataModels = GenerateDomainEventDataModelsCollection(aggregateIdentifier);
 
-        aggregate.Rehydrate(events);
+        aggregate.Rehydrate(GenerateDomainEventsCollection(aggregateIdentifier));
 
         _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, -1, default)).ReturnsAsync(eventDataModels);
         _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, default)).ReturnsAsync(aggregateDataModel);
-        _domainEventMapperMock.Setup(x => x.Map(eventDataModels)).Returns(events);
+        _domainEventMapperMock.Setup(x => x.Map(eventDataModels))
+            .Returns(GenerateDomainEventsCollection(aggregateIdentifier));
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
@@ -249,7 +253,7 @@ public class AggregateRepositoryTests
 
         // Assert
         await getAggregateAction.Should().ThrowAsync<AggregateDeletedException>().WithMessage(
-            $"Unable to get aggregate ({aggregate.GetTypeFullName()}) with id: ({aggregateIdentifier}), because it has been deleted.");
+            $"Unable to get aggregate ({aggregate.GetTypeFullName()}) with id: ({aggregateIdentifier}), because it has been deleted");
 
         _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, default), Times.Once);
         _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, default), Times.Once);
@@ -290,7 +294,7 @@ public class AggregateRepositoryTests
 
         // Assert
         await getAggregateAction.Should().ThrowAsync<AggregateNotFoundException>().WithMessage(
-            $"This aggregate does not exist ({aggregate.GetTypeFullName()} {aggregateIdentifier}) because there are no events for it.");
+            $"This aggregate does not exist ({aggregate.GetTypeFullName()} {aggregateIdentifier}) because there are no events for it");
 
         _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, default), Times.Once);
         _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, default), Times.Once);
@@ -306,9 +310,12 @@ public class AggregateRepositoryTests
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
 
-        aggregate.ChangeDescription(_faker.Lorem.Sentences());
-        aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
-        aggregate.ExtendExpirationDate(_faker.Date.FutureOffset());
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
+        aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
+        aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
+        aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()));
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -351,9 +358,12 @@ public class AggregateRepositoryTests
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
 
-        aggregate.ChangeDescription(_faker.Lorem.Sentences());
-        aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
-        aggregate.ExtendExpirationDate(_faker.Date.FutureOffset());
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
+        aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
+        aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
+        aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()));
 
         _aggregateStoreMock.Setup(x => x.Exists(aggregateIdentifier, expectedAggregateVersion)).Returns(true);
 
@@ -365,7 +375,7 @@ public class AggregateRepositoryTests
 
         // Assert
         saveAction.Should().Throw<ConcurrencyException>().WithMessage(
-            $"A concurrency violation occurred on this aggregate ({aggregateIdentifier}). At least one event failed to save.");
+            $"A concurrency violation occurred on this aggregate ({aggregateIdentifier}). At least one event failed to save");
 
         _aggregateStoreMock.Verify(x => x.Exists(aggregateIdentifier, expectedAggregateVersion), Times.Once);
     }
@@ -380,9 +390,12 @@ public class AggregateRepositoryTests
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
 
-        aggregate.ChangeDescription(_faker.Lorem.Sentences());
-        aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
-        aggregate.ExtendExpirationDate(_faker.Date.FutureOffset());
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
+        aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
+        aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
+        aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()));
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -425,9 +438,12 @@ public class AggregateRepositoryTests
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
             aggregateVersion, _identityServiceMock.Object);
 
-        aggregate.ChangeDescription(_faker.Lorem.Sentences());
-        aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
-        aggregate.ExtendExpirationDate(_faker.Date.FutureOffset());
+        aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+            Date.Create(_faker.Date.FutureOffset()), null);
+        
+        aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
+        aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
+        aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()));
 
         _aggregateStoreMock.Setup(x => x.ExistsAsync(aggregateIdentifier, expectedAggregateVersion, default))
             .ReturnsAsync(true);
@@ -440,7 +456,7 @@ public class AggregateRepositoryTests
 
         // Assert
         await saveAction.Should().ThrowAsync<ConcurrencyException>().WithMessage(
-            $"A concurrency violation occurred on this aggregate ({aggregateIdentifier}). At least one event failed to save.");
+            $"A concurrency violation occurred on this aggregate ({aggregateIdentifier}). At least one event failed to save");
 
         _aggregateStoreMock.Verify(x => x.ExistsAsync(aggregateIdentifier, expectedAggregateVersion, default),
             Times.Once);
@@ -448,20 +464,28 @@ public class AggregateRepositoryTests
 
     private List<IDomainEvent> GenerateDomainEventsCollection(Guid aggregateIdentifier)
     {
+        Guid imageId = _faker.Random.Guid();
+        
         List<IDomainEvent> domainEvents = new()
         {
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
-                _faker.Lorem.Sentences()),
-            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
+            new CreateNewPostDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
+                Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+                Date.Create(_faker.Date.FutureOffset()), null),
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
+                Description.Create(_faker.Lorem.Sentences())),
+            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
                 new HashSet<Image>
                 {
-                    Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(2346)),
-                    Image.Create(_faker.Random.Guid(), _faker.Random.Word(), _faker.Random.Bytes(982))
+                    Image.Create(imageId, Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
+                        BytesContent.Create(_faker.Random.Bytes(2346))),
+                    Image.Create(_faker.Random.Guid(),
+                        Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
+                        BytesContent.Create(_faker.Random.Bytes(982)))
                 }),
-            new ChangeImageNameDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
-                _faker.Random.Guid(), _faker.Lorem.Word()),
-            new ChangeExpirationDateDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 4,
-                _faker.Date.Future())
+            new ChangeImageNameDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 4, imageId,
+                Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)))),
+            new ChangeExpirationDateDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 5,
+                Date.Create(_faker.Date.Future()))
         };
 
         return domainEvents;

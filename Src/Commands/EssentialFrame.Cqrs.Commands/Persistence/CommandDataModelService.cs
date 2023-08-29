@@ -100,7 +100,7 @@ internal sealed class CommandDataModelService : ICommandDataModelService
     {
         if (command is null)
         {
-            throw new ArgumentException("Command class cannot be null.");
+            throw new ArgumentException("Command class cannot be null");
         }
     }
 
