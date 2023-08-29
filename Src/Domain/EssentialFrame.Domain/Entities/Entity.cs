@@ -1,18 +1,23 @@
 using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.Domain.Rules;
 
 namespace EssentialFrame.Domain.Entities;
 
 public abstract class Entity
 {
-    protected Entity(Guid entityIdentifier)
+    protected Entity()
     {
-        EntityIdentifier = entityIdentifier;
+        ImageIdentifier = Guid.NewGuid();
     }
 
-    public Guid EntityIdentifier { get; }
+    protected Entity(Guid imageIdentifier)
+    {
+        ImageIdentifier = imageIdentifier;
+    }
 
-    protected virtual void CheckRule(EntityBusinessRuleBase rule, bool useExtraParameters = true)
+    public Guid ImageIdentifier { get; }
+
+    protected virtual void CheckRule(IBusinessRule rule, bool useExtraParameters = true)
     {
         if (!rule.IsBroken())
         {

@@ -12,10 +12,11 @@ using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Factories;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
 using EssentialFrame.Files;
 using EssentialFrame.Identity;
@@ -55,9 +56,9 @@ public class AggregateOfflineStorageTests
         _domainEvents = new List<IDomainEvent>
         {
             new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                Title.Create(_faker.Lorem.Sentence(), true)),
+                Title.Default(_faker.Lorem.Sentence())),
             new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
-                _faker.Lorem.Sentences())
+                Description.Create(_faker.Lorem.Sentences()))
         };
 
         _domainEventDataModels = _domainEvents.Select(domainEvent => new DomainEventDataModel
@@ -95,7 +96,7 @@ public class AggregateOfflineStorageTests
     private IReadOnlyCollection<DomainEventDataModel> _domainEventDataModels;
     private IReadOnlyCollection<IDomainEvent> _domainEvents;
 
-    private static object[] _possibleExceptions =
+    private static readonly object[] PossibleExceptions =
     {
         new object[] { typeof(OutOfMemoryException) }, new object[] { typeof(ArgumentException) },
         new object[] { typeof(ArgumentNullException) }, new object[] { typeof(PathTooLongException) },
@@ -254,7 +255,7 @@ public class AggregateOfflineStorageTests
     }
 
     [Test]
-    [TestCaseSource(nameof(_possibleExceptions))]
+    [TestCaseSource(nameof(PossibleExceptions))]
     public void Save_WhenExceptionOccurs_ShouldCatchAndThrowAggregateBoxingFailedException(Type exception)
     {
         // Arrange
@@ -275,12 +276,12 @@ public class AggregateOfflineStorageTests
 
         // Assert
         action.Should().ThrowExactly<AggregateBoxingFailedException>().WithMessage(
-                $"Unable to box aggregate ({_aggregateDataModel.GetTypeFullName()}) with id: ({_aggregateDataModel.AggregateIdentifier}). See inner exception for more details.")
+                $"Unable to box aggregate ({_aggregateDataModel.GetTypeFullName()}) with id: ({_aggregateDataModel.AggregateIdentifier}). See inner exception for more details")
             .WithInnerExceptionExactly(exception);
     }
 
     [Test]
-    [TestCaseSource(nameof(_possibleExceptions))]
+    [TestCaseSource(nameof(PossibleExceptions))]
     public async Task SaveAsync_WhenExceptionOccurs_ShouldCatchAndThrowAggregateBoxingFailedException(Type exception)
     {
         // Arrange
@@ -303,7 +304,7 @@ public class AggregateOfflineStorageTests
 
         // Assert
         await action.Should().ThrowExactlyAsync<AggregateBoxingFailedException>().WithMessage(
-                $"Unable to box aggregate ({_aggregateDataModel.GetTypeFullName()}) with id: ({_aggregateDataModel.AggregateIdentifier}). See inner exception for more details.")
+                $"Unable to box aggregate ({_aggregateDataModel.GetTypeFullName()}) with id: ({_aggregateDataModel.AggregateIdentifier}). See inner exception for more details")
             .WithInnerExceptionExactly(exception);
     }
 }

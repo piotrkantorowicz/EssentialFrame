@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
-using EssentialFrame.ExampleApp.Domain.Posts.Entities;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
+using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 
@@ -34,11 +37,6 @@ public sealed class Post : AggregateRoot
         return PostState.Create(AggregateIdentifier, GetType());
     }
 
-    public PostState CreateState(Title title, string description, DateTimeOffset expiration, HashSet<Image> images)
-    {
-        return PostState.Create(AggregateIdentifier, GetType(), title, description, expiration, images);
-    }
-
     public override void RestoreState(object aggregateState, ISerializer serializer = null)
     {
         switch (aggregateState)
@@ -54,19 +52,28 @@ public sealed class Post : AggregateRoot
         }
     }
 
+    public void Create(Title title, Description description, Date expirationDate, HashSet<Image> images)
+    {
+        CreateNewPostDomainEvent domainEvent = new(AggregateIdentifier, IdentityContext, title, description,
+            expirationDate,
+            images);
+
+        Apply(domainEvent);
+    }
+
     public void ChangeTitle(Title title)
     {
         ChangeTitleDomainEvent @event = new(AggregateIdentifier, IdentityContext, title);
         Apply(@event);
     }
 
-    public void ChangeDescription(string description)
+    public void ChangeDescription(Description description)
     {
         ChangeDescriptionDomainEvent @event = new(AggregateIdentifier, IdentityContext, description);
         Apply(@event);
     }
 
-    public void ExtendExpirationDate(DateTimeOffset newExpirationDate)
+    public void ExtendExpirationDate(Date newExpirationDate)
     {
         ChangeExpirationDateDomainEvent @event = new(AggregateIdentifier, IdentityContext, newExpirationDate);
         Apply(@event);
@@ -78,7 +85,7 @@ public sealed class Post : AggregateRoot
         Apply(@event);
     }
 
-    public void ChangeImageName(Guid imageId, string name)
+    public void ChangeImageName(Guid imageId, Name name)
     {
         ChangeImageNameDomainEvent @event = new(AggregateIdentifier, IdentityContext, imageId, name);
         Apply(@event);

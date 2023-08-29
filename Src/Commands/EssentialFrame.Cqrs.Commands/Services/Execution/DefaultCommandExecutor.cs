@@ -140,7 +140,7 @@ internal sealed class DefaultCommandExecutor : ICommandExecutor, ICommandSchedul
         if (!isCommandsRepositoryResolved)
         {
             throw new DependencyResolutionException($"Unable to resolve {commandsRepository.GetTypeFullName()}. " +
-                                                    "Most likely it is not properly registered in container.");
+                                                    "Most likely it is not properly registered in container");
         }
 
         return commandsRepository;
@@ -164,6 +164,6 @@ internal sealed class DefaultCommandExecutor : ICommandExecutor, ICommandSchedul
         }
 
         throw new DependencyResolutionException($"Unable to resolve {command.GetTypeFullName()}. " +
-                                                "Most likely it is not properly registered in container.");
+                                                "Most likely it is not properly registered in container");
     }
 }

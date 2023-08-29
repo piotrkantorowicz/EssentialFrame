@@ -26,8 +26,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Core\EssentialFrame\EssentialFrame.csproj"/>
-        <ProjectReference Include="..\..\Commands\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
+        <ProjectReference Include="..\..\EssentialFrame.Cqrs.Commands\EssentialFrame.Cqrs.Commands.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

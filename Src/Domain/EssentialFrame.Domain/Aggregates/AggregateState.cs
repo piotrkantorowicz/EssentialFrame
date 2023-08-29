@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.Domain.Rules;
 
 namespace EssentialFrame.Domain.Aggregates;
 
@@ -19,7 +19,7 @@ public abstract class AggregateState
         when.Invoke(this, new object[] { domainEvent });
     }
 
-    protected virtual void CheckRule(AggregateBusinessRuleBase rule, bool useExtraParameters = true)
+    protected virtual void CheckRule(IBusinessRule rule, bool useExtraParameters = true)
     {
         if (!rule.IsBroken())
         {

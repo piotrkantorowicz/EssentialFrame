@@ -16,10 +16,12 @@ using EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 using EssentialFrame.Domain.Factories;
 using EssentialFrame.Domain.Snapshots;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects;
-using EssentialFrame.ExampleApp.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
@@ -127,7 +129,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier, AggregateVersion = 3, AggregateState = aggregate.State
+            AggregateIdentifier = aggregateIdentifier, AggregateVersion = events.Count, AggregateState = aggregate.State
         };
 
         Snapshot snapshot = new(snapshotDataModel.AggregateIdentifier, snapshotDataModel.AggregateVersion,
@@ -135,9 +137,7 @@ public class SnapshotRepositoryTests
 
         _snapshotStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         _snapshotMapperMock.Setup(x => x.Map(snapshotDataModel)).Returns(snapshot);
-
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier, snapshot.AggregateVersion)).Returns(eventDataModels);
-
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels)).Returns(events);
 
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
@@ -169,7 +169,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier, AggregateVersion = 3, AggregateState = aggregate.State
+            AggregateIdentifier = aggregateIdentifier, AggregateVersion = events.Count, AggregateState = aggregate.State
         };
 
         Snapshot snapshot = new(snapshotDataModel.AggregateIdentifier, snapshotDataModel.AggregateVersion,
@@ -568,7 +568,7 @@ public class SnapshotRepositoryTests
         _snapshotMapperMock.Verify(x => x.Map(snapshotDataModel), Times.Once);
         result.Should().BeEquivalentTo(aggregate);
     }
-    
+
     [Test]
     public async Task UnboxAsync_CorrectAggregateIdentifierProvided_ShouldUnboxAggregate()
     {
@@ -614,12 +614,15 @@ public class SnapshotRepositoryTests
     {
         List<IDomainEvent> domainEvents = new()
         {
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
-                _faker.Lorem.Sentences()),
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
-                Title.Create(_faker.Random.Word(), _faker.Random.Bool())),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
-                _faker.Lorem.Sentences())
+            new CreateNewPostDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
+                Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
+                Date.Create(_faker.Date.FutureOffset()), null),
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
+                Description.Create(_faker.Lorem.Sentences())),
+            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
+                Title.Default(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)))),
+            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 4,
+                Description.Create(_faker.Lorem.Sentences()))
         };
 
         return domainEvents;

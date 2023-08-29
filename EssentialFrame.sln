@@ -54,9 +54,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.ExampleApp", "Examples\EssentialFrame.ExampleApp\EssentialFrame.ExampleApp.csproj", "{0FA39BC2-BA9A-4F10-869A-38A6A737BABA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Validations", "Validations", "{025A90A2-F4AC-445E-9459-12675DE3080D}"
-	ProjectSection(SolutionItems) = preProject
-		Src\Commands\Validations\EssentialFrame.Cqrs.Commands.Validations\EssentialFrame.Cqrs.Commands.Validations.csproj = Src\Commands\Validations\EssentialFrame.Cqrs.Commands.Validations\EssentialFrame.Cqrs.Commands.Validations.csproj
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Commands.Tests.UnitTests", "Src\Commands\Tests\EssentialFrame.Cqrs.Commands.Tests.UnitTests\EssentialFrame.Cqrs.Commands.Tests.UnitTests.csproj", "{CEB14FCD-C3CB-4D36-9776-3563D89F4419}"
 EndProject
@@ -67,6 +64,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Domain.Events.Tests.UnitTests", "Src\DomainEvents\Tests\EssentialFrame.Domain.Events.Tests.UnitTests\EssentialFrame.Domain.Events.Tests.UnitTests.csproj", "{2CB49695-B8F4-4102-A87F-3EE3AC0E0CCD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Queries.Tests.UnitTests", "Src\Queries\Tests\EssentialFrame.Cqrs.Queries.Tests.UnitTests\EssentialFrame.Cqrs.Queries.Tests.UnitTests.csproj", "{355A21F4-DD32-4DB5-ADD6-97722919FC2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EssentialFrame.Cqrs.Commands.Validations", "Src\Commands\Validations\EssentialFrame.Cqrs.Commands.Validations\EssentialFrame.Cqrs.Commands.Validations.csproj", "{034FEAD7-1E5D-4E1C-A549-A5442F4B1AA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,6 +99,7 @@ Global
 		{05B62208-49F3-4303-9F9C-44AEB4E4B11F} = {5049EBBC-E7C0-47E6-92CE-9CBA6A9CDBEE}
 		{2CB49695-B8F4-4102-A87F-3EE3AC0E0CCD} = {7663572E-8524-4EFE-B1AE-2ECE40C3EF99}
 		{355A21F4-DD32-4DB5-ADD6-97722919FC2A} = {F0B99CF3-7BF9-45D8-9F4C-A1961B180F0F}
+		{034FEAD7-1E5D-4E1C-A549-A5442F4B1AA1} = {025A90A2-F4AC-445E-9459-12675DE3080D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F2659D84-08BA-495F-A0F8-2EC4ACB54EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -158,5 +158,9 @@ Global
 		{355A21F4-DD32-4DB5-ADD6-97722919FC2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{355A21F4-DD32-4DB5-ADD6-97722919FC2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{355A21F4-DD32-4DB5-ADD6-97722919FC2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{034FEAD7-1E5D-4E1C-A549-A5442F4B1AA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{034FEAD7-1E5D-4E1C-A549-A5442F4B1AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{034FEAD7-1E5D-4E1C-A549-A5442F4B1AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{034FEAD7-1E5D-4E1C-A549-A5442F4B1AA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

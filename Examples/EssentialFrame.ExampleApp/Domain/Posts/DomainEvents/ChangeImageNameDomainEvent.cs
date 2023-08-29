@@ -1,34 +1,35 @@
 using System;
 using EssentialFrame.Domain.Events;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 
-public class ChangeImageNameDomainEvent : DomainEventBase
+public class ChangeImageNameDomainEvent : DomainEvent
 {
     public ChangeImageNameDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, Guid imageId,
-        string newImageName) : base(aggregateIdentifier, identityContext)
+        Name newImageName) : base(aggregateIdentifier, identityContext)
     {
         ImageId = imageId;
         NewImageName = newImageName;
     }
 
     public ChangeImageNameDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
-        Guid imageId, string newImageName) : base(aggregateIdentifier, eventIdentifier, identityContext)
+        Guid imageId, Name newImageName) : base(aggregateIdentifier, eventIdentifier, identityContext)
     {
         ImageId = imageId;
         NewImageName = newImageName;
     }
 
     public ChangeImageNameDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, int expectedVersion,
-        Guid imageId, string newImageName) : base(aggregateIdentifier, identityContext, expectedVersion)
+        Guid imageId, Name newImageName) : base(aggregateIdentifier, identityContext, expectedVersion)
     {
         ImageId = imageId;
         NewImageName = newImageName;
     }
 
     public ChangeImageNameDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
-        int expectedVersion, Guid imageId, string newImageName) : base(aggregateIdentifier, eventIdentifier,
+        int expectedVersion, Guid imageId, Name newImageName) : base(aggregateIdentifier, eventIdentifier,
         identityContext, expectedVersion)
     {
         ImageId = imageId;
@@ -37,5 +38,5 @@ public class ChangeImageNameDomainEvent : DomainEventBase
 
     public Guid ImageId { get; }
 
-    public string NewImageName { get; }
+    public Name NewImageName { get; }
 }
