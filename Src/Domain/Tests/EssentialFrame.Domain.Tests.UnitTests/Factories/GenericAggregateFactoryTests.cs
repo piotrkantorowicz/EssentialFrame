@@ -1,8 +1,8 @@
 using System;
 using Bogus;
 using EssentialFrame.Domain.Factories;
+using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
-using EssentialFrame.ExampleApp.Identity;
 using EssentialFrame.Identity;
 using FluentAssertions;
 using Moq;

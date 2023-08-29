@@ -33,7 +33,7 @@ public class SnapshotStrategyTests
 
         _aggregate =
             GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-                _identityServiceMock.Object);
+                _identityServiceMock.Object.GetCurrent());
 
         _aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()), null);
