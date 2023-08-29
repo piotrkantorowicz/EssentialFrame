@@ -51,7 +51,7 @@ public class SnapshotRepository : ISnapshotRepository
             return (T)snapshot;
         }
 
-        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 0, _identityService);
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 0, _identityService.GetCurrent());
         int snapshotVersion = RestoreAggregateFromSnapshot(aggregateId, aggregate);
 
         if (snapshotVersion == -1)
@@ -79,7 +79,7 @@ public class SnapshotRepository : ISnapshotRepository
             return (T)snapshot;
         }
 
-        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 0, _identityService);
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, 0, _identityService.GetCurrent());
         int snapshotVersion = await RestoreAggregateFromSnapshotAsync(aggregateId, aggregate, cancellationToken);
 
         if (snapshotVersion == -1)
@@ -151,7 +151,8 @@ public class SnapshotRepository : ISnapshotRepository
         SnapshotDataModel snapshotDataModel = _snapshotStore.Unbox(aggregateId);
         Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
         T aggregate =
-            GenericAggregateFactory<T>.CreateAggregate(aggregateId, snapshot.AggregateVersion, _identityService);
+            GenericAggregateFactory<T>.CreateAggregate(aggregateId, snapshot.AggregateVersion,
+                _identityService.GetCurrent());
 
         aggregate.RestoreState(snapshot.AggregateState, useSerializer ? _serializer : null);
 
@@ -164,7 +165,8 @@ public class SnapshotRepository : ISnapshotRepository
         SnapshotDataModel snapshotDataModel = await _snapshotStore.UnboxAsync(aggregateId, cancellationToken);
         Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
         T aggregate =
-            GenericAggregateFactory<T>.CreateAggregate(aggregateId, snapshot.AggregateVersion, _identityService);
+            GenericAggregateFactory<T>.CreateAggregate(aggregateId, snapshot.AggregateVersion,
+                _identityService.GetCurrent());
 
         aggregate.RestoreState(snapshot.AggregateState, useSerializer ? _serializer : null);
 

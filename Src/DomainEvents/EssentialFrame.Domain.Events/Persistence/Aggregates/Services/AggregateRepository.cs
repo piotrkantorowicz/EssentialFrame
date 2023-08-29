@@ -79,7 +79,7 @@ public sealed class AggregateRepository : IAggregateRepository
         }
 
         T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id, 0,
-            _identityService);
+            _identityService.GetCurrent());
 
         if (eventsData?.Any() != true)
         {
@@ -106,7 +106,7 @@ public sealed class AggregateRepository : IAggregateRepository
         }
 
         T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id, 0,
-            _identityService);
+            _identityService.GetCurrent());
 
         if (eventsData?.Any() != true)
         {

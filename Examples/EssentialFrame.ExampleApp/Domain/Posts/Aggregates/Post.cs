@@ -11,12 +11,21 @@ namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
 public sealed class Post : AggregateRoot
 {
-    private Post(Guid aggregateIdentifier, int aggregateVersion) : base(aggregateIdentifier, aggregateVersion)
+    private Post(IIdentityContext identityContext) : base(identityContext)
     {
     }
 
-    private Post(Guid aggregateIdentifier, int aggregateVersion, IIdentityService identityService) : base(
-        aggregateIdentifier, aggregateVersion, identityService)
+    private Post(Guid aggregateIdentifier, IIdentityContext identityContext) : base(aggregateIdentifier,
+        identityContext)
+    {
+    }
+
+    private Post(int aggregateVersion, IIdentityContext identityContext) : base(aggregateVersion, identityContext)
+    {
+    }
+
+    private Post(Guid aggregateIdentifier, int aggregateVersion, IIdentityContext identityContext) : base(
+        aggregateIdentifier, aggregateVersion, identityContext)
     {
     }
 
@@ -47,31 +56,31 @@ public sealed class Post : AggregateRoot
 
     public void ChangeTitle(Title title)
     {
-        ChangeTitleDomainEvent @event = new(AggregateIdentifier, GetIdentity(), title);
+        ChangeTitleDomainEvent @event = new(AggregateIdentifier, IdentityContext, title);
         Apply(@event);
     }
 
     public void ChangeDescription(string description)
     {
-        ChangeDescriptionDomainEvent @event = new(AggregateIdentifier, GetIdentity(), description);
+        ChangeDescriptionDomainEvent @event = new(AggregateIdentifier, IdentityContext, description);
         Apply(@event);
     }
 
     public void ExtendExpirationDate(DateTimeOffset newExpirationDate)
     {
-        ChangeExpirationDateDomainEvent @event = new(AggregateIdentifier, GetIdentity(), newExpirationDate);
+        ChangeExpirationDateDomainEvent @event = new(AggregateIdentifier, IdentityContext, newExpirationDate);
         Apply(@event);
     }
 
     public void AddImages(HashSet<Image> images)
     {
-        AddImagesDomainEvent @event = new(AggregateIdentifier, GetIdentity(), images);
+        AddImagesDomainEvent @event = new(AggregateIdentifier, IdentityContext, images);
         Apply(@event);
     }
 
     public void ChangeImageName(Guid imageId, string name)
     {
-        ChangeImageNameDomainEvent @event = new(AggregateIdentifier, GetIdentity(), imageId, name);
+        ChangeImageNameDomainEvent @event = new(AggregateIdentifier, IdentityContext, imageId, name);
         Apply(@event);
     }
 }

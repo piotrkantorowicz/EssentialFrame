@@ -40,7 +40,7 @@ public class SnapshotStrategyTests
 
         Post aggregate =
             GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-                _identityServiceMock.Object);
+                _identityServiceMock.Object.GetCurrent());
 
         aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
         aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), true));
@@ -62,7 +62,7 @@ public class SnapshotStrategyTests
 
         Post aggregate =
             GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-                _identityServiceMock.Object);
+                _identityServiceMock.Object.GetCurrent());
 
         aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
         aggregate.ChangeDescription(_faker.Lorem.Sentences());

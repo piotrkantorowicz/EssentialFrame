@@ -8,30 +8,33 @@ namespace EssentialFrame.Domain.Aggregates;
 public abstract class AggregateRoot
 {
     private readonly List<IDomainEvent> _changes = new();
-    private readonly IIdentityService _identityService;
 
-    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion)
+    protected AggregateRoot(IIdentityContext identityContext)
     {
-        if (aggregateIdentifier == Guid.Empty)
-        {
-            throw new MissingAggregateIdentifierException(GetType());
-        }
-
-        AggregateIdentifier = aggregateIdentifier;
-        AggregateVersion = aggregateVersion;
+        AggregateIdentifier = Guid.NewGuid();
+        AggregateVersion = 0;
+        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
     }
 
-    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion, IIdentityService identityService)
+    protected AggregateRoot(Guid aggregateIdentifier, IIdentityContext identityContext)
     {
-        if (aggregateIdentifier == Guid.Empty)
-        {
-            throw new MissingAggregateIdentifierException(GetType());
-        }
+        AggregateIdentifier = aggregateIdentifier;
+        AggregateVersion = 0;
+        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
+    }
 
-        _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+    protected AggregateRoot(int aggregateVersion, IIdentityContext identityContext)
+    {
+        AggregateIdentifier = Guid.NewGuid();
+        AggregateVersion = aggregateVersion;
+        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
+    }
 
+    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion, IIdentityContext identityContext)
+    {
         AggregateIdentifier = aggregateIdentifier;
         AggregateVersion = aggregateVersion;
+        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
     }
 
     public Guid AggregateIdentifier { get; }
@@ -42,20 +45,12 @@ public abstract class AggregateRoot
 
     public bool IsDeleted { get; private set; }
 
+    public IIdentityContext IdentityContext { get; }
+
     public AggregateState State { get; protected set; }
 
     public abstract AggregateState CreateState();
     public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
-
-    public IIdentityContext GetIdentity()
-    {
-        if (_identityService is null)
-        {
-            throw new MissingIdentityContextException(GetType());
-        }
-
-        return _identityService.GetCurrent();
-    }
 
     public IDomainEvent[] GetUncommittedChanges()
     {

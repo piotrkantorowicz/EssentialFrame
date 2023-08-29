@@ -12,7 +12,7 @@ public class AggregateMapper : IAggregateMapper
         {
             AggregateIdentifier = aggregateRoot.AggregateIdentifier,
             AggregateVersion = aggregateRoot.AggregateVersion,
-            TenantIdentifier = aggregateRoot.GetIdentity()?.Tenant?.Identifier ?? Guid.Empty,
+            TenantIdentifier = aggregateRoot.IdentityContext?.Tenant?.Identifier ?? Guid.Empty,
             DeletedDate = aggregateRoot.DeletedDate,
             IsDeleted = aggregateRoot.IsDeleted
         };

@@ -69,8 +69,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         _snapshotsCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregate);
 
@@ -93,8 +93,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         _snapshotsCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregate);
 
@@ -117,8 +117,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
         List<DomainEventDataModel> eventDataModels = GenerateDomainEventDataModelsCollection(aggregateIdentifier);
@@ -159,8 +159,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
         List<DomainEventDataModel> eventDataModels = GenerateDomainEventDataModelsCollection(aggregateIdentifier);
@@ -202,8 +202,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -232,8 +232,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -263,8 +263,8 @@ public class SnapshotRepositoryTests
         const int aggregateVersion = 0;
         int timeout = _faker.Random.Int(1, 1000);
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -294,8 +294,8 @@ public class SnapshotRepositoryTests
         const int aggregateVersion = 0;
         int timeout = _faker.Random.Int(1, 1000);
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -325,8 +325,8 @@ public class SnapshotRepositoryTests
         const int aggregateVersion = 0;
         int timeout = _faker.Random.Int(1, 1000);
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -357,8 +357,8 @@ public class SnapshotRepositoryTests
         const int aggregateVersion = 0;
         int timeout = _faker.Random.Int(1, 1000);
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -388,8 +388,8 @@ public class SnapshotRepositoryTests
         const int aggregateVersion = 0;
         int timeout = _faker.Random.Int(1, 1000);
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -419,8 +419,8 @@ public class SnapshotRepositoryTests
         const int aggregateVersion = 0;
         int timeout = _faker.Random.Int(1, 1000);
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -449,8 +449,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -492,8 +492,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -535,8 +535,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 
@@ -576,8 +576,8 @@ public class SnapshotRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         List<IDomainEvent> events = GenerateDomainEventsCollection(aggregateIdentifier);
 

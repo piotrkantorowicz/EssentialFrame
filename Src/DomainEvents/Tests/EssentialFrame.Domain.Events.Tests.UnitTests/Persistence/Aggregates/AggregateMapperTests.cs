@@ -41,7 +41,7 @@ public class AggregateMapperTests
 
         Post aggregateRoot =
             GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-                _identityServiceMock.Object);
+                _identityServiceMock.Object.GetCurrent());
 
         // Act
         AggregateDataModel aggregateDataModel = _aggregateMapper.Map(aggregateRoot);

@@ -32,7 +32,6 @@ public class AggregateRepositoryTests
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IAggregateStore> _aggregateStoreMock = new();
 
-
     [SetUp]
     public void SetUp()
     {
@@ -55,8 +54,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -97,8 +96,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -138,8 +137,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -179,8 +178,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -221,8 +220,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -262,8 +261,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -303,8 +302,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         aggregate.ChangeDescription(_faker.Lorem.Sentences());
         aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
@@ -348,8 +347,8 @@ public class AggregateRepositoryTests
         const int aggregateVersion = 0;
         const int expectedAggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         aggregate.ChangeDescription(_faker.Lorem.Sentences());
         aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
@@ -377,8 +376,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         aggregate.ChangeDescription(_faker.Lorem.Sentences());
         aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
@@ -422,8 +421,8 @@ public class AggregateRepositoryTests
         const int aggregateVersion = 0;
         const int expectedAggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         aggregate.ChangeDescription(_faker.Lorem.Sentences());
         aggregate.ChangeTitle(Title.Create(_faker.Lorem.Sentence(), false));
