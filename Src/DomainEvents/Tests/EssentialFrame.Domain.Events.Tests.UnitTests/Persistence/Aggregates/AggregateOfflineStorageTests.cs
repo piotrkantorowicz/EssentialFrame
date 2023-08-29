@@ -42,7 +42,7 @@ public class AggregateOfflineStorageTests
         const int aggregateVersion = 0;
 
         Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-            _identityServiceMock.Object);
+            _identityServiceMock.Object.GetCurrent());
 
         _aggregateDataModel = new AggregateDataModel
         {
@@ -50,7 +50,7 @@ public class AggregateOfflineStorageTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.GetIdentityContext()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = aggregate.IdentityContext?.Tenant?.Identifier ?? Guid.Empty
         };
 
         _domainEvents = new List<IDomainEvent>

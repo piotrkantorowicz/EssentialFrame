@@ -32,8 +32,8 @@ public class SnapshotTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier,
-            aggregateVersion, _identityServiceMock.Object);
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+            _identityServiceMock.Object.GetCurrent());
 
         Title expectedTitle = Title.Default(_faker.Lorem.Sentence());
         Description expectedDescription = Description.Create(_faker.Lorem.Sentences());
