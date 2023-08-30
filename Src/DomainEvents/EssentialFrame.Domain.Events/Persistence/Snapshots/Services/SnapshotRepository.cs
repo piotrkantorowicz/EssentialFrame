@@ -1,5 +1,7 @@
 ﻿using EssentialFrame.Cache.Interfaces;
-using EssentialFrame.Domain.Aggregates;
+using EssentialFrame.Domain.Events.Core.Aggregates;
+using EssentialFrame.Domain.Events.Core.Factories;
+using EssentialFrame.Domain.Events.Core.Snapshots;
 using EssentialFrame.Domain.Events.Core.Snapshots.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
@@ -7,8 +9,6 @@ using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
-using EssentialFrame.Domain.Factories;
-using EssentialFrame.Domain.Snapshots;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 

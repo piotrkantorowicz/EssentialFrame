@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.Aggregates;
+﻿using EssentialFrame.Domain.Events.Core.Aggregates;
 using EssentialFrame.Domain.Events.Core.Snapshots.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Core.Snapshots;

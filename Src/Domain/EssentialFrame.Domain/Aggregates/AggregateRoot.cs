@@ -1,57 +1,26 @@
 ﻿using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Identity;
-using EssentialFrame.Serialization.Interfaces;
+using EssentialFrame.Domain.Rules;
+using EssentialFrame.Domain.Shared;
 
 namespace EssentialFrame.Domain.Aggregates;
 
-public abstract class AggregateRoot
+public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
 {
     private readonly List<IDomainEvent> _changes = new();
 
-    protected AggregateRoot(IIdentityContext identityContext)
+    protected AggregateRoot()
     {
         AggregateIdentifier = Guid.NewGuid();
-        AggregateVersion = 0;
-        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
     }
 
-    protected AggregateRoot(Guid aggregateIdentifier, IIdentityContext identityContext)
+    protected AggregateRoot(Guid aggregateIdentifier)
     {
         AggregateIdentifier = aggregateIdentifier;
-        AggregateVersion = 0;
-        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
-    }
-
-    protected AggregateRoot(int aggregateVersion, IIdentityContext identityContext)
-    {
-        AggregateIdentifier = Guid.NewGuid();
-        AggregateVersion = aggregateVersion;
-        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
-    }
-
-    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion, IIdentityContext identityContext)
-    {
-        AggregateIdentifier = aggregateIdentifier;
-        AggregateVersion = aggregateVersion;
-        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
     }
 
     public Guid AggregateIdentifier { get; }
-
-    public int AggregateVersion { get; private set; }
-
-    public DateTimeOffset? DeletedDate { get; private set; }
-
-    public bool IsDeleted { get; private set; }
-
-    public IIdentityContext IdentityContext { get; }
-
-    public AggregateState State { get; protected set; }
-
-    public abstract AggregateState CreateState();
-    public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
-
+    
     public IDomainEvent[] GetUncommittedChanges()
     {
         lock (_changes)
@@ -60,82 +29,34 @@ public abstract class AggregateRoot
         }
     }
 
-    public IDomainEvent[] FlushUncommittedChanges()
+    public void ClearDomainEvents()
     {
         lock (_changes)
         {
-            IDomainEvent[] changes = _changes.ToArray();
-            int i = 0;
-
-            foreach (IDomainEvent change in changes)
-            {
-                if (change.AggregateIdentifier == Guid.Empty || AggregateIdentifier == Guid.Empty)
-                {
-                    throw new MissingAggregateIdentifierException(GetType(), change.GetType());
-                }
-
-                i++;
-
-                change.AdjustAggregateVersion(AggregateIdentifier, AggregateVersion + i);
-            }
-
-            AggregateVersion += changes.Length;
-
             _changes.Clear();
-
-            return changes;
         }
     }
 
-    public void Rehydrate(IEnumerable<IDomainEvent> history)
+    protected void AddDomainEvent(IDomainEvent domainEvent)
     {
         lock (_changes)
         {
-            foreach (IDomainEvent change in history)
-            {
-                if (change.AggregateIdentifier != AggregateIdentifier)
-                {
-                    throw new UnmatchedDomainEventException(GetType(), change.GetType(), AggregateIdentifier,
-                        change.AggregateIdentifier);
-                }
-
-                if (change.AggregateVersion != AggregateVersion + 1)
-                {
-                    throw new UnorderedEventsException(change.AggregateIdentifier);
-                }
-
-                ApplyEvent(change);
-
-                AggregateVersion++;
-            }
+            _changes.Add(domainEvent);
         }
     }
 
-    public void SafeDelete()
+    protected virtual void CheckRule(IBusinessRule rule, bool useExtraParameters = true)
     {
-        DeletedDate = DateTimeOffset.UtcNow;
-        IsDeleted = true;
-    }
-
-    public void UnDelete()
-    {
-        DeletedDate = null;
-        IsDeleted = false;
-    }
-
-    protected void Apply(IDomainEvent change)
-    {
-        lock (_changes)
+        if (!rule.IsBroken())
         {
-            ApplyEvent(change);
-
-            _changes.Add(change);
+            return;
         }
-    }
 
-    protected virtual void ApplyEvent(IDomainEvent change)
-    {
-        State ??= CreateState();
-        State.Apply(change);
+        if (useExtraParameters)
+        {
+            rule.AddExtraParameters();
+        }
+
+        throw new BusinessRuleValidationException(rule);
     }
 }

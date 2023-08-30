@@ -1,21 +1,22 @@
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
+using EssentialFrame.Domain.Shared;
 
 namespace EssentialFrame.Domain.Entities;
 
-public abstract class Entity
+public abstract class Entity : DeletebleObject, IEntity
 {
     protected Entity()
     {
-        ImageIdentifier = Guid.NewGuid();
+        EntityIdentifier = Guid.NewGuid();
     }
 
-    protected Entity(Guid imageIdentifier)
+    protected Entity(Guid entityIdentifier)
     {
-        ImageIdentifier = imageIdentifier;
+        EntityIdentifier = entityIdentifier;
     }
 
-    public Guid ImageIdentifier { get; }
+    public Guid EntityIdentifier { get; }
 
     protected virtual void CheckRule(IBusinessRule rule, bool useExtraParameters = true)
     {

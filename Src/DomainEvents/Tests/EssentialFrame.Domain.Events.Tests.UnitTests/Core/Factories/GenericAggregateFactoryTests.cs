@@ -1,8 +1,8 @@
 using System;
 using System.Reflection;
 using Bogus;
+using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Domain.Factories;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.Identity;
@@ -10,7 +10,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
-namespace EssentialFrame.Domain.Tests.UnitTests.Factories;
+namespace EssentialFrame.Domain.Events.Tests.UnitTests.Core.Factories;
 
 [TestFixture]
 public sealed class GenericAggregateFactoryTests

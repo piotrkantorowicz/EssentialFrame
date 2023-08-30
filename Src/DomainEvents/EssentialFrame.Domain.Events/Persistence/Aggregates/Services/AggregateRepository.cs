@@ -1,9 +1,9 @@
-﻿using EssentialFrame.Domain.Aggregates;
+﻿using EssentialFrame.Domain.Events.Core.Aggregates;
+using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
-using EssentialFrame.Domain.Factories;
 using EssentialFrame.Identity;
 
 namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services;

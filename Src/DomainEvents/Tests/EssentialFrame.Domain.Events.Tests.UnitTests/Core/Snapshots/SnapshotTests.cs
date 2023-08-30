@@ -1,6 +1,6 @@
 using System;
 using Bogus;
-using EssentialFrame.Domain.Factories;
+using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Snapshots;
@@ -14,7 +14,7 @@ using Moq;
 using Moq.Language.Flow;
 using NUnit.Framework;
 
-namespace EssentialFrame.Domain.Tests.UnitTests.Snapshots;
+namespace EssentialFrame.Domain.Events.Tests.UnitTests.Core.Snapshots;
 
 [TestFixture]
 public class SnapshotTests

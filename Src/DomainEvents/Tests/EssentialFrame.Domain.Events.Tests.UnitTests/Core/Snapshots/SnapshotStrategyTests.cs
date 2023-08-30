@@ -1,7 +1,7 @@
 ﻿using System;
 using Bogus;
+using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.Domain.Events.Core.Snapshots;
-using EssentialFrame.Domain.Factories;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;

@@ -1,9 +1,8 @@
 ﻿using System.Reflection;
-using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
 
-namespace EssentialFrame.Domain.Aggregates;
+namespace EssentialFrame.Domain.Events.Core.Aggregates;
 
 public abstract class AggregateState
 {

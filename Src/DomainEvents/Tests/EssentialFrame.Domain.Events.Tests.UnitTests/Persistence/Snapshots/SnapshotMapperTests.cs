@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bogus;
+using EssentialFrame.Domain.Events.Core.Snapshots;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
-using EssentialFrame.Domain.Snapshots;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.Identity;
 using FluentAssertions;

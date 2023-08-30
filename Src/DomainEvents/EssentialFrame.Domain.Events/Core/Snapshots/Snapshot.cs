@@ -1,4 +1,4 @@
-﻿namespace EssentialFrame.Domain.Snapshots;
+﻿namespace EssentialFrame.Domain.Events.Core.Snapshots;
 
 public class Snapshot
 {

@@ -1,9 +1,9 @@
 ﻿using System;
 using Bogus;
+using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
-using EssentialFrame.Domain.Factories;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.Identity;

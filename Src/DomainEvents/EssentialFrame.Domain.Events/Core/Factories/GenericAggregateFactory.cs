@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
+using EssentialFrame.Domain.Events.Core.Aggregates;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Identity;
 
-namespace EssentialFrame.Domain.Factories;
+namespace EssentialFrame.Domain.Events.Core.Factories;
 
-public static class GenericAggregateFactory<T>
+public static class GenericAggregateFactory<T> where T : AggregateRoot
 {
-    public static T CreateAggregate(IIdentityContext identityContext)
+    public static T CreateAggregate(IIdentityContext identityContext) 
     {
         ConstructorInfo[] constructors = typeof(T).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
 

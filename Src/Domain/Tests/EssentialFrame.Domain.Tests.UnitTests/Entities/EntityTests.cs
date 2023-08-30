@@ -14,7 +14,7 @@ public class EntityTests
     private readonly Faker _faker = new();
 
     [Test]
-    public void CreateImage_Always_ShouldAssignCorrectValues()
+    public void CreateEntity_Always_ShouldAssignCorrectValues()
     {
         // Arrange
         Guid entityIdentifier = _faker.Random.Guid();
@@ -25,7 +25,7 @@ public class EntityTests
         Image image = Image.Create(entityIdentifier, name, bytes);
 
         // Assert
-        image.ImageIdentifier.Should().Be(entityIdentifier);
+        image.EntityIdentifier.Should().Be(entityIdentifier);
         image.Name.Should().Be(name);
         image.Bytes.Should().BeEquivalentTo(bytes);
     }
