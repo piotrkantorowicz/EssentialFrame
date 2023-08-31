@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EssentialFrame.Domain.Aggregates;
+using EssentialFrame.Domain.Events.Core.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
@@ -112,7 +112,7 @@ public sealed class PostState : AggregateState
         CheckRule(new PostMustHaveOnlyUniqueImagesRule(_aggregateIdentifier, _aggregateType, @event.NewImageName,
             Images.Select(i => i.Name).ToArray()));
 
-        Image image = Images.FirstOrDefault(i => i.ImageIdentifier == @event.ImageId);
+        Image image = Images.FirstOrDefault(i => i.EntityIdentifier == @event.ImageId);
 
         CheckRule(new PostImageMustExistsWhenUpdatingOrDeletingRule(_aggregateIdentifier, _aggregateType, image));
 
@@ -128,7 +128,7 @@ public sealed class PostState : AggregateState
             AuthorIdentifier));
 
         foreach (Image image in @event.ImagesIds.Select(imageId =>
-                     Images.FirstOrDefault(i => i.ImageIdentifier == imageId)))
+                     Images.FirstOrDefault(i => i.EntityIdentifier == imageId)))
         {
             CheckRule(new PostImageMustExistsWhenUpdatingOrDeletingRule(_aggregateIdentifier, _aggregateType, image));
 

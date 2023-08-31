@@ -32,4 +32,5 @@
         <ProjectReference Include="..\..\EssentialFrame.Domain\EssentialFrame.Domain.csproj"/>
     </ItemGroup>
 
+
 </Project>

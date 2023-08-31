@@ -1,4 +1,4 @@
-using EssentialFrame.Domain.Aggregates;
+using EssentialFrame.Domain.Events.Core.Aggregates;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 

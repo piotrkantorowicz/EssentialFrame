@@ -1,5 +1,5 @@
 using System;
-using EssentialFrame.Domain.Snapshots;
+using EssentialFrame.Domain.Events.Core.Snapshots;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Snapshots;
 

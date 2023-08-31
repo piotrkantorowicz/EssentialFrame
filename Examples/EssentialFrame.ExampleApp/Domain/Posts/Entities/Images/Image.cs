@@ -13,7 +13,7 @@ public sealed class Image : Entity
         Bytes = bytes;
     }
 
-    private Image(Guid imageIdentifier, Name name, BytesContent bytes) : base(imageIdentifier)
+    private Image(Guid entityIdentifier, Name name, BytesContent bytes) : base(entityIdentifier)
     {
         Name = name;
         Bytes = bytes;
