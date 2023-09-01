@@ -31,22 +31,6 @@ public sealed class GenericAggregateFactoryTests
     }
 
     [Test]
-    public void CreateAggregate_WithOnlyIdentity_ShouldCreateInstanceAndAssignValues()
-    {
-        // Arrange
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
-        
-        // Act
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(_identityServiceMock.Object.GetCurrent());
-
-        // Assert
-        aggregate.Should().NotBeNull();
-        aggregate.AggregateIdentifier.Should().NotBeEmpty();
-        aggregate.AggregateVersion.Should().Be(0);
-        aggregate.IdentityContext.Should().BeEquivalentTo(_identityServiceMock.Object.GetCurrent());
-    }
-
-    [Test]
     public void CreateAggregate_WithIdentifierAndIdentity_ShouldCreateInstanceAndAssignValues()
     {
         // Arrange
@@ -103,22 +87,6 @@ public sealed class GenericAggregateFactoryTests
         aggregate.AggregateIdentifier.Should().Be(aggregateIdentifier);
         aggregate.AggregateVersion.Should().Be(aggregateVersion);
         aggregate.IdentityContext.Should().BeEquivalentTo(_identityServiceMock.Object.GetCurrent());
-    }
-
-    [Test]
-    public void CreateAggregate_WithOnlyIdentityButEmpty_ShouldThrowMissingIdentityContextException()
-    {
-        // Arrange
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns((IdentityContext)null);
-
-        // Act
-        Action createAggregateAction = () =>
-            GenericAggregateFactory<Post>.CreateAggregate(_identityServiceMock.Object.GetCurrent());
-
-        // Assert
-        createAggregateAction.Should().ThrowExactly<TargetInvocationException>()
-            .WithInnerException<MissingIdentityContextException>().WithMessage(
-                $"This aggregate ({typeof(Post).FullName}) has missing identity context. Consider to build your aggregates via constructor allows to pass an identity parameter");
     }
 
     [Test]

@@ -14,10 +14,6 @@ namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
 public sealed class Post : AggregateRoot
 {
-    private Post(IIdentityContext identityContext) : base(identityContext)
-    {
-    }
-
     private Post(Guid aggregateIdentifier, IIdentityContext identityContext) : base(aggregateIdentifier,
         identityContext)
     {

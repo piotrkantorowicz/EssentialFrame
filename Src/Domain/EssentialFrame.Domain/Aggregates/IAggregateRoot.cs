@@ -1,6 +1,8 @@
-﻿namespace EssentialFrame.Domain.Aggregates;
+﻿using EssentialFrame.Domain.ValueObjects;
 
-public interface IAggregateRoot
+namespace EssentialFrame.Domain.Aggregates;
+
+public interface IAggregateRoot<out T> where T : TypedGuidIdentifier
 {
-    public Guid AggregateIdentifier { get; }
+    public T AggregateIdentifier { get; }
 }
