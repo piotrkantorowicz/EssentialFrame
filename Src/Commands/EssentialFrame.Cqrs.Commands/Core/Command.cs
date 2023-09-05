@@ -11,6 +11,7 @@ public abstract class Command : ICommand
         UserIdentity = identityContext.User.Identifier;
         CorrelationIdentity = identityContext.Correlation.Identifier;
         ServiceIdentity = identityContext.Service.GetFullIdentifier();
+        IdentityContext = identityContext;
     }
 
     protected Command(Guid aggregateIdentifier, IIdentityContext identityContext) : this(identityContext)
@@ -42,6 +43,8 @@ public abstract class Command : ICommand
     public Guid UserIdentity { get; }
 
     public Guid CorrelationIdentity { get; }
+
+    public IIdentityContext IdentityContext { get; }
 
     public Guid CommandIdentifier { get; } = Guid.NewGuid();
 }

@@ -13,18 +13,5 @@ public class DeleteImagesCommand : Command
         ImagesIds = imagesIds;
     }
 
-    public DeleteImagesCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
-        HashSet<Guid> imagesIds) : base(aggregateIdentifier, commandIdentifier, identityContext)
-    {
-        ImagesIds = imagesIds;
-    }
-
-    public DeleteImagesCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
-        int expectedVersion, HashSet<Guid> imagesIds) : base(aggregateIdentifier, commandIdentifier, expectedVersion,
-        identityContext)
-    {
-        ImagesIds = imagesIds;
-    }
-
     public HashSet<Guid> ImagesIds { get; }
 }

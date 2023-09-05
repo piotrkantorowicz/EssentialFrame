@@ -12,19 +12,5 @@ public class ExtendedExpirationDateCommand : Command
         ExpirationDate = expirationDate;
     }
 
-    public ExtendedExpirationDateCommand(Guid aggregateIdentifier, Guid commandIdentifier,
-        IIdentityContext identityContext, DateTimeOffset expirationDate) : base(aggregateIdentifier, commandIdentifier,
-        identityContext)
-    {
-        ExpirationDate = expirationDate;
-    }
-
-    public ExtendedExpirationDateCommand(Guid aggregateIdentifier, Guid commandIdentifier,
-        IIdentityContext identityContext, int expectedVersion, DateTimeOffset expirationDate) : base(
-        aggregateIdentifier, commandIdentifier, expectedVersion, identityContext)
-    {
-        ExpirationDate = expirationDate;
-    }
-
     public DateTimeOffset ExpirationDate { get; }
 }

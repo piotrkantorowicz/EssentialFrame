@@ -97,6 +97,7 @@ public sealed class AggregateRepository : IAggregateRepository
         where T : AggregateRoot
     {
         AggregateDataModel aggregateDataModel = await _aggregateStore.GetAsync(id, cancellationToken);
+        
         IReadOnlyCollection<DomainEventDataModel>
             eventsData = await _aggregateStore.GetAsync(id, -1, cancellationToken);
 

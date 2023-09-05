@@ -13,21 +13,6 @@ public class ChangeImageNameCommand : Command
         ImageName = imageName;
     }
 
-    public ChangeImageNameCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
-        Guid imageId, string imageName) : base(aggregateIdentifier, commandIdentifier, identityContext)
-    {
-        ImageId = imageId;
-        ImageName = imageName;
-    }
-
-    public ChangeImageNameCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
-        int expectedVersion, Guid imageId, string imageName) : base(aggregateIdentifier, commandIdentifier,
-        expectedVersion, identityContext)
-    {
-        ImageId = imageId;
-        ImageName = imageName;
-    }
-
     public Guid ImageId { get; }
 
     public string ImageName { get; }
