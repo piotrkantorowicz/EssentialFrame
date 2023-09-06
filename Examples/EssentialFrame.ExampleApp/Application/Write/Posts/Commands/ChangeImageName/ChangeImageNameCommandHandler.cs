@@ -21,7 +21,7 @@ internal sealed class ChangeImageNameCommandHandler : ICommandHandler<ChangeImag
     
     public ICommandResult Handle(ChangeImageNameCommand command)
     {
-        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier);
+        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier, command.IdentityContext);
 
         post.ChangeImageName(command.ImageId, Name.Create(command.ImageName));
         _aggregateRepository.Save(post);
@@ -32,7 +32,8 @@ internal sealed class ChangeImageNameCommandHandler : ICommandHandler<ChangeImag
     public async Task<ICommandResult> HandleAsync(ChangeImageNameCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, cancellationToken);
+        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, command.IdentityContext,
+            cancellationToken);
 
         post.ChangeImageName(command.ImageId, Name.Create(command.ImageName));
         await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);

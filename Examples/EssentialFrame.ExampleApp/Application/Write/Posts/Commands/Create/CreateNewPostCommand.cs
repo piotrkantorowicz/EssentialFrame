@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.ExampleApp.Application.Write.Posts.Commands.Create.Dtos;
 using EssentialFrame.Identity;
@@ -7,29 +8,50 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.Create;
 
 public class CreateNewPostCommand : Command
 {
-    public CreateNewPostCommand(IIdentityContext identityContext, CreatePostDto post) : base(identityContext)
+    public CreateNewPostCommand(IIdentityContext identityContext, string title, string description,
+        DateTimeOffset expiration, HashSet<ImageDto> images) : base(identityContext)
     {
-        Post = post;
+        Title = title;
+        Description = description;
+        Expiration = expiration;
+        Images = images;
     }
 
-    public CreateNewPostCommand(Guid aggregateIdentifier, IIdentityContext identityContext, CreatePostDto post) : base(
-        aggregateIdentifier, identityContext)
+    public CreateNewPostCommand(Guid aggregateIdentifier, IIdentityContext identityContext, string title,
+        string description, DateTimeOffset expiration, HashSet<ImageDto> images) : base(aggregateIdentifier,
+        identityContext)
     {
-        Post = post;
+        Title = title;
+        Description = description;
+        Expiration = expiration;
+        Images = images;
     }
 
     public CreateNewPostCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
-        CreatePostDto post) : base(aggregateIdentifier, commandIdentifier, identityContext)
+        string title, string description, DateTimeOffset expiration, HashSet<ImageDto> images) : base(
+        aggregateIdentifier, commandIdentifier, identityContext)
     {
-        Post = post;
+        Title = title;
+        Description = description;
+        Expiration = expiration;
+        Images = images;
     }
 
     public CreateNewPostCommand(Guid aggregateIdentifier, Guid commandIdentifier, int expectedVersion,
-        IIdentityContext identityContext, CreatePostDto post) : base(aggregateIdentifier, commandIdentifier,
-        expectedVersion, identityContext)
+        IIdentityContext identityContext, string title, string description, DateTimeOffset expiration,
+        HashSet<ImageDto> images) : base(aggregateIdentifier, commandIdentifier, expectedVersion, identityContext)
     {
-        Post = post;
+        Title = title;
+        Description = description;
+        Expiration = expiration;
+        Images = images;
     }
 
-    public CreatePostDto Post { get; set; }
+    public string Title { get; }
+
+    public string Description { get; }
+
+    public DateTimeOffset Expiration { get; }
+
+    public HashSet<ImageDto> Images { get; }
 }

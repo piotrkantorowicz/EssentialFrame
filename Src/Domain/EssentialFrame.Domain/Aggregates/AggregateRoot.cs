@@ -14,10 +14,13 @@ public abstract class AggregateRoot<T> : DeletebleObject, IAggregateRoot<T> wher
     protected AggregateRoot(T aggregateIdentifier, IIdentityContext identityContext)
     {
         AggregateIdentifier = aggregateIdentifier;
+        TenantIdentifier = identityContext.Tenant.Identifier;
         IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
     }
 
     public T AggregateIdentifier { get; }
+
+    public Guid TenantIdentifier { get; protected init; }
 
     public IIdentityContext IdentityContext { get; }
 

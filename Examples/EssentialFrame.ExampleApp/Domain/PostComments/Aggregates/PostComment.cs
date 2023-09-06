@@ -46,7 +46,8 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
             replyToPostCommentIdentifier, text, identityContext);
 
         postComment.CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(
-            postComment.AggregateIdentifier.Identifier, postComment.GetType(), postIdentifier, aggregateRepository));
+            postComment.AggregateIdentifier.Identifier, postComment.GetType(), postIdentifier, aggregateRepository,
+            identityContext));
 
         if (replyToPostCommentIdentifier.Empty())
         {
@@ -70,13 +71,13 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
             identityContext, aggregateRepository);
     }
 
-    public void Edit(PostCommentText text, IAggregateRepository aggregateRepository)
+    public void Edit(PostCommentText text, UserIdentifier editorIdentifier, IAggregateRepository aggregateRepository) 
     {
         CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier.Identifier,
-            GetType(), PostIdentifier, aggregateRepository));
+            GetType(), PostIdentifier, aggregateRepository, IdentityContext));
 
         CheckRule(new PostCommentCanBeEditedOnlyByAuthorRule(AggregateIdentifier.Identifier, GetType(),
-            AuthorIdentifier, UserIdentifier.New(IdentityContext.User.Identifier)));
+            AuthorIdentifier, editorIdentifier));
 
         Text = text;
         EditedDate = Date.Create(DateTimeOffset.UtcNow);
@@ -88,7 +89,7 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
     public void Remove(DeletedReason reason, IAggregateRepository aggregateRepository)
     {
         CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier.Identifier,
-            GetType(), PostIdentifier, aggregateRepository));
+            GetType(), PostIdentifier, aggregateRepository, IdentityContext));
 
         CheckRule(new PostCommentCanBeRemovedOnlyByAuthorRule(AggregateIdentifier.Identifier, GetType(),
             AuthorIdentifier, UserIdentifier.New(IdentityContext.User.Identifier)));

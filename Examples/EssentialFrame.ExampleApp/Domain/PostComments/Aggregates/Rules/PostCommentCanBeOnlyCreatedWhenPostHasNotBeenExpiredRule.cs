@@ -5,6 +5,7 @@ using EssentialFrame.Domain.Rules.Base;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.Extensions;
+using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 
@@ -12,13 +13,16 @@ public class PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule : Business
 {
     private readonly PostIdentifier _postIdentifier;
     private readonly IAggregateRepository _aggregateRepository;
+    private readonly IIdentityContext _identityContext;
 
     public PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(Guid domainObjectIdentifier,
-        Type businessObjectType, PostIdentifier postIdentifier, IAggregateRepository aggregateRepository) : base(
+        Type businessObjectType, PostIdentifier postIdentifier, IAggregateRepository aggregateRepository,
+        IIdentityContext identityContext) : base(
         domainObjectIdentifier, businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
     {
         _postIdentifier = postIdentifier;
         _aggregateRepository = aggregateRepository;
+        _identityContext = identityContext;
     }
 
     public override string Message =>
@@ -26,7 +30,7 @@ public class PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule : Business
 
     public override bool IsBroken()
     {
-        Post post = _aggregateRepository.Get<Post>(_postIdentifier.Identifier);
+        Post post = _aggregateRepository.Get<Post>(_postIdentifier.Identifier, _identityContext);
 
         if (post.State is PostState postState)
         {

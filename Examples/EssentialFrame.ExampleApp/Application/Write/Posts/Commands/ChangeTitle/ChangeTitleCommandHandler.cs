@@ -21,7 +21,7 @@ internal sealed class ChangeTitleCommandHandler : ICommandHandler<ChangeTitleCom
     
     public ICommandResult Handle(ChangeTitleCommand command)
     {
-        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier);
+        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier, command.IdentityContext);
 
         post.ChangeTitle(Title.Default(command.Title));
         _aggregateRepository.Save(post);
@@ -32,7 +32,8 @@ internal sealed class ChangeTitleCommandHandler : ICommandHandler<ChangeTitleCom
     public async Task<ICommandResult> HandleAsync(ChangeTitleCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, cancellationToken);
+        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, command.IdentityContext,
+            cancellationToken);
 
         post.ChangeTitle(Title.Default(command.Title));
         await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);

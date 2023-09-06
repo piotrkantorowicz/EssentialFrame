@@ -1,5 +1,16 @@
-﻿namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.RemovePostComment;
+﻿using System;
+using EssentialFrame.Cqrs.Commands.Core;
+using EssentialFrame.Identity;
 
-public class RemovePostCommand
+namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.RemovePostComment;
+
+public class RemovePostCommand : Command
 {
+    public RemovePostCommand(Guid aggregateIdentifier, IIdentityContext identityContext, string reason) : base(
+        aggregateIdentifier, identityContext)
+    {
+        Reason = reason;
+    }
+
+    public string Reason { get; }
 }

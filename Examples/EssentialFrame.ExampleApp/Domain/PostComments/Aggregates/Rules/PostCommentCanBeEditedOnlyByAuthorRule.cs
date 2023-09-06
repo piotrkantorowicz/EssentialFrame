@@ -8,27 +8,27 @@ namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 public class PostCommentCanBeEditedOnlyByAuthorRule : BusinessRule
 {
     private readonly UserIdentifier _authorIdentifier;
-    private readonly UserIdentifier _updaterIdentifier;
+    private readonly UserIdentifier _editorIdentifier;
 
     public PostCommentCanBeEditedOnlyByAuthorRule(Guid domainObjectIdentifier, Type businessObjectType,
-        UserIdentifier authorIdentifier, UserIdentifier updaterIdentifier) : base(domainObjectIdentifier,
+        UserIdentifier authorIdentifier, UserIdentifier editorIdentifier) : base(domainObjectIdentifier,
         businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
     {
         _authorIdentifier = authorIdentifier;
-        _updaterIdentifier = updaterIdentifier;
+        _editorIdentifier = editorIdentifier;
     }
 
     public override string Message =>
-        $"This ({DomainObjectType.FullName}) with identifier ({DomainObjectIdentifier}) can be updated only by author. Creator identifier ({_authorIdentifier}), updater identifier ({_updaterIdentifier})";
+        $"This ({DomainObjectType.FullName}) with identifier ({DomainObjectIdentifier}) can be updated only by author. Creator identifier ({_authorIdentifier}), updater identifier ({_editorIdentifier})";
 
     public override bool IsBroken()
     {
-        return _authorIdentifier != _updaterIdentifier;
+        return _authorIdentifier != _editorIdentifier;
     }
 
     public override void AddExtraParameters()
     {
         Parameters.TryAdd("CreatorIdentifier", _authorIdentifier);
-        Parameters.TryAdd("UpdaterIdentifier", _updaterIdentifier);
+        Parameters.TryAdd("UpdaterIdentifier", _editorIdentifier);
     }
 }
