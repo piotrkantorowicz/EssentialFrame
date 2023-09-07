@@ -8,6 +8,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
+using EssentialFrame.Time;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
@@ -35,6 +36,8 @@ public sealed class PostState : AggregateState
     public Date Expiration { get; private set; }
 
     public HashSet<Image> Images { get; }
+
+    public bool IsExpired => Expiration < SystemClock.UtcNow;
 
     internal static PostState Create(Guid postIdentifier, Type type)
     {

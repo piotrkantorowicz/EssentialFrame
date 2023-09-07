@@ -13,7 +13,7 @@ namespace EssentialFrame.Tests.UnitTests.Cache;
 public class CacheTests
 {
     private const int TimerInterval = 1;
-    private const int CacheDelay = 10;
+    private const int CacheDelay = 15;
 
     private readonly Faker _faker = new();
     private readonly ICache<Guid, string> _cache;

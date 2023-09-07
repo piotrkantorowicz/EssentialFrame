@@ -79,10 +79,11 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
-        Post result = await snapshotRepository.GetAsync<Post>(aggregateIdentifier);
+        Post result =
+            await snapshotRepository.GetAsync<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -103,10 +104,11 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
-        Post result = await snapshotRepository.GetAsync<Post>(aggregateIdentifier);
+        Post result =
+            await snapshotRepository.GetAsync<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -143,10 +145,10 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
-        Post result = snapshotRepository.Get<Post>(aggregateIdentifier);
+        Post result = snapshotRepository.Get<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -186,10 +188,11 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
-        Post result = await snapshotRepository.GetAsync<Post>(aggregateIdentifier);
+        Post result =
+            await snapshotRepository.GetAsync<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -211,15 +214,16 @@ public class SnapshotRepositoryTests
 
         _snapshotStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
 
-        _aggregateRepositoryMock.Setup(x => x.Get<Post>(aggregateIdentifier)).Returns(aggregate);
+        _aggregateRepositoryMock.Setup(x => x.Get<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent()))
+            .Returns(aggregate);
 
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
-        Post result = snapshotRepository.Get<Post>(aggregateIdentifier);
+        Post result = snapshotRepository.Get<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -241,15 +245,18 @@ public class SnapshotRepositoryTests
 
         _snapshotStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, default)).ReturnsAsync((SnapshotDataModel)null);
 
-        _aggregateRepositoryMock.Setup(x => x.GetAsync<Post>(aggregateIdentifier, default)).ReturnsAsync(aggregate);
+        _aggregateRepositoryMock
+            .Setup(x => x.GetAsync<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), default))
+            .ReturnsAsync(aggregate);
 
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
-        Post result = await snapshotRepository.GetAsync<Post>(aggregateIdentifier);
+        Post result =
+            await snapshotRepository.GetAsync<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -276,7 +283,7 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
         snapshotRepository.Save(aggregate, timeout: timeout);
@@ -307,7 +314,7 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
         await snapshotRepository.SaveAsync(aggregate, timeout: timeout);
@@ -338,7 +345,7 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
         snapshotRepository.Save(aggregate, aggregate.AggregateVersion, timeout);
@@ -370,7 +377,7 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
         snapshotRepository.Save(aggregate, aggregate.AggregateVersion);
@@ -401,7 +408,7 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
         await snapshotRepository.SaveAsync(aggregate, aggregate.AggregateVersion, timeout);
@@ -432,7 +439,7 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
         await snapshotRepository.SaveAsync(aggregate, aggregate.AggregateVersion);
@@ -469,7 +476,7 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         _snapshotStoreMock.Setup(x => x.Box(aggregate.AggregateIdentifier));
         _aggregateStoreMock.Setup(x => x.Box(aggregate.AggregateIdentifier));
@@ -512,7 +519,7 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         _snapshotStoreMock.Setup(x => x.BoxAsync(aggregate.AggregateIdentifier, default));
         _aggregateStoreMock.Setup(x => x.BoxAsync(aggregate.AggregateIdentifier, default));
@@ -558,10 +565,10 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
-        Post result = snapshotRepository.Unbox<Post>(aggregateIdentifier);
+        Post result = snapshotRepository.Unbox<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         _snapshotStoreMock.Verify(x => x.Unbox(aggregateIdentifier), Times.Once);
@@ -599,10 +606,11 @@ public class SnapshotRepositoryTests
         ISnapshotRepository snapshotRepository = new SnapshotRepository(_aggregateStoreMock.Object,
             _aggregateRepositoryMock.Object, _snapshotStoreMock.Object, _snapshotStrategyMock.Object,
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
-            _domainEventMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object);
 
         // Act
-        Post result = await snapshotRepository.UnboxAsync<Post>(aggregateIdentifier);
+        Post result =
+            await snapshotRepository.UnboxAsync<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         _snapshotStoreMock.Verify(x => x.UnboxAsync(aggregateIdentifier, default), Times.Once);

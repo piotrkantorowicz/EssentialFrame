@@ -14,10 +14,6 @@ namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
 public sealed class Post : AggregateRoot
 {
-    private Post(IIdentityContext identityContext) : base(identityContext)
-    {
-    }
-
     private Post(Guid aggregateIdentifier, IIdentityContext identityContext) : base(aggregateIdentifier,
         identityContext)
     {
@@ -55,8 +51,7 @@ public sealed class Post : AggregateRoot
     public void Create(Title title, Description description, Date expirationDate, HashSet<Image> images)
     {
         CreateNewPostDomainEvent domainEvent = new(AggregateIdentifier, IdentityContext, title, description,
-            expirationDate,
-            images);
+            expirationDate, images);
 
         Apply(domainEvent);
     }
@@ -88,6 +83,12 @@ public sealed class Post : AggregateRoot
     public void ChangeImageName(Guid imageId, Name name)
     {
         ChangeImageNameDomainEvent @event = new(AggregateIdentifier, IdentityContext, imageId, name);
+        Apply(@event);
+    }
+
+    public void DeleteImages(HashSet<Guid> imageIds)
+    {
+        DeleteImagesDomainEvent @event = new(AggregateIdentifier, IdentityContext, imageIds);
         Apply(@event);
     }
 }

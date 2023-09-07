@@ -80,10 +80,10 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Post result = aggregateRepository.Get<Post>(aggregateIdentifier);
+        Post result = aggregateRepository.Get<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -121,10 +121,11 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Action getAggregateAction = () => aggregateRepository.Get<Post>(aggregateIdentifier);
+        Action getAggregateAction = () =>
+            aggregateRepository.Get<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         getAggregateAction.Should().Throw<AggregateDeletedException>().WithMessage(
@@ -163,10 +164,11 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Action getAggregateAction = () => aggregateRepository.Get<Post>(aggregateIdentifier);
+        Action getAggregateAction = () =>
+            aggregateRepository.Get<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         getAggregateAction.Should().Throw<AggregateNotFoundException>().WithMessage(
@@ -205,10 +207,11 @@ public class AggregateRepositoryTests
             .Returns(GenerateDomainEventsCollection(aggregateIdentifier));
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Post result = await aggregateRepository.GetAsync<Post>(aggregateIdentifier);
+        Post result =
+            await aggregateRepository.GetAsync<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -246,10 +249,11 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, default)).ReturnsAsync(aggregateDataModel);
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Func<Task> getAggregateAction = async () => await aggregateRepository.GetAsync<Post>(aggregateIdentifier);
+        Func<Task> getAggregateAction = async () =>
+            await aggregateRepository.GetAsync<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         await getAggregateAction.Should().ThrowAsync<AggregateDeletedException>().WithMessage(
@@ -287,10 +291,11 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, default)).ReturnsAsync(aggregateDataModel);
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Func<Task> getAggregateAction = async () => await aggregateRepository.GetAsync<Post>(aggregateIdentifier);
+        Func<Task> getAggregateAction = async () =>
+            await aggregateRepository.GetAsync<Post>(aggregateIdentifier, _identityServiceMock.Object.GetCurrent());
 
         // Assert
         await getAggregateAction.Should().ThrowAsync<AggregateNotFoundException>().WithMessage(
@@ -335,7 +340,7 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.Save(aggregateDataModel, eventDataModels));
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
         IDomainEvent[] domainEvents = aggregateRepository.Save(aggregate);
@@ -368,7 +373,7 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.Exists(aggregateIdentifier, expectedAggregateVersion)).Returns(true);
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
         Action saveAction = () => aggregateRepository.Save(aggregate, expectedAggregateVersion);
@@ -415,7 +420,7 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.SaveAsync(aggregateDataModel, eventDataModels, default));
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
         IDomainEvent[] domainEvents = await aggregateRepository.SaveAsync(aggregate);
@@ -449,7 +454,7 @@ public class AggregateRepositoryTests
             .ReturnsAsync(true);
 
         IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
-            _domainEventMapperMock.Object, _aggregateMapperMock.Object, _identityServiceMock.Object);
+            _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
         Func<Task> saveAction = async () => await aggregateRepository.SaveAsync(aggregate, expectedAggregateVersion);

@@ -22,6 +22,46 @@ public sealed class Date : ValueObject
         return new Date(value);
     }
 
+    public static bool operator >(DateTimeOffset left, Date right)
+    {
+        return left > right.Value;
+    }
+
+    public static bool operator <(DateTimeOffset left, Date right)
+    {
+        return left < right.Value;
+    }
+
+    public static bool operator >=(DateTimeOffset left, Date right)
+    {
+        return left >= right.Value;
+    }
+
+    public static bool operator <=(DateTimeOffset left, Date right)
+    {
+        return left <= right.Value;
+    }
+
+    public static bool operator >(Date left, DateTimeOffset right)
+    {
+        return left.Value > right;
+    }
+
+    public static bool operator <(Date left, DateTimeOffset right)
+    {
+        return left.Value < right;
+    }
+
+    public static bool operator >=(Date left, DateTimeOffset right)
+    {
+        return left.Value >= right;
+    }
+
+    public static bool operator <=(Date left, DateTimeOffset right)
+    {
+        return left.Value <= right;
+    }
+
     public bool GreaterThan(DateTimeOffset dateTimeOffset)
     {
         return Value > dateTimeOffset;

@@ -9,13 +9,6 @@ public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
 {
     private readonly List<IDomainEvent> _changes = new();
 
-    protected AggregateRoot(IIdentityContext identityContext)
-    {
-        AggregateIdentifier = Guid.NewGuid();
-        AggregateVersion = 0;
-        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
-    }
-
     protected AggregateRoot(Guid aggregateIdentifier, IIdentityContext identityContext)
     {
         AggregateIdentifier = aggregateIdentifier;

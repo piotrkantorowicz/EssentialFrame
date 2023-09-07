@@ -13,21 +13,6 @@ public class ChangeTitleCommand : Command
         Uppercase = uppercase;
     }
 
-    public ChangeTitleCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
-        string title, bool uppercase) : base(aggregateIdentifier, commandIdentifier, identityContext)
-    {
-        Title = title;
-        Uppercase = uppercase;
-    }
-
-    public ChangeTitleCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
-        int expectedVersion, string title, bool uppercase) : base(aggregateIdentifier, commandIdentifier,
-        expectedVersion, identityContext)
-    {
-        Title = title;
-        Uppercase = uppercase;
-    }
-
     public string Title { get; }
 
     public bool Uppercase { get; }

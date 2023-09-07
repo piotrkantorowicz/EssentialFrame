@@ -2,25 +2,28 @@
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
 using EssentialFrame.Domain.Shared;
+using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Identity;
 
 namespace EssentialFrame.Domain.Aggregates;
 
-public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
+public abstract class AggregateRoot<T> : DeletebleObject, IAggregateRoot<T> where T : TypedGuidIdentifier
 {
     private readonly List<IDomainEvent> _changes = new();
 
-    protected AggregateRoot()
-    {
-        AggregateIdentifier = Guid.NewGuid();
-    }
-
-    protected AggregateRoot(Guid aggregateIdentifier)
+    protected AggregateRoot(T aggregateIdentifier, IIdentityContext identityContext)
     {
         AggregateIdentifier = aggregateIdentifier;
+        TenantIdentifier = identityContext.Tenant.Identifier;
+        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
     }
 
-    public Guid AggregateIdentifier { get; }
-    
+    public T AggregateIdentifier { get; }
+
+    public Guid TenantIdentifier { get; protected init; }
+
+    public IIdentityContext IdentityContext { get; }
+
     public IDomainEvent[] GetUncommittedChanges()
     {
         lock (_changes)
