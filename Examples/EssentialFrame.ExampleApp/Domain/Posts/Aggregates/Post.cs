@@ -14,8 +14,16 @@ namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
 public sealed class Post : AggregateRoot
 {
-    private Post(Guid aggregateIdentifier = default, int aggregateVersion = 0, Guid tenantIdentifier = default) : base(
-        aggregateIdentifier, aggregateVersion, tenantIdentifier)
+    private Post(Guid aggregateIdentifier) : base(aggregateIdentifier)
+    {
+    }
+
+    private Post(Guid aggregateIdentifier, int aggregateVersion) : base(aggregateIdentifier, aggregateVersion)
+    {
+    }
+
+    private Post(Guid aggregateIdentifier, int aggregateVersion, Guid tenantIdentifier) : base(aggregateIdentifier,
+        aggregateVersion, tenantIdentifier)
     {
     }
 

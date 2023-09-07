@@ -16,7 +16,7 @@ public static class GenericAggregateFactory<T> where T : AggregateRoot
 
             if (parameterNames.Contains(nameof(aggregateIdentifier)))
             {
-                return (T)constructor.Invoke(new object[] { aggregateIdentifier, 0, default });
+                return (T)constructor.Invoke(new object[] { aggregateIdentifier });
             }
         }
 
@@ -34,7 +34,7 @@ public static class GenericAggregateFactory<T> where T : AggregateRoot
             if (parameterNames.Contains(nameof(aggregateIdentifier)) &&
                 parameterNames.Contains(nameof(aggregateVersion)))
             {
-                return (T)constructor.Invoke(new object[] { aggregateIdentifier, aggregateVersion, default });
+                return (T)constructor.Invoke(new object[] { aggregateIdentifier, aggregateVersion });
             }
         }
 
