@@ -1,20 +1,18 @@
-﻿using EssentialFrame.Identity;
-
-namespace EssentialFrame.Domain.Events.Core.Aggregates;
+﻿namespace EssentialFrame.Domain.Events.Core.Aggregates;
 
 public interface IAggregateRoot
 {
-    public Guid AggregateIdentifier { get; }
+    Guid AggregateIdentifier { get; }
 
-    public int AggregateVersion { get; }
+    int AggregateVersion { get; }
 
-    public IIdentityContext IdentityContext { get; }
+    Guid? TenantIdentifier { get; }
 
-    public AggregateState State { get; }
+    AggregateState State { get; }
 
-    public IDomainEvent[] GetUncommittedChanges();
+    IDomainEvent[] GetUncommittedChanges();
 
-    public IDomainEvent[] FlushUncommittedChanges();
+    IDomainEvent[] FlushUncommittedChanges();
 
-    public void Rehydrate(IEnumerable<IDomainEvent> history);
+    void Rehydrate(IEnumerable<IDomainEvent> history);
 }

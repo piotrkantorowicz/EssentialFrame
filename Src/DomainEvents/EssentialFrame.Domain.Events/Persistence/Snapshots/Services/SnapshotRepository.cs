@@ -9,7 +9,6 @@ using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
-using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
@@ -40,7 +39,7 @@ public class SnapshotRepository : ISnapshotRepository
         _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
     }
 
-    public T Get<T>(Guid aggregateId, IIdentityContext identityContext) where T : AggregateRoot
+    public T Get<T>(Guid aggregateId) where T : AggregateRoot
     {
         AggregateRoot snapshot = _snapshotsCache.Get(aggregateId);
 
@@ -49,12 +48,12 @@ public class SnapshotRepository : ISnapshotRepository
             return (T)snapshot;
         }
 
-        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, identityContext);
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId);
         int snapshotVersion = RestoreAggregateFromSnapshot(aggregateId, aggregate);
 
         if (snapshotVersion == -1)
         {
-            return _aggregateRepository.Get<T>(aggregateId, identityContext);
+            return _aggregateRepository.Get<T>(aggregateId);
         }
 
         IReadOnlyCollection<DomainEventDataModel> allEvents = _aggregateStore.Get(aggregateId, snapshotVersion);
@@ -67,8 +66,8 @@ public class SnapshotRepository : ISnapshotRepository
         return aggregate;
     }
 
-    public async Task<T> GetAsync<T>(Guid aggregateId, IIdentityContext identityContext,
-        CancellationToken cancellationToken = default) where T : AggregateRoot
+    public async Task<T> GetAsync<T>(Guid aggregateId, CancellationToken cancellationToken = default)
+        where T : AggregateRoot
     {
         AggregateRoot snapshot = _snapshotsCache.Get(aggregateId);
 
@@ -77,12 +76,12 @@ public class SnapshotRepository : ISnapshotRepository
             return (T)snapshot;
         }
 
-        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, identityContext);
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId);
         int snapshotVersion = await RestoreAggregateFromSnapshotAsync(aggregateId, aggregate, cancellationToken);
 
         if (snapshotVersion == -1)
         {
-            return await _aggregateRepository.GetAsync<T>(aggregateId, identityContext, cancellationToken);
+            return await _aggregateRepository.GetAsync<T>(aggregateId, cancellationToken);
         }
 
         IReadOnlyCollection<DomainEventDataModel> allEvents = await _aggregateStore.GetAsync(aggregateId,
@@ -144,26 +143,24 @@ public class SnapshotRepository : ISnapshotRepository
         _snapshotsCache.Remove(aggregate.AggregateIdentifier);
     }
 
-    public T Unbox<T>(Guid aggregateId, IIdentityContext identityContext, bool useSerializer = false)
+    public T Unbox<T>(Guid aggregateId, bool useSerializer = false)
         where T : AggregateRoot
     {
         SnapshotDataModel snapshotDataModel = _snapshotStore.Unbox(aggregateId);
         Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
-        T aggregate =
-            GenericAggregateFactory<T>.CreateAggregate(aggregateId, snapshot.AggregateVersion, identityContext);
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, snapshot.AggregateVersion);
 
         aggregate.RestoreState(snapshot.AggregateState, useSerializer ? _serializer : null);
 
         return aggregate;
     }
 
-    public async Task<T> UnboxAsync<T>(Guid aggregateId, IIdentityContext identityContext, bool useSerializer = false,
+    public async Task<T> UnboxAsync<T>(Guid aggregateId, bool useSerializer = false,
         CancellationToken cancellationToken = default) where T : AggregateRoot
     {
         SnapshotDataModel snapshotDataModel = await _snapshotStore.UnboxAsync(aggregateId, cancellationToken);
         Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
-        T aggregate =
-            GenericAggregateFactory<T>.CreateAggregate(aggregateId, snapshot.AggregateVersion, identityContext);
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateId, snapshot.AggregateVersion);
 
         aggregate.RestoreState(snapshot.AggregateState, useSerializer ? _serializer : null);
 

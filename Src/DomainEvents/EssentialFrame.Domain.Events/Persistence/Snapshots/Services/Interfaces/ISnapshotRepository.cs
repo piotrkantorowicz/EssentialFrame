@@ -1,14 +1,12 @@
 using EssentialFrame.Domain.Events.Core.Aggregates;
-using EssentialFrame.Identity;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 
 public interface ISnapshotRepository
 {
-    T Get<T>(Guid aggregateId, IIdentityContext identityContext) where T : AggregateRoot;
+    T Get<T>(Guid aggregateId) where T : AggregateRoot;
 
-    Task<T> GetAsync<T>(Guid aggregateId, IIdentityContext identityContext,
-        CancellationToken cancellationToken = default) where T : AggregateRoot;
+    Task<T> GetAsync<T>(Guid aggregateId, CancellationToken cancellationToken = default) where T : AggregateRoot;
 
     IDomainEvent[] Save<T>(T aggregate, int? version = null, int? timeout = null) where T : AggregateRoot;
 
@@ -20,8 +18,8 @@ public interface ISnapshotRepository
     Task BoxAsync<T>(T aggregate, bool useSerializer = false, CancellationToken cancellationToken = default)
         where T : AggregateRoot;
 
-    T Unbox<T>(Guid aggregateId, IIdentityContext identityContext, bool useSerializer = false) where T : AggregateRoot;
+    T Unbox<T>(Guid aggregateId, bool useSerializer = false) where T : AggregateRoot;
 
-    Task<T> UnboxAsync<T>(Guid aggregateId, IIdentityContext identityContext, bool useSerializer = false,
-        CancellationToken cancellationToken = default) where T : AggregateRoot;
+    Task<T> UnboxAsync<T>(Guid aggregateId, bool useSerializer = false, CancellationToken cancellationToken = default)
+        where T : AggregateRoot;
 }

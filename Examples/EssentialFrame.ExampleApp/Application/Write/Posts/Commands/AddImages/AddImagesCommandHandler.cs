@@ -24,10 +24,10 @@ internal sealed class AddImagesCommandHandler : ICommandHandler<AddImagesCommand
 
     public ICommandResult Handle(AddImagesCommand command)
     {
-        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier, command.IdentityContext);
+        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier);
 
         post.AddImages(command.Images.Select(i => Image.Create(Name.Create(i.ImageName), BytesContent.Create(i.Bytes)))
-            .ToHashSet());
+            .ToHashSet(), command.IdentityContext);
 
         _aggregateRepository.Save(post);
 
@@ -37,11 +37,10 @@ internal sealed class AddImagesCommandHandler : ICommandHandler<AddImagesCommand
     public async Task<ICommandResult> HandleAsync(AddImagesCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, command.IdentityContext,
-            cancellationToken);
+        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, cancellationToken);
 
         post.AddImages(command.Images.Select(i => Image.Create(Name.Create(i.ImageName), BytesContent.Create(i.Bytes)))
-            .ToHashSet());
+            .ToHashSet(), command.IdentityContext);
 
         await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
 

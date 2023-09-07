@@ -31,12 +31,10 @@ public class SnapshotStrategyTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 1;
 
-        _aggregate =
-            GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-                _identityServiceMock.Object.GetCurrent());
+        _aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         _aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
-            Date.Create(_faker.Date.FutureOffset()), null);
+            Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
     }
 
     [TearDown]
@@ -49,9 +47,10 @@ public class SnapshotStrategyTests
     public void ShouldTakeSnapShot_WhenAggregateVersionIsOverOfInterval_ReturnsTrue()
     {
         // Arrange
-        _aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
-        _aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
-        _aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
+        _aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()), _identityServiceMock.Object.GetCurrent());
+        _aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()), _identityServiceMock.Object.GetCurrent());
+        _aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()),
+            _identityServiceMock.Object.GetCurrent());
 
         // Act
         bool result = new SnapshotStrategy(Interval).ShouldTakeSnapShot(_aggregate);
@@ -64,8 +63,9 @@ public class SnapshotStrategyTests
     public void ShouldTakeSnapShot_WhenAggregateVersionIsBelowInterval_ReturnsFalse()
     {
         // Arrange
-        _aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()));
-        _aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()));
+        _aggregate.ChangeTitle(Title.Default(_faker.Lorem.Sentence()), _identityServiceMock.Object.GetCurrent());
+        _aggregate.ChangeDescription(Description.Create(_faker.Lorem.Sentences()),
+            _identityServiceMock.Object.GetCurrent());
 
         // Act
         bool result = new SnapshotStrategy(Interval).ShouldTakeSnapShot(_aggregate);

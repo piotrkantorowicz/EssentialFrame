@@ -30,7 +30,7 @@ public class PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule : Business
 
     public override bool IsBroken()
     {
-        Post post = _aggregateRepository.Get<Post>(_postIdentifier.Identifier, _identityContext);
+        Post post = _aggregateRepository.Get<Post>(_postIdentifier.Identifier);
 
         if (post.State is PostState postState)
         {
