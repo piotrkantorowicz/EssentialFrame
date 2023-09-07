@@ -15,13 +15,12 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
 {
     private PostComment(PostCommentIdentifier postCommentIdentifier, PostIdentifier postIdentifier,
         UserIdentifier authorIdentifier, PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text,
-        IIdentityContext identityContext) : base(postCommentIdentifier)
+        Guid? tenantIdentifier) : base(postCommentIdentifier, tenantIdentifier)
     {
         PostIdentifier = postIdentifier;
         AuthorIdentifier = authorIdentifier;
         ReplyToPostCommentIdentifier = replyToPostCommentIdentifier;
         Text = text;
-        TenantIdentifier = identityContext.Tenant.Identifier;
         CreatedDate = Date.Create(DateTimeOffset.UtcNow);
     }
 
@@ -44,7 +43,7 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
         IIdentityContext identityContext, IAggregateRepository aggregateRepository)
     {
         PostComment postComment = new(postCommentIdentifier, postIdentifier, userIdentifier,
-            replyToPostCommentIdentifier, text, identityContext);
+            replyToPostCommentIdentifier, text, identityContext.Tenant?.Identifier);
 
         postComment.CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(
             postComment.AggregateIdentifier.Identifier, postComment.GetType(), postIdentifier, aggregateRepository,

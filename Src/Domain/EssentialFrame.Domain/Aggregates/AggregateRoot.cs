@@ -23,7 +23,7 @@ public abstract class AggregateRoot<T> : DeletebleObject, IAggregateRoot<T> wher
 
     public T AggregateIdentifier { get; }
 
-    public Guid? TenantIdentifier { get; protected set; }
+    public Guid? TenantIdentifier { get; }
 
     public IDomainEvent[] GetUncommittedChanges()
     {
