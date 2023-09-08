@@ -1,7 +1,7 @@
 ﻿using System;
 using EssentialFrame.Domain.ValueObjects;
 
-namespace EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
+namespace EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 public sealed class PostIdentifier : TypedGuidIdentifier
 {

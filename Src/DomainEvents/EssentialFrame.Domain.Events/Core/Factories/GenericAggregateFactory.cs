@@ -1,10 +1,9 @@
 ﻿using System.Reflection;
-using EssentialFrame.Domain.Events.Core.Aggregates;
 using EssentialFrame.Domain.Exceptions;
 
 namespace EssentialFrame.Domain.Events.Core.Factories;
 
-public static class GenericAggregateFactory<T> where T : AggregateRoot
+public static class GenericAggregateFactory<T, TAggregateIdentifier> 
 {
     public static T CreateAggregate(Guid aggregateIdentifier)
     {

@@ -5,6 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
@@ -12,18 +13,18 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
-public sealed class Post : AggregateRoot
+public sealed class Post : AggregateRoot<PostIdentifier>
 {
-    private Post(Guid aggregateIdentifier) : base(aggregateIdentifier)
+    private Post(PostIdentifier aggregateIdentifier) : base(aggregateIdentifier)
     {
     }
 
-    private Post(Guid aggregateIdentifier, int aggregateVersion) : base(aggregateIdentifier, aggregateVersion)
+    private Post(PostIdentifier aggregateIdentifier, int aggregateVersion) : base(aggregateIdentifier, aggregateVersion)
     {
     }
 
-    private Post(Guid aggregateIdentifier, int aggregateVersion, Guid tenantIdentifier) : base(aggregateIdentifier,
-        aggregateVersion, tenantIdentifier)
+    private Post(PostIdentifier aggregateIdentifier, int aggregateVersion, Guid tenantIdentifier) : base(
+        aggregateIdentifier, aggregateVersion, tenantIdentifier)
     {
     }
 

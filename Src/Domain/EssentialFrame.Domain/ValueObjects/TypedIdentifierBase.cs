@@ -1,6 +1,6 @@
 ﻿namespace EssentialFrame.Domain.ValueObjects;
 
-public class TypedIdentifierBase<T> : ValueObject
+public abstract class TypedIdentifierBase<T> : ValueObject
 {
     protected TypedIdentifierBase(T identifier)
     {
@@ -8,6 +8,8 @@ public class TypedIdentifierBase<T> : ValueObject
     }
 
     public T Identifier { get; }
+
+    public abstract bool Empty();
 
     protected override IEnumerable<object> GetEqualityComponents()
     {

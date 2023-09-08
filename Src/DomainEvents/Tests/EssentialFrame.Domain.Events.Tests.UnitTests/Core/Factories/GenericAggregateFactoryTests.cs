@@ -2,6 +2,7 @@ using System;
 using Bogus;
 using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -19,7 +20,7 @@ public sealed class GenericAggregateFactoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         
         // Act
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier);
+        Post aggregate = GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier);
 
         // Assert
         aggregate.Should().NotBeNull();
@@ -34,7 +35,8 @@ public sealed class GenericAggregateFactoryTests
         int aggregateVersion = _faker.Random.Int();
         
         // Act
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         // Assert
         aggregate.Should().NotBeNull();
@@ -52,7 +54,8 @@ public sealed class GenericAggregateFactoryTests
 
         // Act
         Post aggregate =
-            GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion, tenantIdentifier);
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+                tenantIdentifier);
 
         // Assert
         aggregate.Should().NotBeNull();

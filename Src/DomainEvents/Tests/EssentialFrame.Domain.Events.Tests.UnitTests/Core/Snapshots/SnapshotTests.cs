@@ -6,6 +6,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Snapshots;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
@@ -32,7 +33,8 @@ public class SnapshotTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         Title expectedTitle = Title.Default(_faker.Lorem.Sentence());
         Description expectedDescription = Description.Create(_faker.Lorem.Sentences());

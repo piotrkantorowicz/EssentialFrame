@@ -17,6 +17,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
@@ -58,7 +59,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -78,11 +80,12 @@ public class AggregateRepositoryTests
             .Returns(GenerateDomainEventsCollection(aggregateIdentifier));
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Post result = aggregateRepository.Get<Post>(aggregateIdentifier);
+        Post result = aggregateRepository.Get(aggregateIdentifier);
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -99,7 +102,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -118,11 +122,12 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier, -1)).Returns(eventDataModels);
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Action getAggregateAction = () => aggregateRepository.Get<Post>(aggregateIdentifier);
+        Action getAggregateAction = () => aggregateRepository.Get(aggregateIdentifier);
 
         // Assert
         getAggregateAction.Should().Throw<AggregateDeletedException>().WithMessage(
@@ -139,7 +144,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -159,11 +165,12 @@ public class AggregateRepositoryTests
         
         _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(aggregateDataModel);
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Action getAggregateAction = () => aggregateRepository.Get<Post>(aggregateIdentifier);
+        Action getAggregateAction = () => aggregateRepository.Get(aggregateIdentifier);
 
         // Assert
         getAggregateAction.Should().Throw<AggregateNotFoundException>().WithMessage(
@@ -180,7 +187,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -200,11 +208,12 @@ public class AggregateRepositoryTests
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels))
             .Returns(GenerateDomainEventsCollection(aggregateIdentifier));
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Post result = await aggregateRepository.GetAsync<Post>(aggregateIdentifier);
+        Post result = await aggregateRepository.GetAsync(aggregateIdentifier);
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
@@ -221,7 +230,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -240,11 +250,12 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, -1, default)).ReturnsAsync(eventDataModels);
         _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, default)).ReturnsAsync(aggregateDataModel);
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Func<Task> getAggregateAction = async () => await aggregateRepository.GetAsync<Post>(aggregateIdentifier);
+        Func<Task> getAggregateAction = async () => await aggregateRepository.GetAsync(aggregateIdentifier);
 
         // Assert
         await getAggregateAction.Should().ThrowAsync<AggregateDeletedException>().WithMessage(
@@ -261,7 +272,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -280,11 +292,12 @@ public class AggregateRepositoryTests
             .ReturnsAsync((IReadOnlyCollection<DomainEventDataModel>)null);
         _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, default)).ReturnsAsync(aggregateDataModel);
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
-        Func<Task> getAggregateAction = async () => await aggregateRepository.GetAsync<Post>(aggregateIdentifier);
+        Func<Task> getAggregateAction = async () => await aggregateRepository.GetAsync(aggregateIdentifier);
 
         // Assert
         await getAggregateAction.Should().ThrowAsync<AggregateNotFoundException>().WithMessage(
@@ -301,7 +314,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
@@ -329,7 +343,8 @@ public class AggregateRepositoryTests
         _domainEventMapperMock.Setup(x => x.Map(events)).Returns(eventDataModels);
         _aggregateStoreMock.Setup(x => x.Save(aggregateDataModel, eventDataModels));
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
@@ -350,7 +365,8 @@ public class AggregateRepositoryTests
         const int aggregateVersion = 0;
         const int expectedAggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
@@ -363,7 +379,8 @@ public class AggregateRepositoryTests
 
         _aggregateStoreMock.Setup(x => x.Exists(aggregateIdentifier, expectedAggregateVersion)).Returns(true);
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
@@ -383,7 +400,8 @@ public class AggregateRepositoryTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
@@ -411,7 +429,8 @@ public class AggregateRepositoryTests
         _domainEventMapperMock.Setup(x => x.Map(events)).Returns(eventDataModels);
         _aggregateStoreMock.Setup(x => x.SaveAsync(aggregateDataModel, eventDataModels, default));
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act
@@ -432,7 +451,8 @@ public class AggregateRepositoryTests
         const int aggregateVersion = 0;
         const int expectedAggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
@@ -446,7 +466,8 @@ public class AggregateRepositoryTests
         _aggregateStoreMock.Setup(x => x.ExistsAsync(aggregateIdentifier, expectedAggregateVersion, default))
             .ReturnsAsync(true);
 
-        IAggregateRepository aggregateRepository = new AggregateRepository(_aggregateStoreMock.Object,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
+            _aggregateStoreMock.Object,
             _domainEventMapperMock.Object, _aggregateMapperMock.Object);
 
         // Act

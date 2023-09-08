@@ -6,7 +6,9 @@ using EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.DeletedReasons;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
+using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
@@ -40,14 +42,13 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
 
     public static PostComment Create(PostCommentIdentifier postCommentIdentifier, PostIdentifier postIdentifier,
         UserIdentifier userIdentifier, PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text,
-        IIdentityContext identityContext, IAggregateRepository aggregateRepository)
+        IIdentityContext identityContext, IAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         PostComment postComment = new(postCommentIdentifier, postIdentifier, userIdentifier,
             replyToPostCommentIdentifier, text, identityContext.Tenant?.Identifier);
 
         postComment.CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(
-            postComment.AggregateIdentifier.Identifier, postComment.GetType(), postIdentifier, aggregateRepository,
-            identityContext));
+            postComment.AggregateIdentifier.Identifier, postComment.GetType(), postIdentifier, aggregateRepository));
 
         if (replyToPostCommentIdentifier.Empty())
         {
@@ -65,16 +66,17 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
     }
 
     public PostComment Reply(PostCommentText reply, UserIdentifier replierIdentifier, IIdentityContext identityContext,
-        IAggregateRepository aggregateRepository)
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         return Create(PostCommentIdentifier.New(), PostIdentifier, replierIdentifier, AggregateIdentifier, reply,
             identityContext, aggregateRepository);
     }
 
-    public void Edit(PostCommentText text, IAggregateRepository aggregateRepository, IIdentityContext identityContext) 
+    public void Edit(PostCommentText text, IAggregateRepository<Post, PostIdentifier> aggregateRepository,
+        IIdentityContext identityContext) 
     {
         CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier.Identifier,
-            GetType(), PostIdentifier, aggregateRepository, identityContext));
+            GetType(), PostIdentifier, aggregateRepository));
 
         UserIdentifier editorIdentifier = UserIdentifier.New(identityContext.User.Identifier);
         
@@ -88,10 +90,11 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
             EditedDate, editorIdentifier));
     }
 
-    public void Remove(DeletedReason reason, IAggregateRepository aggregateRepository, IIdentityContext identityContext)
+    public void Remove(DeletedReason reason, IAggregateRepository<Post, PostIdentifier> aggregateRepository,
+        IIdentityContext identityContext)
     {
         CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier.Identifier,
-            GetType(), PostIdentifier, aggregateRepository, identityContext));
+            GetType(), PostIdentifier, aggregateRepository));
 
         UserIdentifier removerIdentifier = UserIdentifier.New(identityContext.User.Identifier);
         

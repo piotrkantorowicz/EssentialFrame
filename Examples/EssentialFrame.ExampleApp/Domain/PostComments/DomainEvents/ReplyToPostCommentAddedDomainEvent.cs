@@ -3,6 +3,7 @@ using EssentialFrame.Domain.Events;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;

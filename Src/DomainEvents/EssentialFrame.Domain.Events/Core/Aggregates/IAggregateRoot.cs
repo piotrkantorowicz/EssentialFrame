@@ -1,8 +1,10 @@
-﻿namespace EssentialFrame.Domain.Events.Core.Aggregates;
+﻿using EssentialFrame.Domain.ValueObjects;
 
-public interface IAggregateRoot
+namespace EssentialFrame.Domain.Events.Core.Aggregates;
+
+public interface IAggregateRoot<out T, TType> where T : TypedIdentifierBase<TType>
 {
-    Guid AggregateIdentifier { get; }
+    T AggregateIdentifier { get; }
 
     int AggregateVersion { get; }
 

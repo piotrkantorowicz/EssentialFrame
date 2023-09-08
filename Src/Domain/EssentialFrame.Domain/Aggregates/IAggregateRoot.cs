@@ -2,9 +2,9 @@
 
 namespace EssentialFrame.Domain.Aggregates;
 
-public interface IAggregateRoot<out T> where T : TypedGuidIdentifier
+public interface IAggregateRoot<out TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    T AggregateIdentifier { get; }
+    TAggregateIdentifier AggregateIdentifier { get; }
 
     Guid? TenantIdentifier { get; }
 }

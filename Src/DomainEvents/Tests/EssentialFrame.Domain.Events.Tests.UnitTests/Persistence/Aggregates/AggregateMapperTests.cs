@@ -5,6 +5,7 @@ using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -25,7 +26,8 @@ public class AggregateMapperTests
         Guid? tenantIdentifier = _faker.Random.Guid();
 
         Post aggregateRoot =
-            GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion, tenantIdentifier);
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+                tenantIdentifier);
 
         // Act
         AggregateDataModel aggregateDataModel = _aggregateMapper.Map(aggregateRoot);

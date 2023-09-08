@@ -16,6 +16,7 @@ using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
 using EssentialFrame.Files;
@@ -41,7 +42,8 @@ public class AggregateOfflineStorageTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         _aggregateDataModel = new AggregateDataModel
         {

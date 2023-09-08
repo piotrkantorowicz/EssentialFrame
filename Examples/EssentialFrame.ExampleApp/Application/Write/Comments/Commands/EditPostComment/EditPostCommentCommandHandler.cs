@@ -6,15 +6,17 @@ using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
+using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.EditPostComment;
 
 internal sealed class EditPostCommentCommandHandler : ICommandHandler<EditPostCommentCommand>,
     IAsyncCommandHandler<EditPostCommentCommand>
 {
-    private readonly IAggregateRepository _aggregateRepository;
+    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public EditPostCommentCommandHandler(IAggregateRepository aggregateRepository)
+    public EditPostCommentCommandHandler(IAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
     }

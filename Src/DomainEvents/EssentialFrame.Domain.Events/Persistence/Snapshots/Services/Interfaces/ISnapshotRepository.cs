@@ -1,25 +1,26 @@
 using EssentialFrame.Domain.Events.Core.Aggregates;
+using EssentialFrame.Domain.ValueObjects;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 
-public interface ISnapshotRepository
+public interface ISnapshotRepository<TAggregate, TAggregateId> where TAggregate : AggregateRoot<TAggregateId>
+    where TAggregateId : TypedGuidIdentifier
 {
-    T Get<T>(Guid aggregateId) where T : AggregateRoot;
+    TAggregate Get(Guid aggregateId);
 
-    Task<T> GetAsync<T>(Guid aggregateId, CancellationToken cancellationToken = default) where T : AggregateRoot;
+    Task<TAggregate> GetAsync(Guid aggregateId, CancellationToken cancellationToken = default);
 
-    IDomainEvent[] Save<T>(T aggregate, int? version = null, int? timeout = null) where T : AggregateRoot;
+    IDomainEvent[] Save(TAggregate aggregate, int? version = null, int? timeout = null);
 
-    Task<IDomainEvent[]> SaveAsync<T>(T aggregate, int? version = null, int? timeout = null,
-        CancellationToken cancellationToken = default) where T : AggregateRoot;
+    Task<IDomainEvent[]> SaveAsync(TAggregate aggregate, int? version = null, int? timeout = null,
+        CancellationToken cancellationToken = default);
 
-    void Box<T>(T aggregate, bool useSerializer = false) where T : AggregateRoot;
+    void Box(TAggregate aggregate, bool useSerializer = false);
 
-    Task BoxAsync<T>(T aggregate, bool useSerializer = false, CancellationToken cancellationToken = default)
-        where T : AggregateRoot;
+    Task BoxAsync(TAggregate aggregate, bool useSerializer = false, CancellationToken cancellationToken = default);
 
-    T Unbox<T>(Guid aggregateId, bool useSerializer = false) where T : AggregateRoot;
+    TAggregate Unbox(Guid aggregateId, bool useSerializer = false);
 
-    Task<T> UnboxAsync<T>(Guid aggregateId, bool useSerializer = false, CancellationToken cancellationToken = default)
-        where T : AggregateRoot;
+    Task<TAggregate> UnboxAsync(Guid aggregateId, bool useSerializer = false,
+        CancellationToken cancellationToken = default);
 }

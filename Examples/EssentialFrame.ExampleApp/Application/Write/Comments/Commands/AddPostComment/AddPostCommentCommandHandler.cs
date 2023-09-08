@@ -7,15 +7,17 @@ using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
+using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.AddPostComment;
 
 internal sealed class AddPostCommentCommandHandler : ICommandHandler<AddPostCommentCommand>,
     IAsyncCommandHandler<AddPostCommentCommand>
 {
-    private readonly IAggregateRepository _aggregateRepository;
+    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public AddPostCommentCommandHandler(IAggregateRepository aggregateRepository)
+    public AddPostCommentCommandHandler(IAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
     }

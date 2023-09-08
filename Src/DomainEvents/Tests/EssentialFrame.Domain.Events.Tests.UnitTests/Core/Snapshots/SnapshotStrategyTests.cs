@@ -6,6 +6,7 @@ using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
 using FluentAssertions;
@@ -31,7 +32,8 @@ public class SnapshotStrategyTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 1;
 
-        _aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        _aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         _aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
@@ -53,7 +55,7 @@ public class SnapshotStrategyTests
             _identityServiceMock.Object.GetCurrent());
 
         // Act
-        bool result = new SnapshotStrategy(Interval).ShouldTakeSnapShot(_aggregate);
+        bool result = new SnapshotStrategy<Post, PostIdentifier>(Interval).ShouldTakeSnapShot(_aggregate);
 
         // Assert
         result.Should().BeTrue();
@@ -68,7 +70,7 @@ public class SnapshotStrategyTests
             _identityServiceMock.Object.GetCurrent());
 
         // Act
-        bool result = new SnapshotStrategy(Interval).ShouldTakeSnapShot(_aggregate);
+        bool result = new SnapshotStrategy<Post, PostIdentifier>(Interval).ShouldTakeSnapShot(_aggregate);
 
         // Assert
         result.Should().BeFalse();

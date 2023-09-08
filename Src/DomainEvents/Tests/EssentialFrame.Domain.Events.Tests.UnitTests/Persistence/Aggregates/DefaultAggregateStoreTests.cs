@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Cache.Interfaces;
-using EssentialFrame.Domain.Events.Core.Aggregates;
 using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
@@ -17,6 +16,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
@@ -329,7 +329,8 @@ public class DefaultAggregateStoreTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -365,7 +366,8 @@ public class DefaultAggregateStoreTests
         // Arrange
         Guid aggregateIdentifier = Guid.NewGuid();
         int aggregateVersion = _faker.Random.Int();
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -402,7 +404,8 @@ public class DefaultAggregateStoreTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -439,7 +442,8 @@ public class DefaultAggregateStoreTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -471,11 +475,14 @@ public class DefaultAggregateStoreTests
 
     private List<AggregateDataModel> GenerateAggregates()
     {
-        List<AggregateRoot> aggregates = new()
+        List<Post> aggregates = new()
         {
-            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000)),
-            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000)),
-            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000))
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(_faker.Random.Guid(),
+                _faker.Random.Int(1, 1000)),
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(_faker.Random.Guid(),
+                _faker.Random.Int(1, 1000)),
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(_faker.Random.Guid(),
+                _faker.Random.Int(1, 1000))
         };
 
         List<AggregateDataModel> aggregateDataModels = aggregates.Select(a => new AggregateDataModel

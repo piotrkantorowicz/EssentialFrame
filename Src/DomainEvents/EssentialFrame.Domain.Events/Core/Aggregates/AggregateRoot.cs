@@ -1,33 +1,36 @@
-﻿using EssentialFrame.Domain.Exceptions;
+﻿using EssentialFrame.Domain.Aggregates;
+using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Shared;
+using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Events.Core.Aggregates;
 
-public abstract class AggregateRoot : IDeletableDomainObject, IAggregateRoot
+public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObject, IAggregateRoot<TAggregateIdentifier>
+    where TAggregateIdentifier : TypedGuidIdentifier
 {
     private readonly List<IDomainEvent> _changes = new();
 
-    protected AggregateRoot(Guid aggregateIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier)
     {
-        AggregateIdentifier = aggregateIdentifier == default ? Guid.NewGuid() : aggregateIdentifier;
+        AggregateIdentifier = aggregateIdentifier;
     }
 
-    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, int aggregateVersion)
     {
-        AggregateIdentifier = aggregateIdentifier == default ? Guid.NewGuid() : aggregateIdentifier;
+        AggregateIdentifier = aggregateIdentifier;
         AggregateVersion = aggregateVersion;
     }
 
-    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion, Guid tenantIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, int aggregateVersion, Guid tenantIdentifier)
     {
-        AggregateIdentifier = aggregateIdentifier == default ? Guid.NewGuid() : aggregateIdentifier;
+        AggregateIdentifier = aggregateIdentifier;
         AggregateVersion = aggregateVersion;
         TenantIdentifier = tenantIdentifier == default ? Guid.Empty : tenantIdentifier;
     }
 
-    public Guid AggregateIdentifier { get; }
+    public TAggregateIdentifier AggregateIdentifier { get; }
 
     public int AggregateVersion { get; private set; }
 
@@ -71,7 +74,7 @@ public abstract class AggregateRoot : IDeletableDomainObject, IAggregateRoot
 
             foreach (IDomainEvent change in changes)
             {
-                if (change.AggregateIdentifier == Guid.Empty || AggregateIdentifier == Guid.Empty)
+                if (change.AggregateIdentifier == Guid.Empty || AggregateIdentifier.Empty())
                 {
                     throw new MissingAggregateIdentifierException(GetType(), change.GetType());
                 }

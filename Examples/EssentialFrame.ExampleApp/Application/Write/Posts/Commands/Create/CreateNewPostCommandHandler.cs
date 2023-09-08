@@ -11,6 +11,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 
@@ -19,9 +20,9 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.Create;
 internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPostCommand>,
     IAsyncCommandHandler<CreateNewPostCommand>
 {
-    private readonly IAggregateRepository _aggregateRepository;
+    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public CreateNewPostCommandHandler(IAggregateRepository aggregateRepository)
+    public CreateNewPostCommandHandler(IAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
     }
@@ -47,7 +48,7 @@ internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPos
 
     private static Post Create(CreateNewPostCommand command)
     {
-        Post post = GenericAggregateFactory<Post>.CreateAggregate(command.AggregateIdentifier);
+        Post post = GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(command.AggregateIdentifier);
 
         post.Create(Title.Default(command.Title), Description.Create(command.Description),
             Date.Create(command.Expiration), command.Images

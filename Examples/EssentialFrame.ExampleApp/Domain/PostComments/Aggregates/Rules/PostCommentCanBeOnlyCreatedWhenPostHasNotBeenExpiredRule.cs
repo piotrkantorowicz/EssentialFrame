@@ -2,27 +2,24 @@
 using System.Collections.Generic;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Rules.Base;
-using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Extensions;
-using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 
 public class PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule : BusinessRule
 {
     private readonly PostIdentifier _postIdentifier;
-    private readonly IAggregateRepository _aggregateRepository;
-    private readonly IIdentityContext _identityContext;
+    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
     public PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(Guid domainObjectIdentifier,
-        Type businessObjectType, PostIdentifier postIdentifier, IAggregateRepository aggregateRepository,
-        IIdentityContext identityContext) : base(
+        Type businessObjectType, PostIdentifier postIdentifier,
+        IAggregateRepository<Post, PostIdentifier> aggregateRepository) : base(
         domainObjectIdentifier, businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
     {
         _postIdentifier = postIdentifier;
         _aggregateRepository = aggregateRepository;
-        _identityContext = identityContext;
     }
 
     public override string Message =>
@@ -30,7 +27,7 @@ public class PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule : Business
 
     public override bool IsBroken()
     {
-        Post post = _aggregateRepository.Get<Post>(_postIdentifier.Identifier);
+        Post post = _aggregateRepository.Get(_postIdentifier.Identifier);
 
         if (post.State is PostState postState)
         {
