@@ -1,10 +1,11 @@
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
 using EssentialFrame.Domain.Shared;
+using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Entities;
 
-public abstract class Entity : DeletebleObject, IEntity
+public abstract class Entity : IDeletableDomainObject, IEntity
 {
     protected Entity()
     {
@@ -17,6 +18,22 @@ public abstract class Entity : DeletebleObject, IEntity
     }
 
     public Guid EntityIdentifier { get; }
+
+    public DateTimeOffset? DeletedDate { get; private set; }
+
+    public bool IsDeleted { get; private set; }
+
+    public void SafeDelete()
+    {
+        DeletedDate = SystemClock.UtcNow;
+        IsDeleted = true;
+    }
+
+    public void UnDelete()
+    {
+        DeletedDate = null;
+        IsDeleted = false;
+    }
 
     protected virtual void CheckRule(IBusinessRule rule, bool useExtraParameters = true)
     {

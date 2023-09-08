@@ -1,10 +1,11 @@
 ﻿using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Shared;
 using EssentialFrame.Serialization.Interfaces;
+using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Events.Core.Aggregates;
 
-public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
+public abstract class AggregateRoot : IDeletableDomainObject, IAggregateRoot
 {
     private readonly List<IDomainEvent> _changes = new();
 
@@ -33,6 +34,22 @@ public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
     public Guid? TenantIdentifier { get; protected set; }
 
     public AggregateState State { get; protected set; }
+
+    public DateTimeOffset? DeletedDate { get; private set; }
+
+    public bool IsDeleted { get; private set; }
+
+    public void SafeDelete()
+    {
+        DeletedDate = SystemClock.UtcNow;
+        IsDeleted = true;
+    }
+
+    public void UnDelete()
+    {
+        DeletedDate = null;
+        IsDeleted = false;
+    }
 
     public abstract AggregateState CreateState();
     public abstract void RestoreState(object aggregateState, ISerializer serializer = null);

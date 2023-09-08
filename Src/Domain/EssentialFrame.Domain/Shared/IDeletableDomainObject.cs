@@ -1,6 +1,6 @@
 ﻿namespace EssentialFrame.Domain.Shared;
 
-public interface IDeletableObject
+public interface IDeletableDomainObject
 {
     public DateTimeOffset? DeletedDate { get; }
 

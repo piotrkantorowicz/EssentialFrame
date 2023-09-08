@@ -3,10 +3,11 @@ using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
 using EssentialFrame.Domain.Shared;
 using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Aggregates;
 
-public abstract class AggregateRoot<T> : DeletebleObject, IAggregateRoot<T> where T : TypedGuidIdentifier
+public abstract class AggregateRoot<T> : IDeletableDomainObject, IAggregateRoot<T> where T : TypedGuidIdentifier
 {
     private readonly List<IDomainEvent> _changes = new();
 
@@ -25,6 +26,22 @@ public abstract class AggregateRoot<T> : DeletebleObject, IAggregateRoot<T> wher
 
     public Guid? TenantIdentifier { get; }
 
+    public DateTimeOffset? DeletedDate { get; private set; }
+
+    public bool IsDeleted { get; private set; }
+
+    public void SafeDelete()
+    {
+        DeletedDate = SystemClock.UtcNow;
+        IsDeleted = true;
+    }
+
+    public void UnDelete()
+    {
+        DeletedDate = null;
+        IsDeleted = false;
+    }
+    
     public IDomainEvent[] GetUncommittedChanges()
     {
         lock (_changes)
