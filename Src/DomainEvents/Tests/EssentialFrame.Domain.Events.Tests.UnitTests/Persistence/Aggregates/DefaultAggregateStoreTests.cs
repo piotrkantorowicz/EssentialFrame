@@ -329,8 +329,7 @@ public class DefaultAggregateStoreTests
         // Arrange
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-            _identityServiceMock.Object.GetCurrent());
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -338,7 +337,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.IdentityContext?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
@@ -366,8 +365,7 @@ public class DefaultAggregateStoreTests
         // Arrange
         Guid aggregateIdentifier = Guid.NewGuid();
         int aggregateVersion = _faker.Random.Int();
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-            _identityServiceMock.Object.GetCurrent());
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -375,7 +373,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.IdentityContext?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
@@ -404,8 +402,7 @@ public class DefaultAggregateStoreTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-            _identityServiceMock.Object.GetCurrent());
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -413,7 +410,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.IdentityContext?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
@@ -442,8 +439,7 @@ public class DefaultAggregateStoreTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Int();
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-            _identityServiceMock.Object.GetCurrent());
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         AggregateDataModel aggregateDataModel = new()
         {
@@ -451,7 +447,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.IdentityContext?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
@@ -477,12 +473,9 @@ public class DefaultAggregateStoreTests
     {
         List<AggregateRoot> aggregates = new()
         {
-            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000),
-                _identityServiceMock.Object.GetCurrent()),
-            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000),
-                _identityServiceMock.Object.GetCurrent()),
-            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000),
-                _identityServiceMock.Object.GetCurrent())
+            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000)),
+            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000)),
+            GenericAggregateFactory<Post>.CreateAggregate(_faker.Random.Guid(), _faker.Random.Int(1, 1000))
         };
 
         List<AggregateDataModel> aggregateDataModels = aggregates.Select(a => new AggregateDataModel
@@ -491,7 +484,7 @@ public class DefaultAggregateStoreTests
             AggregateVersion = a.AggregateVersion,
             DeletedDate = a.DeletedDate,
             IsDeleted = a.IsDeleted,
-            TenantIdentifier = a.IdentityContext?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
         }).ToList();
 
         return aggregateDataModels;

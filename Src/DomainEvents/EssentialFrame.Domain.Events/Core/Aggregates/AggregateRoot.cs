@@ -1,6 +1,5 @@
 ﻿using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Shared;
-using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Core.Aggregates;
@@ -9,32 +8,29 @@ public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
 {
     private readonly List<IDomainEvent> _changes = new();
 
-    protected AggregateRoot(Guid aggregateIdentifier, IIdentityContext identityContext)
+    protected AggregateRoot(Guid aggregateIdentifier)
     {
-        AggregateIdentifier = aggregateIdentifier;
-        AggregateVersion = 0;
-        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
+        AggregateIdentifier = aggregateIdentifier == default ? Guid.NewGuid() : aggregateIdentifier;
     }
 
-    protected AggregateRoot(int aggregateVersion, IIdentityContext identityContext)
+    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion)
     {
-        AggregateIdentifier = Guid.NewGuid();
+        AggregateIdentifier = aggregateIdentifier == default ? Guid.NewGuid() : aggregateIdentifier;
         AggregateVersion = aggregateVersion;
-        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
     }
 
-    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion, IIdentityContext identityContext)
+    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion, Guid tenantIdentifier)
     {
-        AggregateIdentifier = aggregateIdentifier;
+        AggregateIdentifier = aggregateIdentifier == default ? Guid.NewGuid() : aggregateIdentifier;
         AggregateVersion = aggregateVersion;
-        IdentityContext = identityContext ?? throw new MissingIdentityContextException(GetType());
+        TenantIdentifier = tenantIdentifier == default ? Guid.Empty : tenantIdentifier;
     }
 
     public Guid AggregateIdentifier { get; }
 
     public int AggregateVersion { get; private set; }
 
-    public IIdentityContext IdentityContext { get; }
+    public Guid? TenantIdentifier { get; protected set; }
 
     public AggregateState State { get; protected set; }
 

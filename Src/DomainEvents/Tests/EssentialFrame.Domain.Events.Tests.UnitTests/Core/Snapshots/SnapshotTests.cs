@@ -32,19 +32,18 @@ public class SnapshotTests
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-            _identityServiceMock.Object.GetCurrent());
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         Title expectedTitle = Title.Default(_faker.Lorem.Sentence());
         Description expectedDescription = Description.Create(_faker.Lorem.Sentences());
         Date expectedExpiration = Date.Create(_faker.Date.FutureOffset());
 
         aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
-            Date.Create(_faker.Date.FutureOffset()), null);
-        
-        aggregate.ChangeTitle(expectedTitle);
-        aggregate.ChangeDescription(expectedDescription);
-        aggregate.ExtendExpirationDate(expectedExpiration);
+            Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
+
+        aggregate.ChangeTitle(expectedTitle, _identityServiceMock.Object.GetCurrent());
+        aggregate.ChangeDescription(expectedDescription, _identityServiceMock.Object.GetCurrent());
+        aggregate.ExtendExpirationDate(expectedExpiration, _identityServiceMock.Object.GetCurrent());
 
         ISetup<ISerializer, string> state = _serializerMock.Setup(s => s.Serialize(aggregate.State));
 

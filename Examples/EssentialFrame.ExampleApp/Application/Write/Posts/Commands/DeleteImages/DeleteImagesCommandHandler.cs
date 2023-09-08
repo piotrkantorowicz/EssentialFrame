@@ -20,9 +20,9 @@ internal sealed class DeleteImagesCommandHandler : ICommandHandler<DeleteImagesC
 
     public ICommandResult Handle(DeleteImagesCommand command)
     {
-        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier, command.IdentityContext);
+        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier);
 
-        post.DeleteImages(command.ImagesIds);
+        post.DeleteImages(command.ImagesIds, command.IdentityContext);
         _aggregateRepository.Save(post);
 
         return CommandResult.Success(post.State);
@@ -31,10 +31,9 @@ internal sealed class DeleteImagesCommandHandler : ICommandHandler<DeleteImagesC
     public async Task<ICommandResult> HandleAsync(DeleteImagesCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, command.IdentityContext,
-            cancellationToken);
+        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, cancellationToken);
 
-        post.DeleteImages(command.ImagesIds);
+        post.DeleteImages(command.ImagesIds, command.IdentityContext);
         await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
 
         return CommandResult.Success(post.State);

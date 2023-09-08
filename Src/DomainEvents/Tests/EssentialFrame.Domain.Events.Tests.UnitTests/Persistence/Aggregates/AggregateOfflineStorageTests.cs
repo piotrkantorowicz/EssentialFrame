@@ -41,8 +41,7 @@ public class AggregateOfflineStorageTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion,
-            _identityServiceMock.Object.GetCurrent());
+        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         _aggregateDataModel = new AggregateDataModel
         {
@@ -50,7 +49,7 @@ public class AggregateOfflineStorageTests
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = aggregate.IdentityContext?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
         };
 
         _domainEvents = new List<IDomainEvent>

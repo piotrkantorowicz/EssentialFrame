@@ -23,7 +23,7 @@ internal sealed class RemovePostCommandHandler : ICommandHandler<RemovePostComma
     {
         PostComment postComment = null; // TODO: Get the aggregate
 
-        postComment.Remove(DeletedReason.Create(command.Reason), _aggregateRepository);
+        postComment.Remove(DeletedReason.Create(command.Reason), _aggregateRepository, command.IdentityContext);
 
         // TODO: Save the aggregate
 
@@ -35,7 +35,7 @@ internal sealed class RemovePostCommandHandler : ICommandHandler<RemovePostComma
     {
         PostComment postComment = null; // TODO: Get the aggregate
 
-        postComment.Remove(DeletedReason.Create(command.Reason), _aggregateRepository);
+        postComment.Remove(DeletedReason.Create(command.Reason), _aggregateRepository, command.IdentityContext);
 
         // TODO: Save the aggregate
 

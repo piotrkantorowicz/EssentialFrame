@@ -4,7 +4,6 @@ using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
-using EssentialFrame.Identity;
 
 namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
 
@@ -22,15 +21,14 @@ public sealed class AggregateRepository : IAggregateRepository
         _aggregateMapper = aggregateMapper ?? throw new ArgumentNullException(nameof(aggregateMapper));
     }
 
-    public T Get<T>(Guid aggregate, IIdentityContext identityContext) where T : AggregateRoot
+    public T Get<T>(Guid aggregate) where T : AggregateRoot
     {
-        return Rehydrate<T>(aggregate, identityContext);
+        return Rehydrate<T>(aggregate);
     }
 
-    public Task<T> GetAsync<T>(Guid aggregate, IIdentityContext identityContext,
-        CancellationToken cancellationToken = default) where T : AggregateRoot
+    public Task<T> GetAsync<T>(Guid aggregate, CancellationToken cancellationToken = default) where T : AggregateRoot
     {
-        return RehydrateAsync<T>(aggregate, identityContext, cancellationToken);
+        return RehydrateAsync<T>(aggregate, cancellationToken);
     }
 
     public IDomainEvent[] Save<T>(T aggregate, int? version) where T : AggregateRoot
@@ -67,7 +65,7 @@ public sealed class AggregateRepository : IAggregateRepository
         return domainEvents;
     }
 
-    private T Rehydrate<T>(Guid id, IIdentityContext identityContext) where T : AggregateRoot
+    private T Rehydrate<T>(Guid id) where T : AggregateRoot
     {
         AggregateDataModel aggregateDataModel = _aggregateStore.Get(id);
         IReadOnlyCollection<DomainEventDataModel> eventsData = _aggregateStore.Get(id, -1);
@@ -77,8 +75,7 @@ public sealed class AggregateRepository : IAggregateRepository
             throw new AggregateDeletedException(aggregateDataModel.AggregateIdentifier, typeof(T));
         }
 
-        T aggregate =
-            GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id, identityContext);
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id);
 
         if (eventsData?.Any() != true)
         {
@@ -92,8 +89,7 @@ public sealed class AggregateRepository : IAggregateRepository
         return aggregate;
     }
 
-    private async Task<T> RehydrateAsync<T>(Guid id, IIdentityContext identityContext,
-        CancellationToken cancellationToken = default)
+    private async Task<T> RehydrateAsync<T>(Guid id, CancellationToken cancellationToken = default)
         where T : AggregateRoot
     {
         AggregateDataModel aggregateDataModel = await _aggregateStore.GetAsync(id, cancellationToken);
@@ -106,8 +102,7 @@ public sealed class AggregateRepository : IAggregateRepository
             throw new AggregateDeletedException(aggregateDataModel.AggregateIdentifier, typeof(T));
         }
 
-        T aggregate =
-            GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id, identityContext);
+        T aggregate = GenericAggregateFactory<T>.CreateAggregate(aggregateDataModel?.AggregateIdentifier ?? id);
 
         if (eventsData?.Any() != true)
         {

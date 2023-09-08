@@ -21,9 +21,9 @@ internal sealed class ExtendedExpirationDateCommandHandler : ICommandHandler<Ext
 
     public ICommandResult Handle(ExtendedExpirationDateCommand command)
     {
-        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier, command.IdentityContext);
+        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier);
 
-        post.ExtendExpirationDate(Date.Create(command.ExpirationDate));
+        post.ExtendExpirationDate(Date.Create(command.ExpirationDate), command.IdentityContext);
         _aggregateRepository.Save(post);
 
         return CommandResult.Success(post.State);
@@ -32,10 +32,9 @@ internal sealed class ExtendedExpirationDateCommandHandler : ICommandHandler<Ext
     public async Task<ICommandResult> HandleAsync(ExtendedExpirationDateCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, command.IdentityContext,
-            cancellationToken);
+        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, cancellationToken);
 
-        post.ExtendExpirationDate(Date.Create(command.ExpirationDate));
+        post.ExtendExpirationDate(Date.Create(command.ExpirationDate), command.IdentityContext);
         await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
 
         return CommandResult.Success(post.State);

@@ -4,7 +4,7 @@ public class AggregateDataModel
 {
     public Guid AggregateIdentifier { get; set; }
 
-    public Guid TenantIdentifier { get; set; }
+    public Guid? TenantIdentifier { get; set; }
 
     public int AggregateVersion { get; set; }
 
