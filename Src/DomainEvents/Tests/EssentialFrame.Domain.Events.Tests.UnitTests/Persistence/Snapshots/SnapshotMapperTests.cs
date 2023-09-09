@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Bogus;
 using EssentialFrame.Domain.Events.Core.Snapshots;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
 using EssentialFrame.ExampleApp.Application.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Identity;
 using FluentAssertions;
 using Moq;
@@ -34,51 +34,51 @@ public class SnapshotMapperTests
     public void Map_Always_ShouldMapSnapshotToSnapshotDataModel()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
-        Snapshot snapshot = new(aggregateIdentifier, aggregateVersion, serializedState);
-        SnapshotMapper mapper = new();
+        Snapshot<PostIdentifier> snapshot = new(aggregateIdentifier, aggregateVersion, serializedState);
+        SnapshotMapper<PostIdentifier> mapper = new();
 
         // Act
         SnapshotDataModel result = mapper.Map(snapshot);
 
         // Assert
-        result.Should().BeEquivalentTo(snapshot);
+        AssertSnapshotDataModel(result, aggregateIdentifier, aggregateVersion, serializedState);
     }
 
     [Test]
     public void Map_Always_ShouldMapSnapshotDataModelToSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier,
+            AggregateIdentifier = aggregateIdentifier.Identifier,
             AggregateVersion = aggregateVersion,
             AggregateState = serializedState
         };
-        SnapshotMapper mapper = new();
+        SnapshotMapper<PostIdentifier> mapper = new();
 
         // Act
-        Snapshot result = mapper.Map(snapshotDataModel);
+        Snapshot<PostIdentifier> result = mapper.Map(snapshotDataModel);
 
         // Assert
-        result.Should().BeEquivalentTo(snapshotDataModel);
+        AssertSnapshot(result, aggregateIdentifier, aggregateVersion, serializedState);
     }
 
     [Test]
     public void Map_Always_ShouldMapCollectionOfSnapshots()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
-        Snapshot snapshot = new(aggregateIdentifier, aggregateVersion, serializedState);
-        Snapshot[] snapshots = { snapshot };
-        SnapshotMapper snapshotMapper = new();
+        Snapshot<PostIdentifier> snapshot = new(aggregateIdentifier, aggregateVersion, serializedState);
+        Snapshot<PostIdentifier>[] snapshots = { snapshot };
+        SnapshotMapper<PostIdentifier> snapshotMapper = new();
 
         // Act
         IReadOnlyCollection<SnapshotDataModel> result = snapshotMapper.Map(snapshots);
@@ -86,31 +86,55 @@ public class SnapshotMapperTests
         // Assert
         result.Should().NotBeEmpty();
         result.Should().HaveCount(snapshots.Length);
-        result.Should().BeEquivalentTo(snapshots);
+
+        foreach (SnapshotDataModel snapshotDataModel in result)
+        {
+            AssertSnapshotDataModel(snapshotDataModel, aggregateIdentifier, aggregateVersion, serializedState);
+        }
     }
 
     [Test]
     public void Map_Always_ShouldMapCollectionOfSnapshotDataModels()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier,
+            AggregateIdentifier = aggregateIdentifier.Identifier,
             AggregateVersion = aggregateVersion,
             AggregateState = serializedState
         };
         SnapshotDataModel[] snapshotDataModels = { snapshotDataModel };
-        SnapshotMapper mapper = new();
+        SnapshotMapper<PostIdentifier> mapper = new();
 
         // Act
-        IReadOnlyCollection<Snapshot> result = mapper.Map(snapshotDataModels);
+        IReadOnlyCollection<Snapshot<PostIdentifier>> result = mapper.Map(snapshotDataModels);
 
         // Assert
         result.Should().NotBeEmpty();
         result.Should().HaveCount(snapshotDataModels.Length);
-        result.Should().BeEquivalentTo(snapshotDataModels);
+
+        foreach (Snapshot<PostIdentifier> snapshot in result)
+        {
+            AssertSnapshot(snapshot, aggregateIdentifier, aggregateVersion, serializedState);
+        }
+    }
+
+    private void AssertSnapshot(Snapshot<PostIdentifier> snapshot, PostIdentifier aggregateIdentifier,
+        int aggregateVersion, string serializedState)
+    {
+        snapshot.AggregateIdentifier.Identifier.Should().Be(aggregateIdentifier.Identifier);
+        snapshot.AggregateVersion.Should().Be(aggregateVersion);
+        snapshot.AggregateState.Should().Be(serializedState);
+    }
+
+    private void AssertSnapshotDataModel(SnapshotDataModel snapshotDataModel, PostIdentifier aggregateIdentifier,
+        int aggregateVersion, string serializedState)
+    {
+        snapshotDataModel.AggregateIdentifier.Should().Be(aggregateIdentifier.Identifier);
+        snapshotDataModel.AggregateVersion.Should().Be(aggregateVersion);
+        snapshotDataModel.AggregateState.Should().Be(serializedState);
     }
 }

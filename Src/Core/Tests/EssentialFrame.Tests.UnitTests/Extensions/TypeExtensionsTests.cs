@@ -11,7 +11,7 @@ public class TypeExtensionsTests
     public void GetTypeName_ShouldReturnTypeName()
     {
         // Arrange
-        object @object = new object();
+        object @object = new();
 
         // Act
         string result = @object.GetTypeName();
@@ -24,7 +24,7 @@ public class TypeExtensionsTests
     public void GetTypeFullName_ShouldReturnTypeName()
     {
         // Arrange
-        object @object = new object();
+        object @object = new();
 
         // Act
         string result = @object.GetTypeFullName();
@@ -37,7 +37,7 @@ public class TypeExtensionsTests
     public void GetClassName_ShouldReturnClassName()
     {
         // Arrange
-        object @object = new object();
+        object @object = new();
 
         // Act
         string result = @object.GetClassName();

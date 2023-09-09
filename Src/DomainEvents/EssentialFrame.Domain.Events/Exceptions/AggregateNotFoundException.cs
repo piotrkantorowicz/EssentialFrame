@@ -5,8 +5,8 @@ namespace EssentialFrame.Domain.Events.Exceptions;
 [Serializable]
 internal class AggregateNotFoundException : EssentialFrameException
 {
-    public AggregateNotFoundException(Type type, Guid id) : base(
-        $"This aggregate does not exist ({type.FullName} {id}) because there are no events for it")
+    public AggregateNotFoundException(Type type, string aggregateIdentifier) : base(
+        $"This aggregate does not exist ({type.FullName} {aggregateIdentifier}) because there are no events for it")
     {
     }
 }

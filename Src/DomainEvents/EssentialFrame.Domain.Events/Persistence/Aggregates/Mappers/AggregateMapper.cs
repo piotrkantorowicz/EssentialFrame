@@ -12,7 +12,7 @@ public class AggregateMapper : IAggregateMapper
     {
         return new AggregateDataModel
         {
-            AggregateIdentifier = aggregateRoot.AggregateIdentifier,
+            AggregateIdentifier = aggregateRoot.AggregateIdentifier.Identifier,
             AggregateVersion = aggregateRoot.AggregateVersion,
             TenantIdentifier = aggregateRoot.TenantIdentifier,
             DeletedDate = aggregateRoot.DeletedDate,

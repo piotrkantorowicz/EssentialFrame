@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public sealed class PostMustBeCreatedBeforeBeModifiedRule : BusinessRule
+public sealed class PostMustBeCreatedBeforeBeModifiedRule : IdentifiableBusinessRule<PostIdentifier>
 {
     private readonly bool _isCreated;
 
-    public PostMustBeCreatedBeforeBeModifiedRule(Guid domainObjectIdentifier, Type businessObjectType, bool isCreated) :
+    public PostMustBeCreatedBeforeBeModifiedRule(PostIdentifier domainObjectIdentifier, Type businessObjectType,
+        bool isCreated) :
         base(domainObjectIdentifier, businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
     {
         _isCreated = isCreated;

@@ -8,7 +8,7 @@ public sealed class PostIdentifier : TypedGuidIdentifier
     private PostIdentifier(Guid id) : base(id)
     {
     }
-
+    
     public static PostIdentifier New()
     {
         return new PostIdentifier(Guid.NewGuid());

@@ -1,5 +1,4 @@
-﻿using System;
-using Bogus;
+﻿using Bogus;
 using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.Domain.Events.Core.Snapshots;
 using EssentialFrame.ExampleApp.Application.Identity;
@@ -29,7 +28,7 @@ public class SnapshotStrategyTests
     {
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 1;
 
         _aggregate =

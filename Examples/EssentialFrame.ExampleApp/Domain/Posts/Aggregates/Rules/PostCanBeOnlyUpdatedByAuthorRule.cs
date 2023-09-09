@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public sealed class PostCanBeOnlyUpdatedByAuthorRule : BusinessRule
+public sealed class PostCanBeOnlyUpdatedByAuthorRule : IdentifiableBusinessRule<PostIdentifier>
 {
     private readonly Guid _authorIdentifier;
     private readonly Guid _updaterIdentifier;
 
-    public PostCanBeOnlyUpdatedByAuthorRule(Guid domainObjectIdentifier, Type businessObjectType, Guid authorIdentifier,
+    public PostCanBeOnlyUpdatedByAuthorRule(PostIdentifier domainObjectIdentifier, Type businessObjectType,
+        Guid authorIdentifier,
         Guid updaterIdentifier) : base(domainObjectIdentifier, businessObjectType,
         BusinessRuleTypes.AggregateBusinessRule)
     {

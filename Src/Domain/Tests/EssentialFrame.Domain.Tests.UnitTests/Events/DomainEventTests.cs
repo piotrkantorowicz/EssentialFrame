@@ -9,6 +9,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
@@ -29,7 +30,7 @@ public sealed class DomainEventTests
     {
         // Arrange
         IdentityContext identityContext = new();
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Title title = Title.Default(_faker.Lorem.Sentence());
@@ -81,7 +82,7 @@ public sealed class DomainEventTests
     {
         // Arrange
         IdentityContext identityContext = new();
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Description description = Description.Create(_faker.Lorem.Sentences());
@@ -133,7 +134,7 @@ public sealed class DomainEventTests
     {
         // Arrange
         IdentityContext identityContext = new();
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Date expirationOffset = Date.Create(_faker.Date.FutureOffset());
@@ -187,7 +188,7 @@ public sealed class DomainEventTests
     {
         // Arrange
         IdentityContext identityContext = new();
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         
@@ -246,7 +247,7 @@ public sealed class DomainEventTests
     {
         // Arrange
         IdentityContext identityContext = new();
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         Guid imageId = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
@@ -304,7 +305,7 @@ public sealed class DomainEventTests
     public void AdjustAggregateVersion_OnValidAggregate_ShouldAssignCorrectAggregateProperties()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Number();
 
         ChangeTitleDomainEvent @event = new(aggregateIdentifier, new IdentityContext(),
@@ -322,10 +323,10 @@ public sealed class DomainEventTests
     public void AdjustAggregateVersion_OnInvalidAggregate_ShouldThrowDomainEventDoesNotMatchException()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Number();
 
-        ChangeTitleDomainEvent @event = new(_faker.Random.Guid(), new IdentityContext(),
+        ChangeTitleDomainEvent @event = new(PostIdentifier.New(_faker.Random.Guid()), new IdentityContext(),
             Title.Default(_faker.Lorem.Sentence()));
 
         // Act
@@ -336,7 +337,7 @@ public sealed class DomainEventTests
             $"The event is not match aggregate ({aggregateIdentifier}), because was assigned to other aggregate ({@event.AggregateIdentifier})");
     }
 
-    private static void AssertIdentity(IIdentityContext provided, IDomainEvent expected)
+    private static void AssertIdentity(IIdentityContext provided, IDomainEvent<PostIdentifier> expected)
     {
         provided.User.Identifier.Should().Be(expected.UserIdentity);
         provided.Service.GetFullIdentifier().Should().Be(expected.ServiceIdentity);

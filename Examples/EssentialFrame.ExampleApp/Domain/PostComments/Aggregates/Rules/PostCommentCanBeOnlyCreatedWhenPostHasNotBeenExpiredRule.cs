@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Extensions;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 
-public class PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule : BusinessRule
+public class PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule : IdentifiableBusinessRule<PostCommentIdentifier>
 {
     private readonly PostIdentifier _postIdentifier;
     private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(Guid domainObjectIdentifier,
+    public PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(PostCommentIdentifier domainObjectIdentifier,
         Type businessObjectType, PostIdentifier postIdentifier,
         IAggregateRepository<Post, PostIdentifier> aggregateRepository) : base(
         domainObjectIdentifier, businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
@@ -27,7 +28,7 @@ public class PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule : Business
 
     public override bool IsBroken()
     {
-        Post post = _aggregateRepository.Get(_postIdentifier.Identifier);
+        Post post = _aggregateRepository.Get(_postIdentifier);
 
         if (post.State is PostState postState)
         {

@@ -7,22 +7,23 @@ using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Aggregates;
 
-public abstract class AggregateRoot<T> : IDeletableDomainObject, IAggregateRoot<T> where T : TypedGuidIdentifier
+public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObject, IAggregateRoot<TAggregateIdentifier>
+    where TAggregateIdentifier : TypedGuidIdentifier
 {
-    private readonly List<IDomainEvent> _changes = new();
+    private readonly List<IDomainEvent<TAggregateIdentifier>> _changes = new();
 
-    protected AggregateRoot(T aggregateIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier)
     {
         AggregateIdentifier = aggregateIdentifier;
     }
 
-    protected AggregateRoot(T aggregateIdentifier, Guid? tenantIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, Guid? tenantIdentifier)
     {
         AggregateIdentifier = aggregateIdentifier;
         TenantIdentifier = tenantIdentifier;
     }
 
-    public T AggregateIdentifier { get; }
+    public TAggregateIdentifier AggregateIdentifier { get; }
 
     public Guid? TenantIdentifier { get; }
 
@@ -41,8 +42,8 @@ public abstract class AggregateRoot<T> : IDeletableDomainObject, IAggregateRoot<
         DeletedDate = null;
         IsDeleted = false;
     }
-    
-    public IDomainEvent[] GetUncommittedChanges()
+
+    public IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges()
     {
         lock (_changes)
         {
@@ -58,7 +59,7 @@ public abstract class AggregateRoot<T> : IDeletableDomainObject, IAggregateRoot<
         }
     }
 
-    protected void AddDomainEvent(IDomainEvent domainEvent)
+    protected void AddDomainEvent(IDomainEvent<TAggregateIdentifier> domainEvent)
     {
         lock (_changes)
         {

@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.Rules.Base;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public sealed class ExpiredPostCannotBeUpdatedRule : BusinessRule
+public sealed class ExpiredPostCannotBeUpdatedRule : IdentifiableBusinessRule<PostIdentifier>
 {
     private readonly Date _expiration;
 
-    public ExpiredPostCannotBeUpdatedRule(Guid domainObjectIdentifier, Type businessObjectType, Date expiration) : base(
+    public ExpiredPostCannotBeUpdatedRule(PostIdentifier domainObjectIdentifier, Type businessObjectType,
+        Date expiration) : base(
         domainObjectIdentifier, businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
     {
         _expiration = expiration;

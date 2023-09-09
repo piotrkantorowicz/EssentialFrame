@@ -2,19 +2,19 @@
 
 namespace EssentialFrame.Domain.Events.Core.Aggregates;
 
-public interface IAggregateRoot<out T, TType> where T : TypedIdentifierBase<TType>
+public interface IAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    T AggregateIdentifier { get; }
+    TAggregateIdentifier AggregateIdentifier { get; }
 
     int AggregateVersion { get; }
 
     Guid? TenantIdentifier { get; }
 
-    AggregateState State { get; }
+    AggregateState<TAggregateIdentifier> State { get; }
 
-    IDomainEvent[] GetUncommittedChanges();
+    IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges();
 
-    IDomainEvent[] FlushUncommittedChanges();
+    IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges();
 
-    void Rehydrate(IEnumerable<IDomainEvent> history);
+    void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier>> history);
 }

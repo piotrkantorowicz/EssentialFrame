@@ -48,7 +48,8 @@ internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPos
 
     private static Post Create(CreateNewPostCommand command)
     {
-        Post post = GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(command.AggregateIdentifier);
+        Post post = GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(
+            PostIdentifier.New(command.AggregateIdentifier));
 
         post.Create(Title.Default(command.Title), Description.Create(command.Description),
             Date.Create(command.Expiration), command.Images

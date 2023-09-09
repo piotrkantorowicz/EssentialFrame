@@ -1,11 +1,11 @@
-using System;
 using EssentialFrame.Domain.Events.Core.Snapshots;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Snapshots;
 
-public class PostSnapshot : Snapshot
+public class PostSnapshot : Snapshot<PostIdentifier>
 {
-    public PostSnapshot(Guid aggregateIdentifier, int aggregateVersion, object aggregateState) : base(
+    public PostSnapshot(PostIdentifier aggregateIdentifier, int aggregateVersion, object aggregateState) : base(
         aggregateIdentifier, aggregateVersion, aggregateState)
     {
     }

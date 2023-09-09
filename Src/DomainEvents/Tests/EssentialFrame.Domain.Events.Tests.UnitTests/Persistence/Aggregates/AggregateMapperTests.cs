@@ -21,7 +21,7 @@ public class AggregateMapperTests
     public void MapToAggregateDataModel_WhenCalledWithValidAggregateRoot_ReturnsAggregateDataModel()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         Guid? tenantIdentifier = _faker.Random.Guid();
 
@@ -34,7 +34,7 @@ public class AggregateMapperTests
 
         // Assert
         aggregateDataModel.Should().NotBeNull();
-        aggregateDataModel.AggregateIdentifier.Should().Be(aggregateIdentifier);
+        aggregateDataModel.AggregateIdentifier.Should().Be(aggregateIdentifier.Identifier);
         aggregateDataModel.AggregateVersion.Should().Be(aggregateVersion);
         aggregateDataModel.TenantIdentifier.Should().Be(tenantIdentifier);
     }

@@ -17,7 +17,7 @@ public sealed class GenericAggregateFactoryTests
     public void CreateAggregate_WithIdentifier_ShouldCreateInstanceAndAssignValues() 
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         
         // Act
         Post aggregate = GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier);
@@ -31,7 +31,7 @@ public sealed class GenericAggregateFactoryTests
     public void CreateAggregate_WithIdentifierAndVersionAndIdentity_ShouldCreateInstanceAndAssignValues()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         
         // Act
@@ -48,7 +48,7 @@ public sealed class GenericAggregateFactoryTests
     public void CreateAggregate_WithIdentifierAndVersionAndIdentityAndTenant_ShouldCreateInstanceAndAssignValues()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         Guid? tenantIdentifier = _faker.Random.Guid();
 

@@ -14,23 +14,24 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
 
-public class SnapshotRepository<TAggregate, TAggregateId> : ISnapshotRepository<TAggregate, TAggregateId>
-    where TAggregate : AggregateRoot<TAggregateId> where TAggregateId : TypedGuidIdentifier
+public class
+    SnapshotRepository<TAggregate, TAggregateIdentifier> : ISnapshotRepository<TAggregate, TAggregateIdentifier>
+    where TAggregate : AggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    private readonly IAggregateRepository<TAggregate, TAggregateId> _aggregateRepository;
+    private readonly IAggregateRepository<TAggregate, TAggregateIdentifier> _aggregateRepository;
     private readonly IAggregateStore _aggregateStore;
     private readonly ICache<Guid, TAggregate> _snapshotsCache;
-    private readonly IDomainEventMapper _domainEventMapper;
+    private readonly IDomainEventMapper<TAggregateIdentifier> _domainEventMapper;
     private readonly ISerializer _serializer;
-    private readonly ISnapshotMapper _snapshotMapper;
+    private readonly ISnapshotMapper<TAggregateIdentifier> _snapshotMapper;
     private readonly ISnapshotStore _snapshotStore;
-    private readonly ISnapshotStrategy<TAggregate, TAggregateId> _snapshotStrategy;
+    private readonly ISnapshotStrategy<TAggregate, TAggregateIdentifier> _snapshotStrategy;
 
     public SnapshotRepository(IAggregateStore aggregateStore,
-        IAggregateRepository<TAggregate, TAggregateId> aggregateRepository, ISnapshotStore snapshotStore,
-        ISnapshotStrategy<TAggregate, TAggregateId> snapshotStrategy, ISerializer serializer,
-        ICache<Guid, TAggregate> snapshotsCache, ISnapshotMapper snapshotMapper,
-        IDomainEventMapper domainEventMapper)
+        IAggregateRepository<TAggregate, TAggregateIdentifier> aggregateRepository, ISnapshotStore snapshotStore,
+        ISnapshotStrategy<TAggregate, TAggregateIdentifier> snapshotStrategy, ISerializer serializer,
+        ICache<Guid, TAggregate> snapshotsCache, ISnapshotMapper<TAggregateIdentifier> snapshotMapper,
+        IDomainEventMapper<TAggregateIdentifier> domainEventMapper)
     {
         _aggregateStore = aggregateStore ?? throw new ArgumentNullException(nameof(aggregateStore));
         _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
@@ -42,26 +43,28 @@ public class SnapshotRepository<TAggregate, TAggregateId> : ISnapshotRepository<
         _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
     }
 
-    public TAggregate Get(Guid aggregateId) 
+    public TAggregate Get(TAggregateIdentifier aggregateIdentifier) 
     {
-        TAggregate snapshot = _snapshotsCache.Get(aggregateId);
+        TAggregate snapshot = _snapshotsCache.Get(aggregateIdentifier.Identifier);
 
         if (snapshot != null)
         {
             return snapshot;
         }
 
-        TAggregate aggregate = GenericAggregateFactory<TAggregate, TAggregateId>.CreateAggregate(aggregateId);
-        int snapshotVersion = RestoreAggregateFromSnapshot(aggregateId, aggregate);
+        TAggregate aggregate =
+            GenericAggregateFactory<TAggregate, TAggregateIdentifier>.CreateAggregate(aggregateIdentifier);
+        int snapshotVersion = RestoreAggregateFromSnapshot(aggregateIdentifier, aggregate);
 
         if (snapshotVersion == -1)
         {
-            return _aggregateRepository.Get(aggregateId);
+            return _aggregateRepository.Get(aggregateIdentifier);
         }
 
-        IReadOnlyCollection<DomainEventDataModel> allEvents = _aggregateStore.Get(aggregateId, snapshotVersion);
+        IReadOnlyCollection<DomainEventDataModel> allEvents =
+            _aggregateStore.Get(aggregateIdentifier.Identifier, snapshotVersion);
 
-        IEnumerable<IDomainEvent> events =
+        IEnumerable<IDomainEvent<TAggregateIdentifier>> events =
             _domainEventMapper.Map(allEvents.Where(desc => desc.AggregateVersion <= snapshotVersion));
 
         aggregate.Rehydrate(events);
@@ -69,39 +72,44 @@ public class SnapshotRepository<TAggregate, TAggregateId> : ISnapshotRepository<
         return aggregate;
     }
 
-    public async Task<TAggregate> GetAsync(Guid aggregateId, CancellationToken cancellationToken = default)
+    public async Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier,
+        CancellationToken cancellationToken = default)
     {
-        TAggregate snapshot = _snapshotsCache.Get(aggregateId);
+        TAggregate snapshot = _snapshotsCache.Get(aggregateIdentifier.Identifier);
 
         if (snapshot != null)
         {
             return snapshot;
         }
 
-        TAggregate aggregate = GenericAggregateFactory<TAggregate, TAggregateId>.CreateAggregate(aggregateId);
-        int snapshotVersion = await RestoreAggregateFromSnapshotAsync(aggregateId, aggregate, cancellationToken);
+        TAggregate aggregate =
+            GenericAggregateFactory<TAggregate, TAggregateIdentifier>.CreateAggregate(aggregateIdentifier);
+        int snapshotVersion =
+            await RestoreAggregateFromSnapshotAsync(aggregateIdentifier, aggregate, cancellationToken);
 
         if (snapshotVersion == -1)
         {
-            return await _aggregateRepository.GetAsync(aggregateId, cancellationToken);
+            return await _aggregateRepository.GetAsync(aggregateIdentifier, cancellationToken);
         }
 
-        IReadOnlyCollection<DomainEventDataModel> allEvents = await _aggregateStore.GetAsync(aggregateId,
+        IReadOnlyCollection<DomainEventDataModel> allEvents = await _aggregateStore.GetAsync(
+            aggregateIdentifier.Identifier,
             snapshotVersion, cancellationToken);
 
-        IEnumerable<IDomainEvent> events =
+        IEnumerable<IDomainEvent<TAggregateIdentifier>> events =
             _domainEventMapper.Map(allEvents.Where(desc => desc.AggregateVersion <= snapshotVersion));
 
         aggregate.Rehydrate(events);
+        
 
         return aggregate;
     }
 
-    public IDomainEvent[] Save(TAggregate aggregate, int? version = null, int? timeout = null) 
+    public IDomainEvent<TAggregateIdentifier>[] Save(TAggregate aggregate, int? version = null, int? timeout = null) 
     {
         if (timeout is > 0)
         {
-            _snapshotsCache.Add(aggregate.AggregateIdentifier, aggregate, timeout.GetValueOrDefault(), true);
+            _snapshotsCache.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout.GetValueOrDefault(), true);
         }
 
         TakeSnapshot(aggregate, false, false);
@@ -109,12 +117,13 @@ public class SnapshotRepository<TAggregate, TAggregateId> : ISnapshotRepository<
         return _aggregateRepository.Save(aggregate, version);
     }
 
-    public async Task<IDomainEvent[]> SaveAsync(TAggregate aggregate, int? version = null, int? timeout = null,
+    public async Task<IDomainEvent<TAggregateIdentifier>[]> SaveAsync(TAggregate aggregate, int? version = null,
+        int? timeout = null,
         CancellationToken cancellationToken = default) 
     {
         if (timeout is > 0)
         {
-            _snapshotsCache.Add(aggregate.AggregateIdentifier, aggregate, timeout.GetValueOrDefault(), true);
+            _snapshotsCache.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout.GetValueOrDefault(), true);
         }
 
         TakeSnapshot(aggregate, false, false);
@@ -127,10 +136,10 @@ public class SnapshotRepository<TAggregate, TAggregateId> : ISnapshotRepository<
         SnapshotDataModel snapshotDataModel = TakeSnapshot(aggregate, useSerializer, true);
 
         _snapshotStore.Save(snapshotDataModel);
-        _snapshotStore.Box(aggregate.AggregateIdentifier);
-        _aggregateStore.Box(aggregate.AggregateIdentifier);
+        _snapshotStore.Box(aggregate.AggregateIdentifier.Identifier);
+        _aggregateStore.Box(aggregate.AggregateIdentifier.Identifier);
 
-        _snapshotsCache.Remove(aggregate.AggregateIdentifier);
+        _snapshotsCache.Remove(aggregate.AggregateIdentifier.Identifier);
     }
 
     public async Task BoxAsync(TAggregate aggregate, bool useSerializer = false,
@@ -139,48 +148,53 @@ public class SnapshotRepository<TAggregate, TAggregateId> : ISnapshotRepository<
         SnapshotDataModel snapshotDataModel = TakeSnapshot(aggregate, useSerializer, true);
 
         await _snapshotStore.SaveAsync(snapshotDataModel, cancellationToken);
-        await _snapshotStore.BoxAsync(aggregate.AggregateIdentifier, cancellationToken);
-        await _aggregateStore.BoxAsync(aggregate.AggregateIdentifier, cancellationToken);
+        await _snapshotStore.BoxAsync(aggregate.AggregateIdentifier.Identifier, cancellationToken);
+        await _aggregateStore.BoxAsync(aggregate.AggregateIdentifier.Identifier, cancellationToken);
 
-        _snapshotsCache.Remove(aggregate.AggregateIdentifier);
+        _snapshotsCache.Remove(aggregate.AggregateIdentifier.Identifier);
     }
 
-    public TAggregate Unbox(Guid aggregateId, bool useSerializer = false)
+    public TAggregate Unbox(TAggregateIdentifier aggregateId, bool useSerializer = false)
     {
-        SnapshotDataModel snapshotDataModel = _snapshotStore.Unbox(aggregateId);
-        Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
+        SnapshotDataModel snapshotDataModel = _snapshotStore.Unbox(aggregateId.Identifier);
+        Snapshot<TAggregateIdentifier> snapshot = _snapshotMapper.Map(snapshotDataModel);
         TAggregate aggregate =
-            GenericAggregateFactory<TAggregate, TAggregateId>.CreateAggregate(aggregateId, snapshot.AggregateVersion);
+            GenericAggregateFactory<TAggregate, TAggregateIdentifier>.CreateAggregate(aggregateId,
+                snapshot.AggregateVersion);
 
         aggregate.RestoreState(snapshot.AggregateState, useSerializer ? _serializer : null);
 
         return aggregate;
     }
 
-    public async Task<TAggregate> UnboxAsync(Guid aggregateId, bool useSerializer = false,
+    public async Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, bool useSerializer = false,
         CancellationToken cancellationToken = default) 
     {
-        SnapshotDataModel snapshotDataModel = await _snapshotStore.UnboxAsync(aggregateId, cancellationToken);
-        Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
+        SnapshotDataModel snapshotDataModel =
+            await _snapshotStore.UnboxAsync(aggregateIdentifier.Identifier, cancellationToken);
+        Snapshot<TAggregateIdentifier> snapshot = _snapshotMapper.Map(snapshotDataModel);
         TAggregate aggregate =
-            GenericAggregateFactory<TAggregate, TAggregateId>.CreateAggregate(aggregateId, snapshot.AggregateVersion);
+            GenericAggregateFactory<TAggregate, TAggregateIdentifier>.CreateAggregate(aggregateIdentifier,
+                snapshot.AggregateVersion);
 
         aggregate.RestoreState(snapshot.AggregateState, useSerializer ? _serializer : null);
 
         return aggregate;
     }
 
-    private int RestoreAggregateFromSnapshot(Guid id, TAggregate aggregate)
+    private int RestoreAggregateFromSnapshot(TAggregateIdentifier aggregateIdentifier, TAggregate aggregate)
     {
-        SnapshotDataModel snapshotDataModel = _snapshotStore.Get(id);
+        SnapshotDataModel snapshotDataModel = _snapshotStore.Get(aggregateIdentifier.Identifier);
 
         return RestoreAggregateFromSnapshotInternal(snapshotDataModel, aggregate);
     }
 
-    private async Task<int> RestoreAggregateFromSnapshotAsync(Guid id, TAggregate aggregate,
+    private async Task<int> RestoreAggregateFromSnapshotAsync(TAggregateIdentifier aggregateIdentifier,
+        TAggregate aggregate,
         CancellationToken cancellationToken = default)
     {
-        SnapshotDataModel snapshotDataModel = await _snapshotStore.GetAsync(id, cancellationToken);
+        SnapshotDataModel snapshotDataModel =
+            await _snapshotStore.GetAsync(aggregateIdentifier.Identifier, cancellationToken);
 
         return RestoreAggregateFromSnapshotInternal(snapshotDataModel, aggregate);
     }
@@ -194,7 +208,7 @@ public class SnapshotRepository<TAggregate, TAggregateId> : ISnapshotRepository<
 
         int aggregateVersion = aggregate.AggregateVersion + aggregate.GetUncommittedChanges().Length;
         object aggregateState = userSerializer ? _serializer.Serialize(aggregate.State) : aggregate.State;
-        Snapshot snapshot = new(aggregate.AggregateIdentifier, aggregateVersion, aggregateState);
+        Snapshot<TAggregateIdentifier> snapshot = new(aggregate.AggregateIdentifier, aggregateVersion, aggregateState);
         SnapshotDataModel snapshotDataModel = _snapshotMapper.Map(snapshot);
 
         return snapshotDataModel;
@@ -207,7 +221,7 @@ public class SnapshotRepository<TAggregate, TAggregateId> : ISnapshotRepository<
             return -1;
         }
 
-        Snapshot snapshot = _snapshotMapper.Map(snapshotDataModel);
+        Snapshot<TAggregateIdentifier> snapshot = _snapshotMapper.Map(snapshotDataModel);
 
         aggregate.RestoreState(snapshot.AggregateState, _serializer);
 

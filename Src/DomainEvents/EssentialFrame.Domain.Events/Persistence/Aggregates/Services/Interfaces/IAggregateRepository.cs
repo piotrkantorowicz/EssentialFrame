@@ -3,15 +3,15 @@ using EssentialFrame.Domain.ValueObjects;
 
 namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 
-public interface IAggregateRepository<TAggregate, TAggregateId> where TAggregate : AggregateRoot<TAggregateId>
-    where TAggregateId : TypedGuidIdentifier
+public interface IAggregateRepository<TAggregate, TAggregateIdentifier>
+    where TAggregate : AggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    TAggregate Get(Guid aggregate);
+    TAggregate Get(TAggregateIdentifier aggregateIdentifier);
 
-    Task<TAggregate> GetAsync(Guid aggregate, CancellationToken cancellationToken = default);
+    Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
 
-    IDomainEvent[] Save(TAggregate aggregate, int? version = null);
+    IDomainEvent<TAggregateIdentifier>[] Save(TAggregate aggregate, int? version = null);
 
-    Task<IDomainEvent[]> SaveAsync(TAggregate aggregate, int? version = null,
+    Task<IDomainEvent<TAggregateIdentifier>[]> SaveAsync(TAggregate aggregate, int? version = null,
         CancellationToken cancellationToken = default);
 }

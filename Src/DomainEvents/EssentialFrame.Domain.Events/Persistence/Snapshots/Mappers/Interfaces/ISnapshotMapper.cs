@@ -1,15 +1,16 @@
 ﻿using EssentialFrame.Domain.Events.Core.Snapshots;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
+using EssentialFrame.Domain.ValueObjects;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers.Interfaces;
 
-public interface ISnapshotMapper
+public interface ISnapshotMapper<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    SnapshotDataModel Map(Snapshot snapshot);
+    SnapshotDataModel Map(Snapshot<TAggregateIdentifier> snapshot);
 
-    IReadOnlyCollection<SnapshotDataModel> Map(IEnumerable<Snapshot> snapshots);
+    IReadOnlyCollection<SnapshotDataModel> Map(IEnumerable<Snapshot<TAggregateIdentifier>> snapshots);
 
-    Snapshot Map(SnapshotDataModel snapshotDataModel);
+    Snapshot<TAggregateIdentifier> Map(SnapshotDataModel snapshotDataModel);
 
-    IReadOnlyCollection<Snapshot> Map(IEnumerable<SnapshotDataModel> snapshotDataModels);
+    IReadOnlyCollection<Snapshot<TAggregateIdentifier>> Map(IEnumerable<SnapshotDataModel> snapshotDataModels);
 }

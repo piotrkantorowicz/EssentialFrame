@@ -48,17 +48,17 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
             replyToPostCommentIdentifier, text, identityContext.Tenant?.Identifier);
 
         postComment.CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(
-            postComment.AggregateIdentifier.Identifier, postComment.GetType(), postIdentifier, aggregateRepository));
+            postComment.AggregateIdentifier, postComment.GetType(), postIdentifier, aggregateRepository));
 
         if (replyToPostCommentIdentifier.Empty())
         {
-            postComment.AddDomainEvent(new PostCommentAddedDomainEvent(postComment.AggregateIdentifier.Identifier,
+            postComment.AddDomainEvent(new PostCommentAddedDomainEvent(postComment.AggregateIdentifier,
                 identityContext, postIdentifier, userIdentifier, text, postComment.CreatedDate));
         }
         else
         {
-            postComment.AddDomainEvent(new ReplyToPostCommentAddedDomainEvent(
-                postComment.AggregateIdentifier.Identifier, identityContext, postIdentifier, userIdentifier,
+            postComment.AddDomainEvent(new ReplyToPostCommentAddedDomainEvent(postComment.AggregateIdentifier,
+                identityContext, postIdentifier, userIdentifier,
                 replyToPostCommentIdentifier, text, postComment.CreatedDate));
         }
 
@@ -75,37 +75,37 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
     public void Edit(PostCommentText text, IAggregateRepository<Post, PostIdentifier> aggregateRepository,
         IIdentityContext identityContext) 
     {
-        CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier.Identifier,
+        CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier,
             GetType(), PostIdentifier, aggregateRepository));
 
         UserIdentifier editorIdentifier = UserIdentifier.New(identityContext.User.Identifier);
-        
-        CheckRule(new PostCommentCanBeEditedOnlyByAuthorRule(AggregateIdentifier.Identifier, GetType(),
+
+        CheckRule(new PostCommentCanBeEditedOnlyByAuthorRule(AggregateIdentifier, GetType(),
             AuthorIdentifier, editorIdentifier));
 
         Text = text;
         EditedDate = Date.Create(DateTimeOffset.UtcNow);
 
-        AddDomainEvent(new PostCommentEditedDomainEvent(AggregateIdentifier.Identifier, identityContext, Text,
+        AddDomainEvent(new PostCommentEditedDomainEvent(AggregateIdentifier, identityContext, Text,
             EditedDate, editorIdentifier));
     }
 
     public void Remove(DeletedReason reason, IAggregateRepository<Post, PostIdentifier> aggregateRepository,
         IIdentityContext identityContext)
     {
-        CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier.Identifier,
+        CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier,
             GetType(), PostIdentifier, aggregateRepository));
 
         UserIdentifier removerIdentifier = UserIdentifier.New(identityContext.User.Identifier);
-        
-        CheckRule(new PostCommentCanBeRemovedOnlyByAuthorRule(AggregateIdentifier.Identifier, GetType(),
+
+        CheckRule(new PostCommentCanBeRemovedOnlyByAuthorRule(AggregateIdentifier, GetType(),
             AuthorIdentifier, removerIdentifier));
 
         SafeDelete();
 
         DeletedReason = reason;
 
-        AddDomainEvent(new PostCommentRemovedDomainEvent(AggregateIdentifier.Identifier, identityContext, DeletedReason,
+        AddDomainEvent(new PostCommentRemovedDomainEvent(AggregateIdentifier, identityContext, DeletedReason,
             removerIdentifier));
     }
 }

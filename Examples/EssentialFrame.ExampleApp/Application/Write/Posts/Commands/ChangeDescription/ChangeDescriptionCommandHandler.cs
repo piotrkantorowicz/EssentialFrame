@@ -22,7 +22,7 @@ internal sealed class ChangeDescriptionCommandHandler : ICommandHandler<ChangeDe
     
     public ICommandResult Handle(ChangeDescriptionCommand command)
     {
-        Post post = _aggregateRepository.Get(command.AggregateIdentifier);
+        Post post = _aggregateRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
 
         post.ChangeDescription(Description.Create(command.Description), command.IdentityContext);
         _aggregateRepository.Save(post);
@@ -33,7 +33,8 @@ internal sealed class ChangeDescriptionCommandHandler : ICommandHandler<ChangeDe
     public async Task<ICommandResult> HandleAsync(ChangeDescriptionCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync(command.AggregateIdentifier, cancellationToken);
+        Post post = await _aggregateRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
+            cancellationToken);
 
         post.ChangeDescription(Description.Create(command.Description), command.IdentityContext);
         await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);

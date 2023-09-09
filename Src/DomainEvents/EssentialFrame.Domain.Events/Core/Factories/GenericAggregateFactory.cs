@@ -5,7 +5,7 @@ namespace EssentialFrame.Domain.Events.Core.Factories;
 
 public static class GenericAggregateFactory<T, TAggregateIdentifier> 
 {
-    public static T CreateAggregate(Guid aggregateIdentifier)
+    public static T CreateAggregate(TAggregateIdentifier aggregateIdentifier)
     {
         ConstructorInfo[] constructors = typeof(T).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -22,7 +22,7 @@ public static class GenericAggregateFactory<T, TAggregateIdentifier>
         throw new MissingConstructorException(typeof(T));
     }
 
-    public static T CreateAggregate(Guid aggregateIdentifier, int aggregateVersion)
+    public static T CreateAggregate(TAggregateIdentifier aggregateIdentifier, int aggregateVersion)
     {
         ConstructorInfo[] constructors = typeof(T).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -40,7 +40,8 @@ public static class GenericAggregateFactory<T, TAggregateIdentifier>
         throw new MissingConstructorException(typeof(T));
     }
 
-    public static T CreateAggregate(Guid aggregateIdentifier, int aggregateVersion, Guid? tenantIdentifier)
+    public static T CreateAggregate(TAggregateIdentifier aggregateIdentifier, int aggregateVersion,
+        Guid? tenantIdentifier)
     {
         ConstructorInfo[] constructors = typeof(T).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
 

@@ -1,5 +1,4 @@
-﻿using EssentialFrame.Domain.Aggregates;
-using EssentialFrame.Domain.Exceptions;
+﻿using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Shared;
 using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.Serialization.Interfaces;
@@ -10,7 +9,7 @@ namespace EssentialFrame.Domain.Events.Core.Aggregates;
 public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObject, IAggregateRoot<TAggregateIdentifier>
     where TAggregateIdentifier : TypedGuidIdentifier
 {
-    private readonly List<IDomainEvent> _changes = new();
+    private readonly List<IDomainEvent<TAggregateIdentifier>> _changes = new();
 
     protected AggregateRoot(TAggregateIdentifier aggregateIdentifier)
     {
@@ -36,7 +35,7 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObje
 
     public Guid? TenantIdentifier { get; protected set; }
 
-    public AggregateState State { get; protected set; }
+    public AggregateState<TAggregateIdentifier> State { get; protected set; }
 
     public DateTimeOffset? DeletedDate { get; private set; }
 
@@ -54,10 +53,10 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObje
         IsDeleted = false;
     }
 
-    public abstract AggregateState CreateState();
+    public abstract AggregateState<TAggregateIdentifier> CreateState();
     public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
 
-    public IDomainEvent[] GetUncommittedChanges()
+    public IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges()
     {
         lock (_changes)
         {
@@ -65,16 +64,16 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObje
         }
     }
 
-    public IDomainEvent[] FlushUncommittedChanges()
+    public IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges()
     {
         lock (_changes)
         {
-            IDomainEvent[] changes = _changes.ToArray();
+            IDomainEvent<TAggregateIdentifier>[] changes = _changes.ToArray();
             int i = 0;
 
-            foreach (IDomainEvent change in changes)
+            foreach (IDomainEvent<TAggregateIdentifier> change in changes)
             {
-                if (change.AggregateIdentifier == Guid.Empty || AggregateIdentifier.Empty())
+                if (change.AggregateIdentifier.Empty() || AggregateIdentifier.Empty())
                 {
                     throw new MissingAggregateIdentifierException(GetType(), change.GetType());
                 }
@@ -92,21 +91,21 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObje
         }
     }
 
-    public void Rehydrate(IEnumerable<IDomainEvent> history)
+    public void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier>> history)
     {
         lock (_changes)
         {
-            foreach (IDomainEvent change in history)
+            foreach (IDomainEvent<TAggregateIdentifier> change in history)
             {
                 if (change.AggregateIdentifier != AggregateIdentifier)
                 {
-                    throw new UnmatchedDomainEventException(GetType(), change.GetType(), AggregateIdentifier,
-                        change.AggregateIdentifier);
+                    throw new UnmatchedDomainEventException(GetType(), change.GetType(), AggregateIdentifier.ToString(),
+                        change.AggregateIdentifier.ToString());
                 }
 
                 if (change.AggregateVersion != AggregateVersion + 1)
                 {
-                    throw new UnorderedEventsException(change.AggregateIdentifier);
+                    throw new UnorderedEventsException(change.AggregateIdentifier.ToString());
                 }
 
                 ApplyEvent(change);
@@ -116,7 +115,7 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObje
         }
     }
 
-    protected void Apply(IDomainEvent change)
+    protected void Apply(IDomainEvent<TAggregateIdentifier> change)
     {
         lock (_changes)
         {
@@ -126,7 +125,7 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObje
         }
     }
 
-    protected virtual void ApplyEvent(IDomainEvent change)
+    protected virtual void ApplyEvent(IDomainEvent<TAggregateIdentifier> change)
     {
         State ??= CreateState();
         State.Apply(change);

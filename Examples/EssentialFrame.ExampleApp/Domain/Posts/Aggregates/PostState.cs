@@ -7,19 +7,20 @@ using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
-public sealed class PostState : AggregateState
+public sealed class PostState : AggregateState<PostIdentifier>
 {
-    private readonly Guid _aggregateIdentifier;
+    private readonly PostIdentifier _aggregateIdentifier;
     private readonly Type _aggregateType;
 
     private bool _isCreated;
 
-    private PostState(Guid aggregateId, Type aggregateType)
+    private PostState(PostIdentifier aggregateId, Type aggregateType)
     {
         _aggregateIdentifier = aggregateId;
         _aggregateType = aggregateType;
@@ -39,7 +40,7 @@ public sealed class PostState : AggregateState
 
     public bool IsExpired => Expiration < SystemClock.UtcNow;
 
-    internal static PostState Create(Guid postIdentifier, Type type)
+    internal static PostState Create(PostIdentifier postIdentifier, Type type)
     {
         PostState state = new(postIdentifier, type);
 
