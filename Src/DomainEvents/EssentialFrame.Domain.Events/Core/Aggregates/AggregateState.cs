@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Events.Core.Aggregates;
 

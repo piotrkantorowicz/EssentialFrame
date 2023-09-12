@@ -7,10 +7,31 @@ public abstract class Command : ICommand
 {
     protected Command(IIdentityContext identityContext)
     {
-        TenantIdentity = identityContext.Tenant.Identifier;
-        UserIdentity = identityContext.User.Identifier;
-        CorrelationIdentity = identityContext.Correlation.Identifier;
-        ServiceIdentity = identityContext.Service.GetFullIdentifier();
+        if (identityContext == null)
+        {
+            throw new ArgumentNullException(nameof(identityContext));
+        }
+
+        if (identityContext.Tenant == null)
+        {
+            throw new ArgumentException($"{nameof(identityContext.Tenant)} cannot be null.");
+        }
+
+        if (identityContext.User == null)
+        {
+            throw new ArgumentException($"{nameof(identityContext.User)} cannot be null.");
+        }
+
+        if (identityContext.Correlation == null)
+        {
+            throw new ArgumentException($"{nameof(identityContext.Correlation)} cannot be null.");
+        }
+
+        if (identityContext.Service == null)
+        {
+            throw new ArgumentException($"{nameof(identityContext.Service)} cannot be null.");
+        }
+
         IdentityContext = identityContext;
     }
 
@@ -35,14 +56,6 @@ public abstract class Command : ICommand
     public Guid AggregateIdentifier { get; } = Guid.NewGuid();
 
     public int? ExpectedVersion { get; }
-
-    public string ServiceIdentity { get; }
-
-    public Guid TenantIdentity { get; }
-
-    public Guid UserIdentity { get; }
-
-    public Guid CorrelationIdentity { get; }
 
     public IIdentityContext IdentityContext { get; }
 

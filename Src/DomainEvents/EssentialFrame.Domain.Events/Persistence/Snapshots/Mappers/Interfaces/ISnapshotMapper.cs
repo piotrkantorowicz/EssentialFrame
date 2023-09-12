@@ -1,6 +1,6 @@
 ﻿using EssentialFrame.Domain.Events.Core.Snapshots;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers.Interfaces;
 

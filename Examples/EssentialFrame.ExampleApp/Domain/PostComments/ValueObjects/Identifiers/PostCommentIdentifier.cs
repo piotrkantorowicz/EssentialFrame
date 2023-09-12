@@ -1,11 +1,11 @@
 ﻿using System;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 
 public sealed class PostCommentIdentifier : TypedGuidIdentifier
 {
-    private PostCommentIdentifier(Guid identifier) : base(identifier)
+    private PostCommentIdentifier(Guid value) : base(value)
     {
     }
     
@@ -13,9 +13,9 @@ public sealed class PostCommentIdentifier : TypedGuidIdentifier
     {
         return new PostCommentIdentifier(Guid.NewGuid());
     }
-    
-    public static PostCommentIdentifier New(Guid identifier)
+
+    public static PostCommentIdentifier New(Guid value)
     {
-        return new PostCommentIdentifier(identifier);
+        return new PostCommentIdentifier(value);
     }
 }

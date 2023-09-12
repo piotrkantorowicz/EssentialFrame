@@ -1,11 +1,11 @@
 ﻿using System;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 public sealed class PostIdentifier : TypedGuidIdentifier
 {
-    private PostIdentifier(Guid id) : base(id)
+    private PostIdentifier(Guid value) : base(value)
     {
     }
     
@@ -14,8 +14,8 @@ public sealed class PostIdentifier : TypedGuidIdentifier
         return new PostIdentifier(Guid.NewGuid());
     }
 
-    public static PostIdentifier New(Guid identifier)
+    public static PostIdentifier New(Guid value)
     {
-        return new PostIdentifier(identifier);
+        return new PostIdentifier(value);
     }
 }

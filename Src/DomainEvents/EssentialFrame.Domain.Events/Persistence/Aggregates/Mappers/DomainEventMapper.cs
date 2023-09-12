@@ -1,7 +1,7 @@
 ﻿using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 using EssentialFrame.Extensions;
 using EssentialFrame.Serialization.Interfaces;
 
@@ -14,7 +14,7 @@ public class DomainEventMapper<TAggregateIdentifier> : IDomainEventMapper<TAggre
     {
         return new DomainEventDataModel
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier.Identifier,
+            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),
@@ -28,7 +28,7 @@ public class DomainEventMapper<TAggregateIdentifier> : IDomainEventMapper<TAggre
     {
         return new DomainEventDataModel
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier.Identifier,
+            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),

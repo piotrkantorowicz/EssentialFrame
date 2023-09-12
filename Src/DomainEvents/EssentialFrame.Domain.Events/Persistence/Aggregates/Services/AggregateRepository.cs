@@ -4,20 +4,21 @@ using EssentialFrame.Domain.Events.Exceptions;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services;
 
 public sealed class
     AggregateRepository<TAggregate, TAggregateIdentifier> : IAggregateRepository<TAggregate, TAggregateIdentifier>
-    where TAggregate : AggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+    where TAggregate : IAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    private readonly IAggregateMapper _aggregateMapper;
+    private readonly IAggregateMapper<TAggregateIdentifier> _aggregateMapper;
     private readonly IDomainEventMapper<TAggregateIdentifier> _domainEventMapper;
     private readonly IAggregateStore _aggregateStore;
 
     public AggregateRepository(IAggregateStore aggregateStore,
-        IDomainEventMapper<TAggregateIdentifier> domainEventMapper, IAggregateMapper aggregateMapper)
+        IDomainEventMapper<TAggregateIdentifier> domainEventMapper,
+        IAggregateMapper<TAggregateIdentifier> aggregateMapper)
     {
         _aggregateStore = aggregateStore ?? throw new ArgumentNullException(nameof(aggregateStore));
         _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
@@ -37,9 +38,9 @@ public sealed class
 
     public IDomainEvent<TAggregateIdentifier>[] Save(TAggregate aggregate, int? version = null)
     {
-        if (version != null && _aggregateStore.Exists(aggregate.AggregateIdentifier.Identifier, version.Value))
+        if (version != null && _aggregateStore.Exists(aggregate.AggregateIdentifier.Value, version.Value))
         {
-            throw new ConcurrencyException(aggregate.AggregateIdentifier.Identifier);
+            throw new ConcurrencyException(aggregate.AggregateIdentifier.Value);
         }
 
         AggregateDataModel aggregateDataModel = _aggregateMapper.Map(aggregate);
@@ -54,10 +55,10 @@ public sealed class
     public async Task<IDomainEvent<TAggregateIdentifier>[]> SaveAsync(TAggregate aggregate, int? version = null,
         CancellationToken cancellationToken = default)
     {
-        if (version != null && await _aggregateStore.ExistsAsync(aggregate.AggregateIdentifier.Identifier,
+        if (version != null && await _aggregateStore.ExistsAsync(aggregate.AggregateIdentifier.Value,
                 version.Value, cancellationToken))
         {
-            throw new ConcurrencyException(aggregate.AggregateIdentifier.Identifier);
+            throw new ConcurrencyException(aggregate.AggregateIdentifier.Value);
         }
 
         AggregateDataModel aggregateDataModel = _aggregateMapper.Map(aggregate);
@@ -71,14 +72,14 @@ public sealed class
 
     private TAggregate Rehydrate(TAggregateIdentifier aggregateIdentifier)
     {
-        AggregateDataModel aggregateDataModel = _aggregateStore.Get(aggregateIdentifier.Identifier);
+        AggregateDataModel aggregateDataModel = _aggregateStore.Get(aggregateIdentifier.Value);
 
         if (aggregateDataModel is null)
         {
             throw new AggregateNotFoundException(typeof(TAggregate), aggregateIdentifier.ToString());
         }
 
-        IReadOnlyCollection<DomainEventDataModel> eventsData = _aggregateStore.Get(aggregateIdentifier.Identifier, -1);
+        IReadOnlyCollection<DomainEventDataModel> eventsData = _aggregateStore.Get(aggregateIdentifier.Value, -1);
 
         if (aggregateDataModel.IsDeleted)
         {
@@ -105,7 +106,7 @@ public sealed class
         CancellationToken cancellationToken = default)
     {
         AggregateDataModel aggregateDataModel =
-            await _aggregateStore.GetAsync(aggregateIdentifier.Identifier, cancellationToken);
+            await _aggregateStore.GetAsync(aggregateIdentifier.Value, cancellationToken);
 
         if (aggregateDataModel is null)
         {
@@ -113,7 +114,7 @@ public sealed class
         }
 
         IReadOnlyCollection<DomainEventDataModel> eventsData =
-            await _aggregateStore.GetAsync(aggregateIdentifier.Identifier, -1, cancellationToken);
+            await _aggregateStore.GetAsync(aggregateIdentifier.Value, -1, cancellationToken);
 
         if (aggregateDataModel.IsDeleted)
         {

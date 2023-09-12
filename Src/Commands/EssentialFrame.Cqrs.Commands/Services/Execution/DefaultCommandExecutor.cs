@@ -149,7 +149,8 @@ internal sealed class DefaultCommandExecutor : ICommandExecutor, ICommandSchedul
     private static THandler FindHandler<TCommand, THandler>(TCommand command, IComponentContext lifetimeScope)
         where TCommand : class, ICommand where THandler : class, ICommandHandler
     {
-        bool isTenantHandlerFound = lifetimeScope.TryResolveKeyed(command.TenantIdentity, out THandler commandHandler);
+        bool isTenantHandlerFound =
+            lifetimeScope.TryResolveKeyed(command.IdentityContext.Tenant.Identifier, out THandler commandHandler);
 
         if (isTenantHandlerFound)
         {

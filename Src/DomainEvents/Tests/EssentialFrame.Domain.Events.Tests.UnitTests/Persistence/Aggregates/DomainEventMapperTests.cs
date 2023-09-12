@@ -127,7 +127,7 @@ public class DomainEventMapperTests
 
         DomainEventDataModel domainEventDataModel = new()
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier.Identifier,
+            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),
@@ -155,7 +155,7 @@ public class DomainEventMapperTests
 
         DomainEventDataModel domainEventDataModel = new()
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier.Identifier,
+            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),
@@ -194,7 +194,7 @@ public class DomainEventMapperTests
 
         DomainEventDataModel domainEventDataModel = new()
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier.Identifier,
+            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),
@@ -225,7 +225,7 @@ public class DomainEventMapperTests
 
         DomainEventDataModel domainEventDataModel = new()
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier.Identifier,
+            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),
@@ -260,7 +260,7 @@ public class DomainEventMapperTests
     private static void AssertEvent(DomainEventDataModel domainEventDataModel, IDomainEvent<PostIdentifier> domainEvent,
         ISerializer serializer = null)
     {
-        domainEventDataModel.AggregateIdentifier.Should().Be(domainEvent.AggregateIdentifier.Identifier);
+        domainEventDataModel.AggregateIdentifier.Should().Be(domainEvent.AggregateIdentifier.Value);
         domainEventDataModel.AggregateVersion.Should().Be(domainEvent.AggregateVersion);
         domainEventDataModel.EventIdentifier.Should().Be(domainEvent.EventIdentifier);
         domainEventDataModel.EventType.Should().Be(domainEvent.GetTypeFullName());

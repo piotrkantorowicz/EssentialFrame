@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.ValueObjects;
+﻿using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Events;
 
@@ -10,13 +10,7 @@ public interface IDomainEvent<TAggregateIdentifier> where TAggregateIdentifier :
 
     int AggregateVersion { get; }
 
-    string ServiceIdentity { get; }
-
-    Guid TenantIdentity { get; }
-
-    Guid UserIdentity { get; }
-
-    Guid CorrelationIdentity { get; }
+    DomainEventIdentity DomainEventIdentity { get; }
 
     DateTimeOffset EventTime { get; }
 

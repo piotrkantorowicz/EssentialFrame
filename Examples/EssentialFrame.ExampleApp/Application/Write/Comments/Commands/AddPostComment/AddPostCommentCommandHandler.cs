@@ -25,7 +25,7 @@ internal sealed class AddPostCommentCommandHandler : ICommandHandler<AddPostComm
     public ICommandResult Handle(AddPostCommentCommand command)
     {
         PostComment postComment = PostComment.Create(PostCommentIdentifier.New(command.AggregateIdentifier),
-            PostIdentifier.New(command.PostIdentifier), UserIdentifier.New(command.UserIdentifier),
+            PostIdentifier.New(command.PostIdentifier), AuthorIdentifier.New(command.UserIdentifier),
             PostCommentIdentifier.New(command.ReplyToCommentIdentifier ?? Guid.Empty),
             PostCommentText.Create(command.Comment), command.IdentityContext, _aggregateRepository);
 
@@ -38,7 +38,7 @@ internal sealed class AddPostCommentCommandHandler : ICommandHandler<AddPostComm
         CancellationToken cancellationToken = default)
     {
         PostComment postComment = PostComment.Create(PostCommentIdentifier.New(command.AggregateIdentifier),
-            PostIdentifier.New(command.PostIdentifier), UserIdentifier.New(command.UserIdentifier),
+            PostIdentifier.New(command.PostIdentifier), AuthorIdentifier.New(command.UserIdentifier),
             PostCommentIdentifier.New(command.ReplyToCommentIdentifier ?? Guid.Empty),
             PostCommentText.Create(command.Comment), command.IdentityContext, _aggregateRepository);
 

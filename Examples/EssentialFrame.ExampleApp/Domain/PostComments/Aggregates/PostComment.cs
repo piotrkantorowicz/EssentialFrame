@@ -1,6 +1,7 @@
 ﻿using System;
 using EssentialFrame.Domain.Aggregates;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 using EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
@@ -16,8 +17,8 @@ namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
 {
     private PostComment(PostCommentIdentifier postCommentIdentifier, PostIdentifier postIdentifier,
-        UserIdentifier authorIdentifier, PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text,
-        Guid? tenantIdentifier) : base(postCommentIdentifier, tenantIdentifier)
+        AuthorIdentifier authorIdentifier, PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text,
+        TenantIdentifier tenantIdentifier) : base(postCommentIdentifier, tenantIdentifier)
     {
         PostIdentifier = postIdentifier;
         AuthorIdentifier = authorIdentifier;
@@ -28,7 +29,7 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
 
     public PostIdentifier PostIdentifier { get; }
 
-    public UserIdentifier AuthorIdentifier { get; }
+    public AuthorIdentifier AuthorIdentifier { get; }
 
     public PostCommentIdentifier ReplyToPostCommentIdentifier { get; }
 
@@ -41,11 +42,11 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
     public DeletedReason DeletedReason { get; private set; }
 
     public static PostComment Create(PostCommentIdentifier postCommentIdentifier, PostIdentifier postIdentifier,
-        UserIdentifier userIdentifier, PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text,
+        AuthorIdentifier userIdentifier, PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text,
         IIdentityContext identityContext, IAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         PostComment postComment = new(postCommentIdentifier, postIdentifier, userIdentifier,
-            replyToPostCommentIdentifier, text, identityContext.Tenant?.Identifier);
+            replyToPostCommentIdentifier, text, TenantIdentifier.New(identityContext.Tenant.Identifier));
 
         postComment.CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(
             postComment.AggregateIdentifier, postComment.GetType(), postIdentifier, aggregateRepository));
@@ -65,7 +66,8 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
         return postComment;
     }
 
-    public PostComment Reply(PostCommentText reply, UserIdentifier replierIdentifier, IIdentityContext identityContext,
+    public PostComment Reply(PostCommentText reply, AuthorIdentifier replierIdentifier,
+        IIdentityContext identityContext,
         IAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         return Create(PostCommentIdentifier.New(), PostIdentifier, replierIdentifier, AggregateIdentifier, reply,
@@ -78,7 +80,7 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
         CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier,
             GetType(), PostIdentifier, aggregateRepository));
 
-        UserIdentifier editorIdentifier = UserIdentifier.New(identityContext.User.Identifier);
+        AuthorIdentifier editorIdentifier = AuthorIdentifier.New(identityContext.User.Identifier);
 
         CheckRule(new PostCommentCanBeEditedOnlyByAuthorRule(AggregateIdentifier, GetType(),
             AuthorIdentifier, editorIdentifier));
@@ -96,7 +98,7 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
         CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier,
             GetType(), PostIdentifier, aggregateRepository));
 
-        UserIdentifier removerIdentifier = UserIdentifier.New(identityContext.User.Identifier);
+        AuthorIdentifier removerIdentifier = AuthorIdentifier.New(identityContext.User.Identifier);
 
         CheckRule(new PostCommentCanBeRemovedOnlyByAuthorRule(AggregateIdentifier, GetType(),
             AuthorIdentifier, removerIdentifier));

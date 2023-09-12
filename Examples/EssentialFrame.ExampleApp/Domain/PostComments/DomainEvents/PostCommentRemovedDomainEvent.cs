@@ -8,7 +8,7 @@ namespace EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
 public class PostCommentRemovedDomainEvent : DomainEvent<PostCommentIdentifier>
 {
     public PostCommentRemovedDomainEvent(PostCommentIdentifier aggregateIdentifier, IIdentityContext identityContext,
-        DeletedReason removedReason, UserIdentifier removedBy) : base(aggregateIdentifier, identityContext)
+        DeletedReason removedReason, AuthorIdentifier removedBy) : base(aggregateIdentifier, identityContext)
     {
         RemovedReason = removedReason;
         RemovedBy = removedBy;
@@ -16,5 +16,5 @@ public class PostCommentRemovedDomainEvent : DomainEvent<PostCommentIdentifier>
 
     public DeletedReason RemovedReason { get; }
 
-    public UserIdentifier RemovedBy { get; }
+    public AuthorIdentifier RemovedBy { get; }
 }

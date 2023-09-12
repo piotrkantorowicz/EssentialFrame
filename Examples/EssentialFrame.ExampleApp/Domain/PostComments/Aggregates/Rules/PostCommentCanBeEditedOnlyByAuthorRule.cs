@@ -7,11 +7,11 @@ namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 
 public class PostCommentCanBeEditedOnlyByAuthorRule : IdentifiableBusinessRule<PostCommentIdentifier>
 {
-    private readonly UserIdentifier _authorIdentifier;
-    private readonly UserIdentifier _editorIdentifier;
+    private readonly AuthorIdentifier _authorIdentifier;
+    private readonly AuthorIdentifier _editorIdentifier;
 
     public PostCommentCanBeEditedOnlyByAuthorRule(PostCommentIdentifier domainObjectIdentifier, Type businessObjectType,
-        UserIdentifier authorIdentifier, UserIdentifier editorIdentifier) : base(domainObjectIdentifier,
+        AuthorIdentifier authorIdentifier, AuthorIdentifier editorIdentifier) : base(domainObjectIdentifier,
         businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
     {
         _authorIdentifier = authorIdentifier;

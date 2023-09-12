@@ -10,8 +10,7 @@ namespace EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
 public class ReplyToPostCommentAddedDomainEvent : DomainEvent<PostCommentIdentifier>
 {
     public ReplyToPostCommentAddedDomainEvent(PostCommentIdentifier aggregateIdentifier,
-        IIdentityContext identityContext,
-        PostIdentifier postIdentifier, UserIdentifier authorIdentifier,
+        IIdentityContext identityContext, PostIdentifier postIdentifier, AuthorIdentifier authorIdentifier,
         PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text, Date createdDate) : base(
         aggregateIdentifier, identityContext)
     {
@@ -24,7 +23,7 @@ public class ReplyToPostCommentAddedDomainEvent : DomainEvent<PostCommentIdentif
 
     public PostIdentifier PostIdentifier { get; }
 
-    public UserIdentifier AuthorIdentifier { get; }
+    public AuthorIdentifier AuthorIdentifier { get; }
 
     public PostCommentIdentifier ReplyToPostCommentIdentifier { get; }
 

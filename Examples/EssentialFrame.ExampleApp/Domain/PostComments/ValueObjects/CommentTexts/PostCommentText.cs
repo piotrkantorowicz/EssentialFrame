@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts.Rules;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;

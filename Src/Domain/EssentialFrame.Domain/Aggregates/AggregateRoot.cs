@@ -1,13 +1,13 @@
 ﻿using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
-using EssentialFrame.Domain.Shared;
 using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Aggregates;
 
-public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObject, IAggregateRoot<TAggregateIdentifier>
+public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggregateIdentifier>
     where TAggregateIdentifier : TypedGuidIdentifier
 {
     private readonly List<IDomainEvent<TAggregateIdentifier>> _changes = new();
@@ -17,7 +17,7 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObje
         AggregateIdentifier = aggregateIdentifier;
     }
 
-    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, Guid? tenantIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, TenantIdentifier tenantIdentifier)
     {
         AggregateIdentifier = aggregateIdentifier;
         TenantIdentifier = tenantIdentifier;
@@ -25,7 +25,7 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObje
 
     public TAggregateIdentifier AggregateIdentifier { get; }
 
-    public Guid? TenantIdentifier { get; }
+    public TenantIdentifier TenantIdentifier { get; }
 
     public DateTimeOffset? DeletedDate { get; private set; }
 

@@ -1,30 +1,30 @@
 ﻿using System.Reflection;
 using EssentialFrame.Domain.Exceptions;
 
-namespace EssentialFrame.Domain.ValueObjects;
+namespace EssentialFrame.Domain.ValueObjects.Core;
 
 public abstract class TypedIdentifierBase<T> : ValueObject
 {
-    protected TypedIdentifierBase(T identifier)
+    protected TypedIdentifierBase(T value)
     {
-        Identifier = identifier;
+        Value = value;
     }
 
-    public T Identifier { get; }
+    public T Value { get; }
 
     public abstract bool Empty();
 
     public override string ToString()
     {
-        return Identifier.ToString();
+        return Value.ToString();
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return Identifier;
+        yield return Value;
     }
 
-    public static TAggregateIdentifier New<TAggregateIdentifier>(Guid identifier)
+    public static TAggregateIdentifier New<TAggregateIdentifier>(Guid value)
         where TAggregateIdentifier : TypedIdentifierBase<T>
     {
         ConstructorInfo[] constructors =
@@ -34,9 +34,9 @@ public abstract class TypedIdentifierBase<T> : ValueObject
         {
             List<string> parameterNames = constructor.GetParameters().Select(p => p.Name).ToList();
 
-            if (parameterNames.Contains("id"))
+            if (parameterNames.Contains(nameof(value)))
             {
-                return (TAggregateIdentifier)constructor.Invoke(new object[] { identifier });
+                return (TAggregateIdentifier)constructor.Invoke(new object[] { value });
             }
         }
 

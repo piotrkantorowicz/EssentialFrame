@@ -1,9 +1,9 @@
-﻿using System;
-using Bogus;
+﻿using Bogus;
 using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
+using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using FluentAssertions;
@@ -15,7 +15,7 @@ namespace EssentialFrame.Domain.Events.Tests.UnitTests.Persistence.Aggregates;
 public class AggregateMapperTests
 {
     private readonly Faker _faker = new();
-    private readonly IAggregateMapper _aggregateMapper = new AggregateMapper();
+    private readonly IAggregateMapper<PostIdentifier> _aggregateMapper = new AggregateMapper<PostIdentifier>();
 
     [Test]
     public void MapToAggregateDataModel_WhenCalledWithValidAggregateRoot_ReturnsAggregateDataModel()
@@ -23,7 +23,7 @@ public class AggregateMapperTests
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
-        Guid? tenantIdentifier = _faker.Random.Guid();
+        TenantIdentifier tenantIdentifier = TenantIdentifier.New(_faker.Random.Guid());
 
         Post aggregateRoot =
             GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion,
@@ -34,8 +34,8 @@ public class AggregateMapperTests
 
         // Assert
         aggregateDataModel.Should().NotBeNull();
-        aggregateDataModel.AggregateIdentifier.Should().Be(aggregateIdentifier.Identifier);
+        aggregateDataModel.AggregateIdentifier.Should().Be(aggregateIdentifier.Value);
         aggregateDataModel.AggregateVersion.Should().Be(aggregateVersion);
-        aggregateDataModel.TenantIdentifier.Should().Be(tenantIdentifier);
+        aggregateDataModel.TenantIdentifier.Should().Be(tenantIdentifier.Value);
     }
 }

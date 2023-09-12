@@ -1,11 +1,10 @@
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
-using EssentialFrame.Domain.Shared;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Entities;
 
-public abstract class Entity : IDeletableDomainObject, IEntity
+public abstract class Entity : IEntity
 {
     protected Entity()
     {

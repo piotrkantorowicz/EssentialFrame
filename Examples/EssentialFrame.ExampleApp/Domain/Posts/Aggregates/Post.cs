@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.Events.Core.Aggregates;
+using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
@@ -23,7 +24,7 @@ public sealed class Post : AggregateRoot<PostIdentifier>
     {
     }
 
-    private Post(PostIdentifier aggregateIdentifier, int aggregateVersion, Guid tenantIdentifier) : base(
+    private Post(PostIdentifier aggregateIdentifier, int aggregateVersion, TenantIdentifier tenantIdentifier) : base(
         aggregateIdentifier, aggregateVersion, tenantIdentifier)
     {
     }

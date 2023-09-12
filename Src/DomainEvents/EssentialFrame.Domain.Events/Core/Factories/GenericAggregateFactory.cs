@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using EssentialFrame.Domain.Exceptions;
+using EssentialFrame.Domain.ValueObjects;
 
 namespace EssentialFrame.Domain.Events.Core.Factories;
 
@@ -41,7 +42,7 @@ public static class GenericAggregateFactory<T, TAggregateIdentifier>
     }
 
     public static T CreateAggregate(TAggregateIdentifier aggregateIdentifier, int aggregateVersion,
-        Guid? tenantIdentifier)
+        TenantIdentifier tenantIdentifier)
     {
         ConstructorInfo[] constructors = typeof(T).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
 

@@ -1,6 +1,8 @@
-﻿namespace EssentialFrame.Domain.Entities;
+﻿using EssentialFrame.Domain.Shared;
 
-public interface IEntity
+namespace EssentialFrame.Domain.Entities;
+
+public interface IEntity : IDeletableDomainObject
 {
     public Guid EntityIdentifier { get; }
 }

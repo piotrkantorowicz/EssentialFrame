@@ -9,14 +9,14 @@ using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Mappers.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services;
 
 public class
     SnapshotRepository<TAggregate, TAggregateIdentifier> : ISnapshotRepository<TAggregate, TAggregateIdentifier>
-    where TAggregate : AggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+    where TAggregate : IAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
     private readonly IAggregateRepository<TAggregate, TAggregateIdentifier> _aggregateRepository;
     private readonly IAggregateStore _aggregateStore;
@@ -45,7 +45,7 @@ public class
 
     public TAggregate Get(TAggregateIdentifier aggregateIdentifier) 
     {
-        TAggregate snapshot = _snapshotsCache.Get(aggregateIdentifier.Identifier);
+        TAggregate snapshot = _snapshotsCache.Get(aggregateIdentifier.Value);
 
         if (snapshot != null)
         {
@@ -62,7 +62,7 @@ public class
         }
 
         IReadOnlyCollection<DomainEventDataModel> allEvents =
-            _aggregateStore.Get(aggregateIdentifier.Identifier, snapshotVersion);
+            _aggregateStore.Get(aggregateIdentifier.Value, snapshotVersion);
 
         IEnumerable<IDomainEvent<TAggregateIdentifier>> events =
             _domainEventMapper.Map(allEvents.Where(desc => desc.AggregateVersion <= snapshotVersion));
@@ -75,7 +75,7 @@ public class
     public async Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier,
         CancellationToken cancellationToken = default)
     {
-        TAggregate snapshot = _snapshotsCache.Get(aggregateIdentifier.Identifier);
+        TAggregate snapshot = _snapshotsCache.Get(aggregateIdentifier.Value);
 
         if (snapshot != null)
         {
@@ -92,8 +92,7 @@ public class
             return await _aggregateRepository.GetAsync(aggregateIdentifier, cancellationToken);
         }
 
-        IReadOnlyCollection<DomainEventDataModel> allEvents = await _aggregateStore.GetAsync(
-            aggregateIdentifier.Identifier,
+        IReadOnlyCollection<DomainEventDataModel> allEvents = await _aggregateStore.GetAsync(aggregateIdentifier.Value,
             snapshotVersion, cancellationToken);
 
         IEnumerable<IDomainEvent<TAggregateIdentifier>> events =
@@ -109,7 +108,7 @@ public class
     {
         if (timeout is > 0)
         {
-            _snapshotsCache.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout.GetValueOrDefault(), true);
+            _snapshotsCache.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout.GetValueOrDefault(), true);
         }
 
         TakeSnapshot(aggregate, false, false);
@@ -123,7 +122,7 @@ public class
     {
         if (timeout is > 0)
         {
-            _snapshotsCache.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout.GetValueOrDefault(), true);
+            _snapshotsCache.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout.GetValueOrDefault(), true);
         }
 
         TakeSnapshot(aggregate, false, false);
@@ -136,10 +135,10 @@ public class
         SnapshotDataModel snapshotDataModel = TakeSnapshot(aggregate, useSerializer, true);
 
         _snapshotStore.Save(snapshotDataModel);
-        _snapshotStore.Box(aggregate.AggregateIdentifier.Identifier);
-        _aggregateStore.Box(aggregate.AggregateIdentifier.Identifier);
+        _snapshotStore.Box(aggregate.AggregateIdentifier.Value);
+        _aggregateStore.Box(aggregate.AggregateIdentifier.Value);
 
-        _snapshotsCache.Remove(aggregate.AggregateIdentifier.Identifier);
+        _snapshotsCache.Remove(aggregate.AggregateIdentifier.Value);
     }
 
     public async Task BoxAsync(TAggregate aggregate, bool useSerializer = false,
@@ -148,15 +147,15 @@ public class
         SnapshotDataModel snapshotDataModel = TakeSnapshot(aggregate, useSerializer, true);
 
         await _snapshotStore.SaveAsync(snapshotDataModel, cancellationToken);
-        await _snapshotStore.BoxAsync(aggregate.AggregateIdentifier.Identifier, cancellationToken);
-        await _aggregateStore.BoxAsync(aggregate.AggregateIdentifier.Identifier, cancellationToken);
+        await _snapshotStore.BoxAsync(aggregate.AggregateIdentifier.Value, cancellationToken);
+        await _aggregateStore.BoxAsync(aggregate.AggregateIdentifier.Value, cancellationToken);
 
-        _snapshotsCache.Remove(aggregate.AggregateIdentifier.Identifier);
+        _snapshotsCache.Remove(aggregate.AggregateIdentifier.Value);
     }
 
     public TAggregate Unbox(TAggregateIdentifier aggregateId, bool useSerializer = false)
     {
-        SnapshotDataModel snapshotDataModel = _snapshotStore.Unbox(aggregateId.Identifier);
+        SnapshotDataModel snapshotDataModel = _snapshotStore.Unbox(aggregateId.Value);
         Snapshot<TAggregateIdentifier> snapshot = _snapshotMapper.Map(snapshotDataModel);
         TAggregate aggregate =
             GenericAggregateFactory<TAggregate, TAggregateIdentifier>.CreateAggregate(aggregateId,
@@ -171,7 +170,7 @@ public class
         CancellationToken cancellationToken = default) 
     {
         SnapshotDataModel snapshotDataModel =
-            await _snapshotStore.UnboxAsync(aggregateIdentifier.Identifier, cancellationToken);
+            await _snapshotStore.UnboxAsync(aggregateIdentifier.Value, cancellationToken);
         Snapshot<TAggregateIdentifier> snapshot = _snapshotMapper.Map(snapshotDataModel);
         TAggregate aggregate =
             GenericAggregateFactory<TAggregate, TAggregateIdentifier>.CreateAggregate(aggregateIdentifier,
@@ -184,7 +183,7 @@ public class
 
     private int RestoreAggregateFromSnapshot(TAggregateIdentifier aggregateIdentifier, TAggregate aggregate)
     {
-        SnapshotDataModel snapshotDataModel = _snapshotStore.Get(aggregateIdentifier.Identifier);
+        SnapshotDataModel snapshotDataModel = _snapshotStore.Get(aggregateIdentifier.Value);
 
         return RestoreAggregateFromSnapshotInternal(snapshotDataModel, aggregate);
     }
@@ -194,7 +193,7 @@ public class
         CancellationToken cancellationToken = default)
     {
         SnapshotDataModel snapshotDataModel =
-            await _snapshotStore.GetAsync(aggregateIdentifier.Identifier, cancellationToken);
+            await _snapshotStore.GetAsync(aggregateIdentifier.Value, cancellationToken);
 
         return RestoreAggregateFromSnapshotInternal(snapshotDataModel, aggregate);
     }

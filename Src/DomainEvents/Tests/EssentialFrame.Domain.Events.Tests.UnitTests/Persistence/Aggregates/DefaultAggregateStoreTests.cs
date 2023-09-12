@@ -33,13 +33,6 @@ public class DefaultAggregateStoreTests
     [SetUp]
     public void SetUp()
     {
-        _aggregateCacheMock = new Mock<ICache<Guid, AggregateDataModel>>();
-        _eventsCacheMock = new Mock<ICache<Guid, DomainEventDataModel>>();
-        _identityServiceMock = new Mock<IIdentityService>();
-        _aggregateOfflineStorageMock = new Mock<IAggregateOfflineStorage>();
-        _domainEventMapper = new Mock<IDomainEventMapper<PostIdentifier>>();
-        _aggregateMapperMock = new Mock<IAggregateMapper>();
-
         _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new IdentityContext());
     }
 
@@ -55,24 +48,24 @@ public class DefaultAggregateStoreTests
     }
 
     private readonly Faker _faker = new();
-    private Mock<ICache<Guid, AggregateDataModel>> _aggregateCacheMock;
-    private Mock<ICache<Guid, DomainEventDataModel>> _eventsCacheMock;
-    private Mock<IIdentityService> _identityServiceMock;
-    private Mock<IAggregateOfflineStorage> _aggregateOfflineStorageMock;
-    private Mock<IDomainEventMapper<PostIdentifier>> _domainEventMapper;
-    private Mock<IAggregateMapper> _aggregateMapperMock;
+    private readonly Mock<ICache<Guid, AggregateDataModel>> _aggregateCacheMock = new();
+    private readonly Mock<ICache<Guid, DomainEventDataModel>> _eventsCacheMock = new();
+    private readonly Mock<IIdentityService> _identityServiceMock = new();
+    private readonly Mock<IAggregateOfflineStorage> _aggregateOfflineStorageMock = new();
+    private readonly Mock<IDomainEventMapper<PostIdentifier>> _domainEventMapper = new();
+    private readonly Mock<IAggregateMapper<PostIdentifier>> _aggregateMapperMock = new();
 
     [Test]
     public void Exists_WhenAggregateIdentifierIsProvided_ShouldReturnTrue()
     {
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier.Identifier)).Returns(true);
+        _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier.Value)).Returns(true);
         DefaultAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        bool result = aggregateStore.Exists(aggregateIdentifier.Identifier);
+        bool result = aggregateStore.Exists(aggregateIdentifier.Value);
 
         // Assert
         result.Should().BeTrue();
@@ -99,12 +92,12 @@ public class DefaultAggregateStoreTests
     {
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier.Identifier)).Returns(false);
+        _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier.Value)).Returns(false);
         DefaultAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        bool result = aggregateStore.Exists(aggregateIdentifier.Identifier);
+        bool result = aggregateStore.Exists(aggregateIdentifier.Value);
 
         // Assert
         result.Should().BeFalse();
@@ -137,7 +130,7 @@ public class DefaultAggregateStoreTests
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        bool result = aggregateStore.Exists(aggregateIdentifier.Identifier, aggregateVersion);
+        bool result = aggregateStore.Exists(aggregateIdentifier.Value, aggregateVersion);
 
         // Assert
         result.Should().BeTrue();
@@ -171,7 +164,7 @@ public class DefaultAggregateStoreTests
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        bool result = aggregateStore.Exists(aggregateIdentifier.Identifier, aggregateVersion);
+        bool result = aggregateStore.Exists(aggregateIdentifier.Value, aggregateVersion);
 
         // Assert
         result.Should().BeFalse();
@@ -209,13 +202,13 @@ public class DefaultAggregateStoreTests
             TenantIdentifier = _faker.Random.Guid()
         };
 
-        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(aggregateDataModel);
+        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(aggregateDataModel);
 
         DefaultAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        AggregateDataModel result = aggregateStore.Get(aggregateIdentifier.Identifier);
+        AggregateDataModel result = aggregateStore.Get(aggregateIdentifier.Value);
 
         // Assert
         result.Should().BeEquivalentTo(aggregateDataModel);
@@ -236,13 +229,13 @@ public class DefaultAggregateStoreTests
             TenantIdentifier = _faker.Random.Guid()
         };
 
-        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(aggregateDataModel);
+        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(aggregateDataModel);
 
         DefaultAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        AggregateDataModel result = await aggregateStore.GetAsync(aggregateIdentifier.Identifier);
+        AggregateDataModel result = await aggregateStore.GetAsync(aggregateIdentifier.Value);
 
         // Assert
         result.Should().BeEquivalentTo(aggregateDataModel);
@@ -264,7 +257,7 @@ public class DefaultAggregateStoreTests
 
         // Act
         IReadOnlyCollection<DomainEventDataModel> result =
-            aggregateStore.Get(aggregateIdentifier.Identifier, aggregateVersion);
+            aggregateStore.Get(aggregateIdentifier.Value, aggregateVersion);
 
         // Assert
         result.Should().BeEquivalentTo(domainEventsDms);
@@ -286,7 +279,7 @@ public class DefaultAggregateStoreTests
 
         // Act
         IReadOnlyCollection<DomainEventDataModel> result =
-            await aggregateStore.GetAsync(aggregateIdentifier.Identifier, aggregateVersion);
+            await aggregateStore.GetAsync(aggregateIdentifier.Value, aggregateVersion);
 
         // Assert
         result.Should().BeEquivalentTo(domainEventsDms);
@@ -335,18 +328,18 @@ public class DefaultAggregateStoreTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregateIdentifier.Value,
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
         IEnumerable<KeyValuePair<Guid, DomainEventDataModel>> domainEventsDictionary =
             domainEventsDms?.Select(v => new KeyValuePair<Guid, DomainEventDataModel>(v.EventIdentifier, v));
 
-        _aggregateCacheMock.Setup(x => x.Add(aggregateIdentifier.Identifier, aggregateDataModel));
+        _aggregateCacheMock.Setup(x => x.Add(aggregateIdentifier.Value, aggregateDataModel));
 
         _eventsCacheMock.Setup(x => x.AddMany(domainEventsDictionary));
 
@@ -357,7 +350,7 @@ public class DefaultAggregateStoreTests
         aggregateStore.Save(aggregateDataModel, domainEventsDms);
 
         // Assert
-        _aggregateCacheMock.Verify(x => x.Add(aggregateIdentifier.Identifier, aggregateDataModel), Times.Once);
+        _aggregateCacheMock.Verify(x => x.Add(aggregateIdentifier.Value, aggregateDataModel), Times.Once);
         _eventsCacheMock.Verify(x => x.AddMany(domainEventsDictionary), Times.Once);
     }
 
@@ -372,18 +365,18 @@ public class DefaultAggregateStoreTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregateIdentifier.Value,
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
         IEnumerable<KeyValuePair<Guid, DomainEventDataModel>> domainEventsDictionary =
             domainEventsDms?.Select(v => new KeyValuePair<Guid, DomainEventDataModel>(v.EventIdentifier, v));
 
-        _aggregateCacheMock.Setup(x => x.Add(aggregateIdentifier.Identifier, aggregateDataModel));
+        _aggregateCacheMock.Setup(x => x.Add(aggregateIdentifier.Value, aggregateDataModel));
 
         _eventsCacheMock.Setup(x => x.AddMany(domainEventsDictionary));
 
@@ -394,7 +387,7 @@ public class DefaultAggregateStoreTests
         await aggregateStore.SaveAsync(aggregateDataModel, domainEventsDms);
 
         // Assert
-        _aggregateCacheMock.Verify(x => x.Add(aggregateIdentifier.Identifier, aggregateDataModel), Times.Once);
+        _aggregateCacheMock.Verify(x => x.Add(aggregateIdentifier.Value, aggregateDataModel), Times.Once);
         _eventsCacheMock.Verify(x => x.AddMany(domainEventsDictionary), Times.Once);
     }
 
@@ -410,16 +403,16 @@ public class DefaultAggregateStoreTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregateIdentifier.Value,
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
 
-        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(aggregateDataModel);
+        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(aggregateDataModel);
         _eventsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()))
             .Returns(domainEventsDms);
         _aggregateOfflineStorageMock.Setup(x => x.Save(aggregateDataModel, domainEventsDms));
@@ -428,10 +421,10 @@ public class DefaultAggregateStoreTests
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        aggregateStore.Box(aggregateIdentifier.Identifier);
+        aggregateStore.Box(aggregateIdentifier.Value);
 
         // Assert
-        _aggregateCacheMock.Verify(x => x.Get(aggregateIdentifier.Identifier), Times.Once);
+        _aggregateCacheMock.Verify(x => x.Get(aggregateIdentifier.Value), Times.Once);
         _aggregateOfflineStorageMock.Verify(x => x.Save(aggregateDataModel, domainEventsDms), Times.Once);
         _eventsCacheMock.Verify(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()), Times.Once);
     }
@@ -448,16 +441,16 @@ public class DefaultAggregateStoreTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregateIdentifier.Value,
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
         List<DomainEventDataModel> domainEventsDms = GenerateDomainEventsCollection(aggregateIdentifier);
 
-        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(aggregateDataModel);
+        _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(aggregateDataModel);
         _eventsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()))
             .Returns(domainEventsDms);
         _aggregateOfflineStorageMock.Setup(x => x.SaveAsync(aggregateDataModel, domainEventsDms, default));
@@ -466,10 +459,10 @@ public class DefaultAggregateStoreTests
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        await aggregateStore.BoxAsync(aggregateIdentifier.Identifier);
+        await aggregateStore.BoxAsync(aggregateIdentifier.Value);
 
         // Assert
-        _aggregateCacheMock.Verify(x => x.Get(aggregateIdentifier.Identifier), Times.Once);
+        _aggregateCacheMock.Verify(x => x.Get(aggregateIdentifier.Value), Times.Once);
         _aggregateOfflineStorageMock.Verify(x => x.SaveAsync(aggregateDataModel, domainEventsDms, default), Times.Once);
         _eventsCacheMock.Verify(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()), Times.Once);
     }
@@ -488,11 +481,11 @@ public class DefaultAggregateStoreTests
 
         List<AggregateDataModel> aggregateDataModels = aggregates.Select(a => new AggregateDataModel
         {
-            AggregateIdentifier = a.AggregateIdentifier.Identifier,
+            AggregateIdentifier = a.AggregateIdentifier.Value,
             AggregateVersion = a.AggregateVersion,
             DeletedDate = a.DeletedDate,
             IsDeleted = a.IsDeleted,
-            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         }).ToList();
 
         return aggregateDataModels;
@@ -539,7 +532,7 @@ public class DefaultAggregateStoreTests
 
         List<DomainEventDataModel> domainEventDms = domainEvents.Select(e => new DomainEventDataModel
         {
-            AggregateIdentifier = e.AggregateIdentifier.Identifier,
+            AggregateIdentifier = e.AggregateIdentifier.Value,
             AggregateVersion = e.AggregateVersion,
             EventIdentifier = e.EventIdentifier,
             EventType = e.GetTypeFullName(),

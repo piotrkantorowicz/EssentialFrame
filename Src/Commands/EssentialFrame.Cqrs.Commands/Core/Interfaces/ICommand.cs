@@ -1,4 +1,6 @@
-﻿namespace EssentialFrame.Cqrs.Commands.Core.Interfaces;
+﻿using EssentialFrame.Identity;
+
+namespace EssentialFrame.Cqrs.Commands.Core.Interfaces;
 
 public interface ICommand
 {
@@ -8,11 +10,6 @@ public interface ICommand
 
     int? ExpectedVersion { get; }
 
-    Guid TenantIdentity { get; }
-
-    Guid UserIdentity { get; }
-
-    Guid CorrelationIdentity { get; }
-
-    string ServiceIdentity { get; }
+    public IIdentityContext IdentityContext { get; }
 }
+    

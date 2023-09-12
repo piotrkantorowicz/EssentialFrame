@@ -47,11 +47,11 @@ public class AggregateOfflineStorageTests
 
         _aggregateDataModel = new AggregateDataModel
         {
-            AggregateIdentifier = aggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregateIdentifier.Value,
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
         _domainEvents = new List<IDomainEvent<PostIdentifier>>
@@ -64,7 +64,7 @@ public class AggregateOfflineStorageTests
 
         _domainEventDataModels = _domainEvents.Select(domainEvent => new DomainEventDataModel
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier.Identifier,
+            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),

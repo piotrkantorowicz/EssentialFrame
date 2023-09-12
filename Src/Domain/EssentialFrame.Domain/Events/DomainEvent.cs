@@ -1,5 +1,5 @@
 ﻿using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 using EssentialFrame.Identity;
 using EssentialFrame.Time;
 
@@ -10,10 +10,14 @@ public abstract class DomainEvent<TAggregateIdentifier> : IDomainEvent<TAggregat
 {
     private DomainEvent(IIdentityContext identityContext)
     {
-        TenantIdentity = identityContext?.Tenant?.Identifier ?? Guid.Empty;
-        UserIdentity = identityContext?.User?.Identifier ?? Guid.Empty;
-        CorrelationIdentity = identityContext?.Correlation?.Identifier ?? Guid.Empty;
-        ServiceIdentity = identityContext?.Service?.GetFullIdentifier();
+        if (identityContext == null)
+        {
+            throw new ArgumentNullException(nameof(identityContext));
+        }
+
+        DomainEventIdentity = new DomainEventIdentity(identityContext.Tenant.Identifier,
+            identityContext.User.Identifier, identityContext.Correlation.Identifier,
+            identityContext.Service.GetFullIdentifier());
     }
 
     protected DomainEvent(TAggregateIdentifier aggregateIdentifier, IIdentityContext identityContext) : this(
@@ -57,13 +61,7 @@ public abstract class DomainEvent<TAggregateIdentifier> : IDomainEvent<TAggregat
 
     public int AggregateVersion { get; private set; }
 
-    public string ServiceIdentity { get; }
+    public DomainEventIdentity DomainEventIdentity { get; }
 
-    public Guid TenantIdentity { get; }
-
-    public Guid UserIdentity { get; }
-
-    public Guid CorrelationIdentity { get; }
-
-    public DateTimeOffset EventTime { get; private set; } = SystemClock.UtcNow;
+    public DateTimeOffset EventTime { get; } = SystemClock.UtcNow;
 }

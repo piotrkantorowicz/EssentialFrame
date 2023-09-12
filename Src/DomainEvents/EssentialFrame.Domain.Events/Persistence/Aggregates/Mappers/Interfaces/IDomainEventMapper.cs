@@ -1,5 +1,5 @@
 ﻿using EssentialFrame.Domain.Events.Persistence.Aggregates.Models;
-using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Mappers.Interfaces;

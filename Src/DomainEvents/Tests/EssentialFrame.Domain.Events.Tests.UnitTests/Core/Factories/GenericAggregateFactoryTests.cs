@@ -1,6 +1,6 @@
-using System;
 using Bogus;
 using EssentialFrame.Domain.Events.Core.Factories;
+using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using FluentAssertions;
@@ -50,7 +50,7 @@ public sealed class GenericAggregateFactoryTests
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
-        Guid? tenantIdentifier = _faker.Random.Guid();
+        TenantIdentifier tenantIdentifier = TenantIdentifier.New(_faker.Random.Guid());
 
         // Act
         Post aggregate =

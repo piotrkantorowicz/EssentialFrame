@@ -1,12 +1,12 @@
 ﻿using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Domain.Shared;
 using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Events.Core.Aggregates;
 
-public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObject, IAggregateRoot<TAggregateIdentifier>
+public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggregateIdentifier>
     where TAggregateIdentifier : TypedGuidIdentifier
 {
     private readonly List<IDomainEvent<TAggregateIdentifier>> _changes = new();
@@ -22,18 +22,19 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IDeletableDomainObje
         AggregateVersion = aggregateVersion;
     }
 
-    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, int aggregateVersion, Guid tenantIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, int aggregateVersion,
+        TenantIdentifier tenantIdentifier)
     {
         AggregateIdentifier = aggregateIdentifier;
         AggregateVersion = aggregateVersion;
-        TenantIdentifier = tenantIdentifier == default ? Guid.Empty : tenantIdentifier;
+        TenantIdentifier = tenantIdentifier;
     }
 
     public TAggregateIdentifier AggregateIdentifier { get; }
 
     public int AggregateVersion { get; private set; }
 
-    public Guid? TenantIdentifier { get; protected set; }
+    public TenantIdentifier TenantIdentifier { get; protected set; }
 
     public AggregateState<TAggregateIdentifier> State { get; protected set; }
 

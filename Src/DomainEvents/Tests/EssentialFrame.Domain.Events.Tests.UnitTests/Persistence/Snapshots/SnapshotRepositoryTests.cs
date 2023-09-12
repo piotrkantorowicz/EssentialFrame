@@ -74,7 +74,7 @@ public class SnapshotRepositoryTests
         Post aggregate =
             GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
-        _snapshotsCacheMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(aggregate);
+        _snapshotsCacheMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(aggregate);
 
         ISnapshotRepository<Post, PostIdentifier> snapshotRepository = new SnapshotRepository<Post, PostIdentifier>(
             _aggregateStoreMock.Object,
@@ -99,7 +99,7 @@ public class SnapshotRepositoryTests
         Post aggregate =
             GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
-        _snapshotsCacheMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(aggregate);
+        _snapshotsCacheMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(aggregate);
 
         ISnapshotRepository<Post, PostIdentifier> snapshotRepository = new SnapshotRepository<Post, PostIdentifier>(
             _aggregateStoreMock.Object,
@@ -131,7 +131,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregateIdentifier.Value,
             AggregateVersion = events.Count,
             AggregateState = aggregate.State
         };
@@ -140,9 +140,9 @@ public class SnapshotRepositoryTests
             snapshotDataModel.AggregateVersion,
             snapshotDataModel.AggregateState);
 
-        _snapshotStoreMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(snapshotDataModel);
+        _snapshotStoreMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(snapshotDataModel);
         _snapshotMapperMock.Setup(x => x.Map(snapshotDataModel)).Returns(snapshot);
-        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Identifier, snapshot.AggregateVersion))
+        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Value, snapshot.AggregateVersion))
             .Returns(eventDataModels);
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels)).Returns(events);
 
@@ -176,7 +176,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregateIdentifier.Value,
             AggregateVersion = events.Count,
             AggregateState = aggregate.State
         };
@@ -185,11 +185,11 @@ public class SnapshotRepositoryTests
             snapshotDataModel.AggregateVersion,
             snapshotDataModel.AggregateState);
 
-        _snapshotStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Identifier, default))
+        _snapshotStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Value, default))
             .ReturnsAsync(snapshotDataModel);
         _snapshotMapperMock.Setup(x => x.Map(snapshotDataModel)).Returns(snapshot);
 
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Identifier, snapshot.AggregateVersion, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Value, snapshot.AggregateVersion, default))
             .ReturnsAsync(eventDataModels);
 
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels)).Returns(events);
@@ -221,7 +221,7 @@ public class SnapshotRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _snapshotStoreMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns((SnapshotDataModel)null);
+        _snapshotStoreMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns((SnapshotDataModel)null);
 
         _aggregateRepositoryMock.Setup(x => x.Get(aggregateIdentifier))
             .Returns(aggregate);
@@ -253,7 +253,7 @@ public class SnapshotRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _snapshotStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Identifier, default))
+        _snapshotStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Value, default))
             .ReturnsAsync((SnapshotDataModel)null);
 
         _aggregateRepositoryMock.Setup(x => x.GetAsync(aggregateIdentifier, default))
@@ -287,7 +287,7 @@ public class SnapshotRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true));
+        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.Save(aggregate, null));
 
         ISnapshotRepository<Post, PostIdentifier> snapshotRepository = new SnapshotRepository<Post, PostIdentifier>(
@@ -300,7 +300,7 @@ public class SnapshotRepositoryTests
         snapshotRepository.Save(aggregate, timeout: timeout);
 
         // Assert
-        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true),
+        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true),
             Times.Once);
         _aggregateRepositoryMock.Verify(x => x.Save(aggregate, null), Times.Once);
     }
@@ -320,7 +320,7 @@ public class SnapshotRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true));
+        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.SaveAsync(aggregate, null, default));
 
         ISnapshotRepository<Post, PostIdentifier> snapshotRepository = new SnapshotRepository<Post, PostIdentifier>(
@@ -333,7 +333,7 @@ public class SnapshotRepositoryTests
         await snapshotRepository.SaveAsync(aggregate, timeout: timeout);
 
         // Assert
-        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true),
+        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true),
             Times.Once);
         _aggregateRepositoryMock.Verify(x => x.SaveAsync(aggregate, null, default), Times.Once);
     }
@@ -353,7 +353,7 @@ public class SnapshotRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true));
+        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.Save(aggregate, aggregate.AggregateVersion));
 
         ISnapshotRepository<Post, PostIdentifier> snapshotRepository = new SnapshotRepository<Post, PostIdentifier>(
@@ -366,7 +366,7 @@ public class SnapshotRepositoryTests
         snapshotRepository.Save(aggregate, aggregate.AggregateVersion, timeout);
 
         // Assert
-        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true),
+        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true),
             Times.Once);
         _aggregateRepositoryMock.Verify(x => x.Save(aggregate, aggregate.AggregateVersion), Times.Once);
     }
@@ -387,7 +387,7 @@ public class SnapshotRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true));
+        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.Save(aggregate, aggregate.AggregateVersion));
 
         ISnapshotRepository<Post, PostIdentifier> snapshotRepository = new SnapshotRepository<Post, PostIdentifier>(
@@ -400,7 +400,7 @@ public class SnapshotRepositoryTests
         snapshotRepository.Save(aggregate, aggregate.AggregateVersion);
 
         // Assert
-        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true),
+        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true),
             Times.Never);
         _aggregateRepositoryMock.Verify(x => x.Save(aggregate, aggregate.AggregateVersion), Times.Once);
     }
@@ -420,7 +420,7 @@ public class SnapshotRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true));
+        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.SaveAsync(aggregate, aggregate.AggregateVersion, default));
 
         ISnapshotRepository<Post, PostIdentifier> snapshotRepository = new SnapshotRepository<Post, PostIdentifier>(
@@ -433,7 +433,7 @@ public class SnapshotRepositoryTests
         await snapshotRepository.SaveAsync(aggregate, aggregate.AggregateVersion, timeout);
 
         // Assert
-        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true),
+        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true),
             Times.Once);
         _aggregateRepositoryMock.Verify(x => x.SaveAsync(aggregate, aggregate.AggregateVersion, default), Times.Once);
     }
@@ -453,7 +453,7 @@ public class SnapshotRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true));
+        _snapshotsCacheMock.Setup(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true));
         _aggregateRepositoryMock.Setup(x => x.SaveAsync(aggregate, aggregate.AggregateVersion, default));
 
         ISnapshotRepository<Post, PostIdentifier> snapshotRepository = new SnapshotRepository<Post, PostIdentifier>(
@@ -466,7 +466,7 @@ public class SnapshotRepositoryTests
         await snapshotRepository.SaveAsync(aggregate, aggregate.AggregateVersion);
 
         // Assert
-        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Identifier, aggregate, timeout, true),
+        _snapshotsCacheMock.Verify(x => x.Add(aggregate.AggregateIdentifier.Value, aggregate, timeout, true),
             Times.Never);
         _aggregateRepositoryMock.Verify(x => x.SaveAsync(aggregate, aggregate.AggregateVersion, default), Times.Once);
     }
@@ -487,7 +487,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             AggregateState = aggregate.State
         };
@@ -501,18 +501,18 @@ public class SnapshotRepositoryTests
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object);
 
-        _snapshotStoreMock.Setup(x => x.Box(aggregate.AggregateIdentifier.Identifier));
-        _aggregateStoreMock.Setup(x => x.Box(aggregate.AggregateIdentifier.Identifier));
-        _snapshotsCacheMock.Setup(x => x.Remove(aggregate.AggregateIdentifier.Identifier));
+        _snapshotStoreMock.Setup(x => x.Box(aggregate.AggregateIdentifier.Value));
+        _aggregateStoreMock.Setup(x => x.Box(aggregate.AggregateIdentifier.Value));
+        _snapshotsCacheMock.Setup(x => x.Remove(aggregate.AggregateIdentifier.Value));
 
         // Act
         snapshotRepository.Box(aggregate);
 
         // Assert
         _snapshotStoreMock.Verify(x => x.Save(snapshotDataModel), Times.Once);
-        _snapshotStoreMock.Verify(x => x.Box(aggregate.AggregateIdentifier.Identifier), Times.Once);
-        _aggregateStoreMock.Verify(x => x.Box(aggregate.AggregateIdentifier.Identifier), Times.Once);
-        _snapshotsCacheMock.Verify(x => x.Remove(aggregate.AggregateIdentifier.Identifier), Times.Once);
+        _snapshotStoreMock.Verify(x => x.Box(aggregate.AggregateIdentifier.Value), Times.Once);
+        _aggregateStoreMock.Verify(x => x.Box(aggregate.AggregateIdentifier.Value), Times.Once);
+        _snapshotsCacheMock.Verify(x => x.Remove(aggregate.AggregateIdentifier.Value), Times.Once);
     }
 
     [Test]
@@ -531,7 +531,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             AggregateState = aggregate.State
         };
@@ -545,18 +545,18 @@ public class SnapshotRepositoryTests
             _serializerMock.Object, _snapshotsCacheMock.Object, _snapshotMapperMock.Object,
             _domainEventMapperMock.Object);
 
-        _snapshotStoreMock.Setup(x => x.BoxAsync(aggregate.AggregateIdentifier.Identifier, default));
-        _aggregateStoreMock.Setup(x => x.BoxAsync(aggregate.AggregateIdentifier.Identifier, default));
-        _snapshotsCacheMock.Setup(x => x.Remove(aggregate.AggregateIdentifier.Identifier));
+        _snapshotStoreMock.Setup(x => x.BoxAsync(aggregate.AggregateIdentifier.Value, default));
+        _aggregateStoreMock.Setup(x => x.BoxAsync(aggregate.AggregateIdentifier.Value, default));
+        _snapshotsCacheMock.Setup(x => x.Remove(aggregate.AggregateIdentifier.Value));
 
         // Act
         await snapshotRepository.BoxAsync(aggregate);
 
         // Assert
         _snapshotStoreMock.Verify(x => x.SaveAsync(snapshotDataModel, default), Times.Once);
-        _snapshotStoreMock.Verify(x => x.BoxAsync(aggregate.AggregateIdentifier.Identifier, default), Times.Once);
-        _aggregateStoreMock.Verify(x => x.BoxAsync(aggregate.AggregateIdentifier.Identifier, default), Times.Once);
-        _snapshotsCacheMock.Verify(x => x.Remove(aggregate.AggregateIdentifier.Identifier), Times.Once);
+        _snapshotStoreMock.Verify(x => x.BoxAsync(aggregate.AggregateIdentifier.Value, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.BoxAsync(aggregate.AggregateIdentifier.Value, default), Times.Once);
+        _snapshotsCacheMock.Verify(x => x.Remove(aggregate.AggregateIdentifier.Value), Times.Once);
     }
 
     [Test]
@@ -575,7 +575,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             AggregateState = aggregate.State
         };
@@ -584,7 +584,7 @@ public class SnapshotRepositoryTests
             snapshotDataModel.AggregateVersion,
             snapshotDataModel.AggregateState);
 
-        _snapshotStoreMock.Setup(x => x.Unbox(aggregateIdentifier.Identifier)).Returns(snapshotDataModel);
+        _snapshotStoreMock.Setup(x => x.Unbox(aggregateIdentifier.Value)).Returns(snapshotDataModel);
         _snapshotMapperMock.Setup(x => x.Map(snapshotDataModel)).Returns(snapshot);
 
         ISnapshotRepository<Post, PostIdentifier> snapshotRepository = new SnapshotRepository<Post, PostIdentifier>(
@@ -597,7 +597,7 @@ public class SnapshotRepositoryTests
         Post result = snapshotRepository.Unbox(aggregateIdentifier);
 
         // Assert
-        _snapshotStoreMock.Verify(x => x.Unbox(aggregateIdentifier.Identifier), Times.Once);
+        _snapshotStoreMock.Verify(x => x.Unbox(aggregateIdentifier.Value), Times.Once);
         _snapshotMapperMock.Verify(x => x.Map(snapshotDataModel), Times.Once);
         result.Should().BeEquivalentTo(aggregate);
     }
@@ -618,7 +618,7 @@ public class SnapshotRepositoryTests
 
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             AggregateState = aggregate.State
         };
@@ -627,7 +627,7 @@ public class SnapshotRepositoryTests
             snapshotDataModel.AggregateVersion,
             snapshotDataModel.AggregateState);
 
-        _snapshotStoreMock.Setup(x => x.UnboxAsync(aggregateIdentifier.Identifier, default))
+        _snapshotStoreMock.Setup(x => x.UnboxAsync(aggregateIdentifier.Value, default))
             .ReturnsAsync(snapshotDataModel);
         _snapshotMapperMock.Setup(x => x.Map(snapshotDataModel)).Returns(snapshot);
 
@@ -641,7 +641,7 @@ public class SnapshotRepositoryTests
         Post result = await snapshotRepository.UnboxAsync(aggregateIdentifier);
 
         // Assert
-        _snapshotStoreMock.Verify(x => x.UnboxAsync(aggregateIdentifier.Identifier, default), Times.Once);
+        _snapshotStoreMock.Verify(x => x.UnboxAsync(aggregateIdentifier.Value, default), Times.Once);
         _snapshotMapperMock.Verify(x => x.Map(snapshotDataModel), Times.Once);
         result.Should().BeEquivalentTo(aggregate);
     }

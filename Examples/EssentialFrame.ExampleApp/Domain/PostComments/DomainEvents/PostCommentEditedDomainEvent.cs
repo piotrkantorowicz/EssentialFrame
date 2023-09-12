@@ -9,7 +9,7 @@ namespace EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
 public class PostCommentEditedDomainEvent : DomainEvent<PostCommentIdentifier>
 {
     public PostCommentEditedDomainEvent(PostCommentIdentifier aggregateIdentifier, IIdentityContext identityContext,
-        PostCommentText text, Date editedDate, UserIdentifier editedBy) : base(aggregateIdentifier, identityContext)
+        PostCommentText text, Date editedDate, AuthorIdentifier editedBy) : base(aggregateIdentifier, identityContext)
     {
         Text = text;
         EditedDate = editedDate;
@@ -20,5 +20,5 @@ public class PostCommentEditedDomainEvent : DomainEvent<PostCommentIdentifier>
 
     public Date EditedDate { get; }
 
-    public UserIdentifier EditedBy { get; }
+    public AuthorIdentifier EditedBy { get; }
 }

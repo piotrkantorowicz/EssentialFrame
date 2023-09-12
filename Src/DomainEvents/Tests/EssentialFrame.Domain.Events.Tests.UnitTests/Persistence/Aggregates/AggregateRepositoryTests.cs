@@ -32,7 +32,7 @@ namespace EssentialFrame.Domain.Events.Tests.UnitTests.Persistence.Aggregates;
 public class AggregateRepositoryTests
 {
     private readonly Faker _faker = new();
-    private readonly Mock<IAggregateMapper> _aggregateMapperMock = new();
+    private readonly Mock<IAggregateMapper<PostIdentifier>> _aggregateMapperMock = new();
     private readonly Mock<IDomainEventMapper<PostIdentifier>> _domainEventMapperMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IAggregateStore> _aggregateStoreMock = new();
@@ -64,7 +64,7 @@ public class AggregateRepositoryTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             DeletedDate = null,
             IsDeleted = false,
@@ -75,10 +75,10 @@ public class AggregateRepositoryTests
 
         aggregate.Rehydrate(GenerateDomainEventsCollection(aggregateIdentifier));
 
-        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Identifier, -1)).Returns(eventDataModels);
+        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Value, -1)).Returns(eventDataModels);
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels))
             .Returns(GenerateDomainEventsCollection(aggregateIdentifier));
-        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(aggregateDataModel);
+        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(aggregateDataModel);
 
         IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
             _aggregateStoreMock.Object,
@@ -90,9 +90,9 @@ public class AggregateRepositoryTests
         // Assert
         result.Should().BeEquivalentTo(aggregate);
 
-        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Identifier, -1), Times.Once);
+        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Value, -1), Times.Once);
         _domainEventMapperMock.Verify(x => x.Map(eventDataModels), Times.Once);
-        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Identifier), Times.Once);
+        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Value), Times.Once);
     }
 
     [Test]
@@ -107,7 +107,7 @@ public class AggregateRepositoryTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             DeletedDate = _faker.Date.PastOffset(),
             IsDeleted = true,
@@ -119,8 +119,8 @@ public class AggregateRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Identifier, -1)).Returns(eventDataModels);
-        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(aggregateDataModel);
+        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Value, -1)).Returns(eventDataModels);
+        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(aggregateDataModel);
 
         IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
             _aggregateStoreMock.Object,
@@ -133,8 +133,8 @@ public class AggregateRepositoryTests
         getAggregateAction.Should().Throw<AggregateDeletedException>().WithMessage(
             $"Unable to get aggregate ({aggregate.GetTypeFullName()}) with id: ({aggregateIdentifier}), because it has been deleted");
 
-        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Identifier, -1), Times.Once);
-        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Identifier), Times.Once);
+        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Value, -1), Times.Once);
+        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Value), Times.Once);
     }
 
     [Test]
@@ -149,7 +149,7 @@ public class AggregateRepositoryTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             DeletedDate = null,
             IsDeleted = false,
@@ -160,10 +160,10 @@ public class AggregateRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Identifier, -1))
+        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Value, -1))
             .Returns((IReadOnlyCollection<DomainEventDataModel>)null);
 
-        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Identifier)).Returns(aggregateDataModel);
+        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier.Value)).Returns(aggregateDataModel);
 
         IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
             _aggregateStoreMock.Object,
@@ -176,8 +176,8 @@ public class AggregateRepositoryTests
         getAggregateAction.Should().Throw<AggregateNotFoundException>().WithMessage(
             $"This aggregate does not exist ({aggregate.GetTypeFullName()} {aggregateIdentifier}) because there are no events for it");
 
-        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Identifier, -1), Times.Once);
-        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Identifier), Times.Once);
+        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Value, -1), Times.Once);
+        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier.Value), Times.Once);
     }
 
     [Test]
@@ -192,7 +192,7 @@ public class AggregateRepositoryTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             DeletedDate = null,
             IsDeleted = false,
@@ -203,9 +203,9 @@ public class AggregateRepositoryTests
 
         aggregate.Rehydrate(GenerateDomainEventsCollection(aggregateIdentifier));
 
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Identifier, -1, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Value, -1, default))
             .ReturnsAsync(eventDataModels);
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Identifier, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Value, default))
             .ReturnsAsync(aggregateDataModel);
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels))
             .Returns(GenerateDomainEventsCollection(aggregateIdentifier));
@@ -220,9 +220,9 @@ public class AggregateRepositoryTests
         // Assert
         result.Should().BeEquivalentTo(aggregate);
 
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Identifier, -1, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Value, -1, default), Times.Once);
         _domainEventMapperMock.Verify(x => x.Map(eventDataModels), Times.Once);
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Identifier, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Value, default), Times.Once);
     }
 
     [Test]
@@ -237,7 +237,7 @@ public class AggregateRepositoryTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             DeletedDate = _faker.Date.PastOffset(),
             IsDeleted = true,
@@ -249,9 +249,9 @@ public class AggregateRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Identifier, -1, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Value, -1, default))
             .ReturnsAsync(eventDataModels);
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Identifier, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Value, default))
             .ReturnsAsync(aggregateDataModel);
 
         IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
@@ -265,8 +265,8 @@ public class AggregateRepositoryTests
         await getAggregateAction.Should().ThrowAsync<AggregateDeletedException>().WithMessage(
             $"Unable to get aggregate ({aggregate.GetTypeFullName()}) with id: ({aggregateIdentifier}), because it has been deleted");
 
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Identifier, -1, default), Times.Once);
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Identifier, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Value, -1, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Value, default), Times.Once);
     }
 
     [Test]
@@ -281,7 +281,7 @@ public class AggregateRepositoryTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             DeletedDate = null,
             IsDeleted = false,
@@ -292,9 +292,9 @@ public class AggregateRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Identifier, -1, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Value, -1, default))
             .ReturnsAsync((IReadOnlyCollection<DomainEventDataModel>)null);
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Identifier, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier.Value, default))
             .ReturnsAsync(aggregateDataModel);
 
         IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
@@ -308,8 +308,8 @@ public class AggregateRepositoryTests
         await getAggregateAction.Should().ThrowAsync<AggregateNotFoundException>().WithMessage(
             $"This aggregate does not exist ({aggregate.GetTypeFullName()} {aggregateIdentifier}) because there are no events for it");
 
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Identifier, -1, default), Times.Once);
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Identifier, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Value, -1, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier.Value, default), Times.Once);
     }
 
     [Test]
@@ -333,7 +333,7 @@ public class AggregateRepositoryTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             DeletedDate = null,
             IsDeleted = false,
@@ -382,7 +382,7 @@ public class AggregateRepositoryTests
         aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()),
             _identityServiceMock.Object.GetCurrent());
 
-        _aggregateStoreMock.Setup(x => x.Exists(aggregateIdentifier.Identifier, expectedAggregateVersion))
+        _aggregateStoreMock.Setup(x => x.Exists(aggregateIdentifier.Value, expectedAggregateVersion))
             .Returns(true);
 
         IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
@@ -396,7 +396,7 @@ public class AggregateRepositoryTests
         saveAction.Should().Throw<ConcurrencyException>().WithMessage(
             $"A concurrency violation occurred on this aggregate ({aggregateIdentifier}). At least one event failed to save");
 
-        _aggregateStoreMock.Verify(x => x.Exists(aggregateIdentifier.Identifier, expectedAggregateVersion), Times.Once);
+        _aggregateStoreMock.Verify(x => x.Exists(aggregateIdentifier.Value, expectedAggregateVersion), Times.Once);
     }
 
     [Test]
@@ -420,7 +420,7 @@ public class AggregateRepositoryTests
 
         AggregateDataModel aggregateDataModel = new()
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Identifier,
+            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
             AggregateVersion = aggregate.AggregateVersion,
             DeletedDate = null,
             IsDeleted = false,
@@ -469,7 +469,7 @@ public class AggregateRepositoryTests
         aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()),
             _identityServiceMock.Object.GetCurrent());
 
-        _aggregateStoreMock.Setup(x => x.ExistsAsync(aggregateIdentifier.Identifier, expectedAggregateVersion, default))
+        _aggregateStoreMock.Setup(x => x.ExistsAsync(aggregateIdentifier.Value, expectedAggregateVersion, default))
             .ReturnsAsync(true);
 
         IAggregateRepository<Post, PostIdentifier> aggregateRepository = new AggregateRepository<Post, PostIdentifier>(
@@ -483,8 +483,7 @@ public class AggregateRepositoryTests
         await saveAction.Should().ThrowAsync<ConcurrencyException>().WithMessage(
             $"A concurrency violation occurred on this aggregate ({aggregateIdentifier}). At least one event failed to save");
 
-        _aggregateStoreMock.Verify(
-            x => x.ExistsAsync(aggregateIdentifier.Identifier, expectedAggregateVersion, default),
+        _aggregateStoreMock.Verify(x => x.ExistsAsync(aggregateIdentifier.Value, expectedAggregateVersion, default),
             Times.Once);
     }
 

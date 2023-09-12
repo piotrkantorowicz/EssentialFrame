@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.ValueObjects;
+﻿using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Rules.Base;
 
