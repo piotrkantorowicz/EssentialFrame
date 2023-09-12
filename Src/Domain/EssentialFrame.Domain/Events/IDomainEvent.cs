@@ -1,22 +1,18 @@
-﻿namespace EssentialFrame.Domain.Events;
+﻿using EssentialFrame.Domain.ValueObjects.Core;
 
-public interface IDomainEvent
+namespace EssentialFrame.Domain.Events;
+
+public interface IDomainEvent<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
     Guid EventIdentifier { get; }
 
-    Guid AggregateIdentifier { get; }
+    TAggregateIdentifier AggregateIdentifier { get; }
 
     int AggregateVersion { get; }
 
-    string ServiceIdentity { get; }
-
-    Guid TenantIdentity { get; }
-
-    Guid UserIdentity { get; }
-
-    Guid CorrelationIdentity { get; }
+    DomainEventIdentity DomainEventIdentity { get; }
 
     DateTimeOffset EventTime { get; }
 
-    void AdjustAggregateVersion(Guid aggregateIdentifier, int aggregateVersion);
+    void AdjustAggregateVersion(TAggregateIdentifier aggregateIdentifier, int aggregateVersion);
 }

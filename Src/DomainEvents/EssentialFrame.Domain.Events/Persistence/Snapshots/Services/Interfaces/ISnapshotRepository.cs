@@ -1,25 +1,26 @@
 using EssentialFrame.Domain.Events.Core.Aggregates;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Events.Persistence.Snapshots.Services.Interfaces;
 
-public interface ISnapshotRepository
+public interface ISnapshotRepository<TAggregate, TAggregateIdentifier>
+    where TAggregate : IAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    T Get<T>(Guid aggregateId) where T : AggregateRoot;
+    TAggregate Get(TAggregateIdentifier aggregateIdentifier);
 
-    Task<T> GetAsync<T>(Guid aggregateId, CancellationToken cancellationToken = default) where T : AggregateRoot;
+    Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
 
-    IDomainEvent[] Save<T>(T aggregate, int? version = null, int? timeout = null) where T : AggregateRoot;
+    IDomainEvent<TAggregateIdentifier>[] Save(TAggregate aggregate, int? version = null, int? timeout = null);
 
-    Task<IDomainEvent[]> SaveAsync<T>(T aggregate, int? version = null, int? timeout = null,
-        CancellationToken cancellationToken = default) where T : AggregateRoot;
+    Task<IDomainEvent<TAggregateIdentifier>[]> SaveAsync(TAggregate aggregate, int? version = null, int? timeout = null,
+        CancellationToken cancellationToken = default);
 
-    void Box<T>(T aggregate, bool useSerializer = false) where T : AggregateRoot;
+    void Box(TAggregate aggregate, bool useSerializer = false);
 
-    Task BoxAsync<T>(T aggregate, bool useSerializer = false, CancellationToken cancellationToken = default)
-        where T : AggregateRoot;
+    Task BoxAsync(TAggregate aggregate, bool useSerializer = false, CancellationToken cancellationToken = default);
 
-    T Unbox<T>(Guid aggregateId, bool useSerializer = false) where T : AggregateRoot;
+    TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, bool useSerializer = false);
 
-    Task<T> UnboxAsync<T>(Guid aggregateId, bool useSerializer = false, CancellationToken cancellationToken = default)
-        where T : AggregateRoot;
+    Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, bool useSerializer = false,
+        CancellationToken cancellationToken = default);
 }

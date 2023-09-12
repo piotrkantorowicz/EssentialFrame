@@ -1,18 +1,26 @@
-﻿namespace EssentialFrame.Domain.Events.Core.Aggregates;
+﻿using EssentialFrame.Domain.Shared;
+using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
+using EssentialFrame.Serialization.Interfaces;
 
-public interface IAggregateRoot
+namespace EssentialFrame.Domain.Events.Core.Aggregates;
+
+public interface IAggregateRoot<TAggregateIdentifier> : IDeletableDomainObject
+    where TAggregateIdentifier : TypedGuidIdentifier
 {
-    Guid AggregateIdentifier { get; }
+    TAggregateIdentifier AggregateIdentifier { get; }
 
     int AggregateVersion { get; }
 
-    Guid? TenantIdentifier { get; }
+    TenantIdentifier TenantIdentifier { get; }
 
-    AggregateState State { get; }
+    AggregateState<TAggregateIdentifier> State { get; }
 
-    IDomainEvent[] GetUncommittedChanges();
+    IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges();
 
-    IDomainEvent[] FlushUncommittedChanges();
+    IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges();
 
-    void Rehydrate(IEnumerable<IDomainEvent> history);
+    void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier>> history);
+
+    void RestoreState(object aggregateState, ISerializer serializer = null);
 }

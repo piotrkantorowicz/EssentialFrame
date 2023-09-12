@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using EssentialFrame.Domain.Exceptions;
 
-namespace EssentialFrame.Domain.ValueObjects;
+namespace EssentialFrame.Domain.ValueObjects.Core;
 
 public abstract record Enumeration<T> : IComparable<T> where T : Enumeration<T>
 {

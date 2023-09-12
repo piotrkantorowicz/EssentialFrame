@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Events.Core.Aggregates;
 
-public abstract class AggregateState
+public abstract class AggregateState<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    public void Apply(IDomainEvent domainEvent)
+    public void Apply(IDomainEvent<TAggregateIdentifier> domainEvent)
     {
         MethodInfo when = GetType().GetMethod("When", new[] { domainEvent.GetType() });
 

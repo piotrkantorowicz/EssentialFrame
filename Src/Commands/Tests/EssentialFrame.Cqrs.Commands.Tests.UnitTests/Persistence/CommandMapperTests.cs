@@ -265,7 +265,7 @@ public class CommandMapperTests
         }
     }
 
-    private CommandDataModel GenerateCommandDataModel(ICommand command, ISerializer serializer = null)
+    private static CommandDataModel GenerateCommandDataModel(ICommand command, ISerializer serializer = null)
     {
         CommandDataModel commandDataModel = new()
         {

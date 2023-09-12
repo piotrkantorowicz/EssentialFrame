@@ -1,4 +1,3 @@
-using System;
 using Bogus;
 using EssentialFrame.Domain.Events.Core.Factories;
 using EssentialFrame.ExampleApp.Application.Identity;
@@ -6,6 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Snapshots;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
@@ -27,12 +27,14 @@ public class SnapshotTests
     public void CreateSnapshotInstance_Always_AssignCorrectValues()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
+        ;
         const int aggregateVersion = 0;
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         Title expectedTitle = Title.Default(_faker.Lorem.Sentence());
         Description expectedDescription = Description.Create(_faker.Lorem.Sentences());

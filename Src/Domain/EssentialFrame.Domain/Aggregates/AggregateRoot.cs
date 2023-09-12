@@ -1,31 +1,49 @@
 ﻿using EssentialFrame.Domain.Events;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
-using EssentialFrame.Domain.Shared;
 using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
+using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Aggregates;
 
-public abstract class AggregateRoot<T> : DeletebleObject, IAggregateRoot<T> where T : TypedGuidIdentifier
+public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggregateIdentifier>
+    where TAggregateIdentifier : TypedGuidIdentifier
 {
-    private readonly List<IDomainEvent> _changes = new();
+    private readonly List<IDomainEvent<TAggregateIdentifier>> _changes = new();
 
-    protected AggregateRoot(T aggregateIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier)
     {
         AggregateIdentifier = aggregateIdentifier;
     }
 
-    protected AggregateRoot(T aggregateIdentifier, Guid? tenantIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, TenantIdentifier tenantIdentifier)
     {
         AggregateIdentifier = aggregateIdentifier;
         TenantIdentifier = tenantIdentifier;
     }
 
-    public T AggregateIdentifier { get; }
+    public TAggregateIdentifier AggregateIdentifier { get; }
 
-    public Guid? TenantIdentifier { get; }
+    public TenantIdentifier TenantIdentifier { get; }
 
-    public IDomainEvent[] GetUncommittedChanges()
+    public DateTimeOffset? DeletedDate { get; private set; }
+
+    public bool IsDeleted { get; private set; }
+
+    public void SafeDelete()
+    {
+        DeletedDate = SystemClock.UtcNow;
+        IsDeleted = true;
+    }
+
+    public void UnDelete()
+    {
+        DeletedDate = null;
+        IsDeleted = false;
+    }
+
+    public IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges()
     {
         lock (_changes)
         {
@@ -41,7 +59,7 @@ public abstract class AggregateRoot<T> : DeletebleObject, IAggregateRoot<T> wher
         }
     }
 
-    protected void AddDomainEvent(IDomainEvent domainEvent)
+    protected void AddDomainEvent(IDomainEvent<TAggregateIdentifier> domainEvent)
     {
         lock (_changes)
         {

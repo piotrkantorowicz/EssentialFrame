@@ -1,7 +1,7 @@
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Rules;
 
-namespace EssentialFrame.Domain.ValueObjects;
+namespace EssentialFrame.Domain.ValueObjects.Core;
 
 public abstract class ValueObject
 {

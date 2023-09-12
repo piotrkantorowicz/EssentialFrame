@@ -13,6 +13,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
@@ -50,11 +51,11 @@ public sealed class AggregateRootTests
     public void CreateState_Always_ShouldReturnSpecificType()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Number();
-
-
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         // Act
         PostState state = aggregate.CreateState();
@@ -67,12 +68,12 @@ public sealed class AggregateRootTests
     public void RestoreState_Always_ShouldAssignCorrectState()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Number();
         string serializedState = _faker.Lorem.Sentence();
 
-
-        Post expectedAggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post expectedAggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         expectedAggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()),
@@ -85,7 +86,8 @@ public sealed class AggregateRootTests
 
         PostState expectedAggregateState = expectedAggregate.State as PostState;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         
         aggregate.RestoreState(expectedAggregateState);
 
@@ -112,11 +114,11 @@ public sealed class AggregateRootTests
     public void ApplyEvent_Always_ShouldModifyAggregateState()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 0;
-
-
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
@@ -151,10 +153,11 @@ public sealed class AggregateRootTests
     public void GetUncommittedChanges_Always_ShouldGetAllChangesFromAggregate()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
@@ -169,7 +172,7 @@ public sealed class AggregateRootTests
         aggregate.ExtendExpirationDate(expectedExpiration, _identityServiceMock.Object.GetCurrent());
 
         // Assert
-        IDomainEvent[] changes = aggregate.GetUncommittedChanges();
+        IDomainEvent<PostIdentifier>[] changes = aggregate.GetUncommittedChanges();
         changes.Should().HaveCount(4);
     }
 
@@ -177,10 +180,11 @@ public sealed class AggregateRootTests
     public void FlushUncommittedChanges_Always_ShouldIncreaseAggregateVersion()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             Date.Create(_faker.Date.FutureOffset()), null, _identityServiceMock.Object.GetCurrent());
@@ -195,7 +199,7 @@ public sealed class AggregateRootTests
         aggregate.ExtendExpirationDate(expectedExpiration, _identityServiceMock.Object.GetCurrent());
 
         // Assert
-        IDomainEvent[] changes = aggregate.FlushUncommittedChanges();
+        IDomainEvent<PostIdentifier>[] changes = aggregate.FlushUncommittedChanges();
         changes.Should().HaveCount(4);
         aggregate.AggregateVersion.Should().Be(changes.Length);
         aggregate.GetUncommittedChanges().Should().BeEmpty();
@@ -205,7 +209,7 @@ public sealed class AggregateRootTests
     public void Rehydrate_WhenHistoryIsValid_ShouldRestoreCorrectAggregate()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid imageId = _faker.Random.Guid();
         const int aggregateVersion = 0;
         IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
@@ -222,7 +226,8 @@ public sealed class AggregateRootTests
                 BytesContent.Create(_faker.Random.Bytes(500)))
         };
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         CreateNewPostDomainEvent createNewPostEvent = new(aggregateIdentifier, identityContext, aggregateVersion + 1,
             Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
@@ -242,7 +247,7 @@ public sealed class AggregateRootTests
         ChangeImageNameDomainEvent changeImageNameEvent =
             new(aggregateIdentifier, identityContext, aggregateVersion + 6, imageId, imageName);
 
-        IDomainEvent[] history =
+        IDomainEvent<PostIdentifier>[] history =
         {
             createNewPostEvent, changeTitleEvent, changeDescription, changeExpirationEvent, addImagesEvent,
             changeImageNameEvent
@@ -259,21 +264,22 @@ public sealed class AggregateRootTests
     public void Rehydrate_WhenHistoryIsUnordered_ShouldThrowUnorderedEventsException()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 0;
         IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
         Title title = Title.Default(_faker.Lorem.Sentence());
         Date expiration = Date.Create(_faker.Date.FutureOffset());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         
         ChangeTitleDomainEvent changeTitleEvent =
             new(aggregateIdentifier, identityContext, aggregateVersion + 2, title);
         
         ChangeExpirationDateDomainEvent changeExpirationEvent =
             new(aggregateIdentifier, identityContext, aggregateVersion + 1, expiration);
-        
-        IDomainEvent[] history = { changeTitleEvent, changeExpirationEvent };
+
+        IDomainEvent<PostIdentifier>[] history = { changeTitleEvent, changeExpirationEvent };
 
         // Act
         Action action = () => aggregate.Rehydrate(history);
@@ -287,17 +293,18 @@ public sealed class AggregateRootTests
     public void Rehydrate_WhenOneOfEventsHaveUnMatchedAggregateId_ShouldThrowUnmatchedDomainEventException()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 0;
         IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
         Date expiration = Date.Create(_faker.Date.FutureOffset());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
         
-        ChangeExpirationDateDomainEvent changeExpirationEvent =
-            new(_faker.Random.Guid(), identityContext, aggregateVersion + 2, expiration);
-        
-        IDomainEvent[] history = { changeExpirationEvent };
+        ChangeExpirationDateDomainEvent changeExpirationEvent = new(PostIdentifier.New(_faker.Random.Guid()),
+            identityContext, aggregateVersion + 2, expiration);
+
+        IDomainEvent<PostIdentifier>[] history = { changeExpirationEvent };
 
         // Act
         Action action = () => aggregate.Rehydrate(history);
@@ -313,13 +320,14 @@ public sealed class AggregateRootTests
         CreateNewAggregateState_WithOutdatedExpirationDate_ShouldThrowCannotCreateOutdatedPostRuleValidationException()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         DateTimeOffset expiration = _faker.Date.PastOffset();
         const int aggregateVersion = 0;
         Title title = Title.Default(_faker.Lorem.Sentence());
         Description description = Description.Create(_faker.Lorem.Sentences());
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         // Act
         Action action = () => aggregate.Create(title, description, Date.Create(expiration), null,
@@ -341,7 +349,7 @@ public sealed class AggregateRootTests
     {
         // Arrange
         const int aggregateVersion = 0;
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid imageId = _faker.Random.Guid();
         Date expiration = Date.Create(SystemClock.UtcNow.AddMilliseconds(Defaults.DefaultWaitTime));
         Title title = Title.Default(_faker.Lorem.Sentence());
@@ -355,14 +363,16 @@ public sealed class AggregateRootTests
         };
 
 
-        Post expectedAggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post expectedAggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         expectedAggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             expiration, images, _identityServiceMock.Object.GetCurrent());
 
         PostState expectedAggregateState = expectedAggregate.State as PostState;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.RestoreState(expectedAggregateState);
 
@@ -418,11 +428,12 @@ public sealed class AggregateRootTests
     {
         // Arrange
         const int aggregateVersion = 0;
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Date expiration = Date.Create(SystemClock.UtcNow.AddMilliseconds(Defaults.DefaultWaitTime));
         Date newExpiration = Date.Create(SystemClock.UtcNow.AddDays(14));
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             expiration, null, _identityServiceMock.Object.GetCurrent());
@@ -442,7 +453,7 @@ public sealed class AggregateRootTests
     {
         // Arrange
         const int aggregateVersion = 0;
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid imageId = _faker.Random.Guid();
         Date expiration = Date.Create(_faker.Date.FutureOffset());
         Name imageName = Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)));
@@ -450,14 +461,16 @@ public sealed class AggregateRootTests
         HashSet<Image> images =
             new() { Image.Create(imageId, imageName, BytesContent.Create(_faker.Random.Bytes(200))) };
 
-        Post expectedAggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post expectedAggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         expectedAggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             expiration, images, _identityServiceMock.Object.GetCurrent());
 
         PostState expectedAggregateState = expectedAggregate.State as PostState;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.RestoreState(expectedAggregateState);
 
@@ -477,7 +490,7 @@ public sealed class AggregateRootTests
     {
         // Arrange
         const int aggregateVersion = 0;
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid imageId = _faker.Random.Guid();
         Date expiration = Date.Create(SystemClock.UtcNow.AddMilliseconds(Defaults.DefaultWaitTime));
         Name imageName = Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)));
@@ -489,14 +502,16 @@ public sealed class AggregateRootTests
             Image.Create(_faker.Random.Guid(), duplicateImageName, BytesContent.Create(_faker.Random.Bytes(200)))
         };
 
-        Post expectedAggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post expectedAggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         expectedAggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
             expiration, images, _identityServiceMock.Object.GetCurrent());
 
         PostState expectedAggregateState = expectedAggregate.State as PostState;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         aggregate.RestoreState(expectedAggregateState);
 
@@ -512,10 +527,11 @@ public sealed class AggregateRootTests
     public void SafeDelete_Always_ShouldSetDeleteProperties()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         // Act
         aggregate.SafeDelete();
@@ -529,10 +545,11 @@ public sealed class AggregateRootTests
     public void UnDelete_Always_ShouldSetDeleteProperties()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         // Act
         aggregate.UnDelete();

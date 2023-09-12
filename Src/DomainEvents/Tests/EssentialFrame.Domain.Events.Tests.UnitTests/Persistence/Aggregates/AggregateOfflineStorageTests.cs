@@ -16,6 +16,7 @@ using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
 using EssentialFrame.Files;
@@ -36,23 +37,24 @@ public class AggregateOfflineStorageTests
     public void SetUp()
     {
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
-        _logger = NullLoggerFactory.Instance.CreateLogger<AggregateOfflineStorage>();
+        _logger = NullLoggerFactory.Instance.CreateLogger<AggregateOfflineStorage<PostIdentifier>>();
 
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 0;
 
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         _aggregateDataModel = new AggregateDataModel
         {
-            AggregateIdentifier = aggregateIdentifier,
+            AggregateIdentifier = aggregateIdentifier.Value,
             AggregateVersion = aggregateVersion,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted,
-            TenantIdentifier = _identityServiceMock.Object.GetCurrent()?.Tenant?.Identifier ?? Guid.Empty
+            TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
-        _domainEvents = new List<IDomainEvent>
+        _domainEvents = new List<IDomainEvent<PostIdentifier>>
         {
             new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Title.Default(_faker.Lorem.Sentence())),
@@ -62,7 +64,7 @@ public class AggregateOfflineStorageTests
 
         _domainEventDataModels = _domainEvents.Select(domainEvent => new DomainEventDataModel
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier,
+            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),
@@ -88,12 +90,12 @@ public class AggregateOfflineStorageTests
     private readonly Mock<ISerializer> _serializerMock = new();
     private readonly Mock<IFileSystem> _fileSystemMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
-    private readonly Mock<IDomainEventMapper> _domainEventMapperMock = new();
+    private readonly Mock<IDomainEventMapper<PostIdentifier>> _domainEventMapperMock = new();
 
     private AggregateDataModel _aggregateDataModel;
-    private ILogger<AggregateOfflineStorage> _logger;
+    private ILogger<AggregateOfflineStorage<PostIdentifier>> _logger;
     private IReadOnlyCollection<DomainEventDataModel> _domainEventDataModels;
-    private IReadOnlyCollection<IDomainEvent> _domainEvents;
+    private IReadOnlyCollection<IDomainEvent<PostIdentifier>> _domainEvents;
 
     private static readonly object[] PossibleExceptions =
     {
@@ -109,7 +111,8 @@ public class AggregateOfflineStorageTests
     public void Save_UsingDefaultDirectory_ShouldSaveFile()
     {
         // Arrange
-        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
+        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage<PostIdentifier>(
+            _fileStorageMock.Object,
             _fileSystemMock.Object, _logger, _domainEventMapperMock.Object, _serializerMock.Object);
 
         Mock<IFileInfo> fileInfoMock = new();
@@ -144,7 +147,8 @@ public class AggregateOfflineStorageTests
     public async Task SaveAsync_UsingDefaultDirectory_ShouldSaveFile()
     {
         // Arrange
-        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
+        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage<PostIdentifier>(
+            _fileStorageMock.Object,
             _fileSystemMock.Object, _logger, _domainEventMapperMock.Object, _serializerMock.Object);
 
         Mock<IFileInfo> fileInfoMock = new();
@@ -184,7 +188,8 @@ public class AggregateOfflineStorageTests
         string offlineDirectory = _faker.System.DirectoryPath();
 
         // Arrange
-        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
+        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage<PostIdentifier>(
+            _fileStorageMock.Object,
             _fileSystemMock.Object, _logger, _domainEventMapperMock.Object, _serializerMock.Object, offlineDirectory);
 
         Mock<IFileInfo> fileInfoMock = new();
@@ -221,7 +226,8 @@ public class AggregateOfflineStorageTests
         string offlineDirectory = _faker.System.DirectoryPath();
 
         // Arrange
-        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
+        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage<PostIdentifier>(
+            _fileStorageMock.Object,
             _fileSystemMock.Object, _logger, _domainEventMapperMock.Object, _serializerMock.Object, offlineDirectory);
 
         Mock<IFileInfo> fileInfoMock = new();
@@ -258,7 +264,8 @@ public class AggregateOfflineStorageTests
     public void Save_WhenExceptionOccurs_ShouldCatchAndThrowAggregateBoxingFailedException(Type exception)
     {
         // Arrange
-        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
+        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage<PostIdentifier>(
+            _fileStorageMock.Object,
             _fileSystemMock.Object, _logger, _domainEventMapperMock.Object, _serializerMock.Object);
 
         string directoryPath = _faker.System.DirectoryPath();
@@ -284,7 +291,8 @@ public class AggregateOfflineStorageTests
     public async Task SaveAsync_WhenExceptionOccurs_ShouldCatchAndThrowAggregateBoxingFailedException(Type exception)
     {
         // Arrange
-        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage(_fileStorageMock.Object,
+        IAggregateOfflineStorage aggregateOfflineStorage = new AggregateOfflineStorage<PostIdentifier>(
+            _fileStorageMock.Object,
             _fileSystemMock.Object, _logger, _domainEventMapperMock.Object, _serializerMock.Object);
 
         string directoryPath = _faker.System.DirectoryPath();

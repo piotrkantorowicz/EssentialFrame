@@ -5,6 +5,7 @@ using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 
 namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeImageName;
@@ -12,16 +13,16 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeImage
 internal sealed class ChangeImageNameCommandHandler : ICommandHandler<ChangeImageNameCommand>,
     IAsyncCommandHandler<ChangeImageNameCommand>
 {
-    private readonly IAggregateRepository _aggregateRepository;
+    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public ChangeImageNameCommandHandler(IAggregateRepository aggregateRepository)
+    public ChangeImageNameCommandHandler(IAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
     }
     
     public ICommandResult Handle(ChangeImageNameCommand command)
     {
-        Post post = _aggregateRepository.Get<Post>(command.AggregateIdentifier);
+        Post post = _aggregateRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
 
         post.ChangeImageName(command.ImageId, Name.Create(command.ImageName), command.IdentityContext);
         _aggregateRepository.Save(post);
@@ -32,7 +33,8 @@ internal sealed class ChangeImageNameCommandHandler : ICommandHandler<ChangeImag
     public async Task<ICommandResult> HandleAsync(ChangeImageNameCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync<Post>(command.AggregateIdentifier, cancellationToken);
+        Post post = await _aggregateRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
+            cancellationToken);
 
         post.ChangeImageName(command.ImageId, Name.Create(command.ImageName), command.IdentityContext);
         await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);

@@ -1,14 +1,15 @@
 ﻿using System;
 using EssentialFrame.Domain.Rules.Base;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public class PostImageMustExistsWhenUpdatingOrDeletingRule : BusinessRule
+public class PostImageMustExistsWhenUpdatingOrDeletingRule : IdentifiableBusinessRule<PostIdentifier>
 {
     private readonly Image _image;
 
-    public PostImageMustExistsWhenUpdatingOrDeletingRule(Guid domainObjectIdentifier, Type businessObjectType,
+    public PostImageMustExistsWhenUpdatingOrDeletingRule(PostIdentifier domainObjectIdentifier, Type businessObjectType,
         Image image) : base(domainObjectIdentifier, businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
     {
         _image = image;

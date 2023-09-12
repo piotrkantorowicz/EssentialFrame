@@ -1,9 +1,11 @@
 ﻿using EssentialFrame.Domain.Events.Core.Aggregates;
 using EssentialFrame.Domain.Events.Core.Snapshots.Interfaces;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Events.Core.Snapshots;
 
-public class SnapshotStrategy : ISnapshotStrategy
+public class SnapshotStrategy<TAggregate, TAggregateIdentifier> : ISnapshotStrategy<TAggregate, TAggregateIdentifier>
+    where TAggregate : IAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
     private readonly int _interval;
 
@@ -12,7 +14,7 @@ public class SnapshotStrategy : ISnapshotStrategy
         _interval = interval;
     }
 
-    public bool ShouldTakeSnapShot(AggregateRoot aggregate)
+    public bool ShouldTakeSnapShot(TAggregate aggregate)
     {
         int i = aggregate.AggregateVersion;
 

@@ -1,6 +1,6 @@
 ﻿namespace EssentialFrame.Tests.Utils;
 
-public class Defaults
+public static class Defaults
 {
     public const int DefaultAggregateVersion = 1;
 

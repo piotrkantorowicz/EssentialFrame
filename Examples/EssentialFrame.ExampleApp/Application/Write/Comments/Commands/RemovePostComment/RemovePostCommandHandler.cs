@@ -6,15 +6,17 @@ using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.DeletedReasons;
+using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.RemovePostComment;
 
 internal sealed class RemovePostCommandHandler : ICommandHandler<RemovePostCommand>,
     IAsyncCommandHandler<RemovePostCommand>
 {
-    private readonly IAggregateRepository _aggregateRepository;
+    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public RemovePostCommandHandler(IAggregateRepository aggregateRepository)
+    public RemovePostCommandHandler(IAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
     }

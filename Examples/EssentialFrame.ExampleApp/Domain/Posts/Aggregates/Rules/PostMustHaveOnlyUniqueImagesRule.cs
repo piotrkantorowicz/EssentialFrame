@@ -2,16 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public class PostMustHaveOnlyUniqueImagesRule : BusinessRule
+public class PostMustHaveOnlyUniqueImagesRule : IdentifiableBusinessRule<PostIdentifier>
 {
     private readonly Name[] _aggregateExistingImagesNames;
     private readonly Name _imageName;
 
-    public PostMustHaveOnlyUniqueImagesRule(Guid domainObjectIdentifier, Type businessObjectType, Name imageName,
+    public PostMustHaveOnlyUniqueImagesRule(PostIdentifier domainObjectIdentifier, Type businessObjectType,
+        Name imageName,
         Name[] aggregateExistingImagesNames) : base(domainObjectIdentifier, businessObjectType,
         BusinessRuleTypes.AggregateBusinessRule)
     {

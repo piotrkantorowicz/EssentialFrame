@@ -1,34 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.Events;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 
-public class DeleteImagesDomainEvent : DomainEvent
+public class DeleteImagesDomainEvent : DomainEvent<PostIdentifier>
 {
-    public DeleteImagesDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext,
-        HashSet<Guid> imagesIds) :
-        base(aggregateIdentifier, identityContext)
+    public DeleteImagesDomainEvent(PostIdentifier aggregateIdentifier, IIdentityContext identityContext,
+        HashSet<Guid> imagesIds) : base(aggregateIdentifier, identityContext)
     {
         ImagesIds = imagesIds;
     }
 
-    public DeleteImagesDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
-        HashSet<Guid> imagesIds) : base(aggregateIdentifier, eventIdentifier, identityContext)
+    public DeleteImagesDomainEvent(PostIdentifier aggregateIdentifier, Guid eventIdentifier,
+        IIdentityContext identityContext, HashSet<Guid> imagesIds) : base(aggregateIdentifier, eventIdentifier,
+        identityContext)
     {
         ImagesIds = imagesIds;
     }
 
-    public DeleteImagesDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext, int expectedVersion,
-        HashSet<Guid> imagesIds) : base(aggregateIdentifier, identityContext, expectedVersion)
+    public DeleteImagesDomainEvent(PostIdentifier aggregateIdentifier, IIdentityContext identityContext,
+        int expectedVersion, HashSet<Guid> imagesIds) : base(aggregateIdentifier, identityContext, expectedVersion)
     {
         ImagesIds = imagesIds;
     }
 
-    public DeleteImagesDomainEvent(Guid aggregateIdentifier, Guid eventIdentifier, IIdentityContext identityContext,
-        int expectedVersion, HashSet<Guid> imagesIds) : base(aggregateIdentifier, eventIdentifier, identityContext,
-        expectedVersion)
+    public DeleteImagesDomainEvent(PostIdentifier aggregateIdentifier, Guid eventIdentifier,
+        IIdentityContext identityContext, int expectedVersion, HashSet<Guid> imagesIds) : base(aggregateIdentifier,
+        eventIdentifier, identityContext, expectedVersion)
     {
         ImagesIds = imagesIds;
     }

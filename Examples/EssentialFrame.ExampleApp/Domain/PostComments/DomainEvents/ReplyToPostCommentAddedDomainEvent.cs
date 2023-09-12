@@ -1,16 +1,16 @@
-﻿using System;
-using EssentialFrame.Domain.Events;
+﻿using EssentialFrame.Domain.Events;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
 
-public class ReplyToPostCommentAddedDomainEvent : DomainEvent
+public class ReplyToPostCommentAddedDomainEvent : DomainEvent<PostCommentIdentifier>
 {
-    public ReplyToPostCommentAddedDomainEvent(Guid aggregateIdentifier, IIdentityContext identityContext,
-        PostIdentifier postIdentifier, UserIdentifier authorIdentifier,
+    public ReplyToPostCommentAddedDomainEvent(PostCommentIdentifier aggregateIdentifier,
+        IIdentityContext identityContext, PostIdentifier postIdentifier, AuthorIdentifier authorIdentifier,
         PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text, Date createdDate) : base(
         aggregateIdentifier, identityContext)
     {
@@ -23,7 +23,7 @@ public class ReplyToPostCommentAddedDomainEvent : DomainEvent
 
     public PostIdentifier PostIdentifier { get; }
 
-    public UserIdentifier AuthorIdentifier { get; }
+    public AuthorIdentifier AuthorIdentifier { get; }
 
     public PostCommentIdentifier ReplyToPostCommentIdentifier { get; }
 

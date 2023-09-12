@@ -1,7 +1,8 @@
-using System;
 using Bogus;
 using EssentialFrame.Domain.Events.Core.Factories;
+using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -16,10 +17,10 @@ public sealed class GenericAggregateFactoryTests
     public void CreateAggregate_WithIdentifier_ShouldCreateInstanceAndAssignValues() 
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         
         // Act
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier);
+        Post aggregate = GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier);
 
         // Assert
         aggregate.Should().NotBeNull();
@@ -30,11 +31,12 @@ public sealed class GenericAggregateFactoryTests
     public void CreateAggregate_WithIdentifierAndVersionAndIdentity_ShouldCreateInstanceAndAssignValues()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         
         // Act
-        Post aggregate = GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion);
+        Post aggregate =
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion);
 
         // Assert
         aggregate.Should().NotBeNull();
@@ -46,13 +48,14 @@ public sealed class GenericAggregateFactoryTests
     public void CreateAggregate_WithIdentifierAndVersionAndIdentityAndTenant_ShouldCreateInstanceAndAssignValues()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
-        Guid? tenantIdentifier = _faker.Random.Guid();
+        TenantIdentifier tenantIdentifier = TenantIdentifier.New(_faker.Random.Guid());
 
         // Act
         Post aggregate =
-            GenericAggregateFactory<Post>.CreateAggregate(aggregateIdentifier, aggregateVersion, tenantIdentifier);
+            GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier, aggregateVersion,
+                tenantIdentifier);
 
         // Assert
         aggregate.Should().NotBeNull();

@@ -1,10 +1,13 @@
-﻿using EssentialFrame.Domain.ValueObjects;
+﻿using EssentialFrame.Domain.Shared;
+using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Aggregates;
 
-public interface IAggregateRoot<out T> where T : TypedGuidIdentifier
+public interface IAggregateRoot<out TAggregateIdentifier> : IDeletableDomainObject
+    where TAggregateIdentifier : TypedGuidIdentifier
 {
-    T AggregateIdentifier { get; }
+    TAggregateIdentifier AggregateIdentifier { get; }
 
-    Guid? TenantIdentifier { get; }
+    TenantIdentifier TenantIdentifier { get; }
 }

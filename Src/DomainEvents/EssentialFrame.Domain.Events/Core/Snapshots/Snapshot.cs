@@ -1,15 +1,17 @@
-﻿namespace EssentialFrame.Domain.Events.Core.Snapshots;
+﻿using EssentialFrame.Domain.ValueObjects.Core;
 
-public class Snapshot
+namespace EssentialFrame.Domain.Events.Core.Snapshots;
+
+public class Snapshot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    public Snapshot(Guid aggregateIdentifier, int aggregateVersion, object aggregateState)
+    public Snapshot(TAggregateIdentifier aggregateIdentifier, int aggregateVersion, object aggregateState)
     {
         AggregateIdentifier = aggregateIdentifier;
         AggregateVersion = aggregateVersion;
         AggregateState = aggregateState;
     }
 
-    public Guid AggregateIdentifier { get; }
+    public TAggregateIdentifier AggregateIdentifier { get; }
 
     public int AggregateVersion { get; }
 

@@ -16,17 +16,6 @@ public abstract class BusinessRule : IBusinessRule
         Parameters.Add(nameof(DomainObjectType), domainObjectType);
     }
 
-    protected BusinessRule(Guid domainObjectIdentifier, Type domainObjectType, string businessRuleType) : this(
-        domainObjectType, businessRuleType)
-    {
-        DomainObjectIdentifier = domainObjectIdentifier;
-        DomainObjectType = domainObjectType ?? throw new ArgumentNullException(nameof(domainObjectType));
-
-        Parameters.Add(nameof(DomainObjectIdentifier), domainObjectIdentifier);
-    }
-
-    protected Guid DomainObjectIdentifier { get; }
-
     protected Type DomainObjectType { get; }
 
     protected string BusinessRuleType { get; }

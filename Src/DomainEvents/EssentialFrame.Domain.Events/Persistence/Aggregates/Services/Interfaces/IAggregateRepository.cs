@@ -1,16 +1,17 @@
 ﻿using EssentialFrame.Domain.Events.Core.Aggregates;
+using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
 
-public interface IAggregateRepository
+public interface IAggregateRepository<TAggregate, TAggregateIdentifier>
+    where TAggregate : IAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
-    T Get<T>(Guid id) where T : AggregateRoot;
+    TAggregate Get(TAggregateIdentifier aggregateIdentifier);
 
-    Task<T> GetAsync<T>(Guid id, CancellationToken cancellationToken = default)
-        where T : AggregateRoot;
+    Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
 
-    IDomainEvent[] Save<T>(T aggregate, int? version = null) where T : AggregateRoot;
+    IDomainEvent<TAggregateIdentifier>[] Save(TAggregate aggregate, int? version = null);
 
-    Task<IDomainEvent[]> SaveAsync<T>(T aggregate, int? version = null, CancellationToken cancellationToken = default)
-        where T : AggregateRoot;
+    Task<IDomainEvent<TAggregateIdentifier>[]> SaveAsync(TAggregate aggregate, int? version = null,
+        CancellationToken cancellationToken = default);
 }

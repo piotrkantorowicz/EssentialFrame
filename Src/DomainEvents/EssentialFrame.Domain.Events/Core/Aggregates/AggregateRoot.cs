@@ -1,43 +1,63 @@
 ﻿using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Domain.Shared;
+using EssentialFrame.Domain.ValueObjects;
+using EssentialFrame.Domain.ValueObjects.Core;
 using EssentialFrame.Serialization.Interfaces;
+using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Events.Core.Aggregates;
 
-public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
+public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggregateIdentifier>
+    where TAggregateIdentifier : TypedGuidIdentifier
 {
-    private readonly List<IDomainEvent> _changes = new();
+    private readonly List<IDomainEvent<TAggregateIdentifier>> _changes = new();
 
-    protected AggregateRoot(Guid aggregateIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier)
     {
-        AggregateIdentifier = aggregateIdentifier == default ? Guid.NewGuid() : aggregateIdentifier;
+        AggregateIdentifier = aggregateIdentifier;
     }
 
-    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, int aggregateVersion)
     {
-        AggregateIdentifier = aggregateIdentifier == default ? Guid.NewGuid() : aggregateIdentifier;
+        AggregateIdentifier = aggregateIdentifier;
         AggregateVersion = aggregateVersion;
     }
 
-    protected AggregateRoot(Guid aggregateIdentifier, int aggregateVersion, Guid tenantIdentifier)
+    protected AggregateRoot(TAggregateIdentifier aggregateIdentifier, int aggregateVersion,
+        TenantIdentifier tenantIdentifier)
     {
-        AggregateIdentifier = aggregateIdentifier == default ? Guid.NewGuid() : aggregateIdentifier;
+        AggregateIdentifier = aggregateIdentifier;
         AggregateVersion = aggregateVersion;
-        TenantIdentifier = tenantIdentifier == default ? Guid.Empty : tenantIdentifier;
+        TenantIdentifier = tenantIdentifier;
     }
 
-    public Guid AggregateIdentifier { get; }
+    public TAggregateIdentifier AggregateIdentifier { get; }
 
     public int AggregateVersion { get; private set; }
 
-    public Guid? TenantIdentifier { get; protected set; }
+    public TenantIdentifier TenantIdentifier { get; protected set; }
 
-    public AggregateState State { get; protected set; }
+    public AggregateState<TAggregateIdentifier> State { get; protected set; }
 
-    public abstract AggregateState CreateState();
+    public DateTimeOffset? DeletedDate { get; private set; }
+
+    public bool IsDeleted { get; private set; }
+
+    public void SafeDelete()
+    {
+        DeletedDate = SystemClock.UtcNow;
+        IsDeleted = true;
+    }
+
+    public void UnDelete()
+    {
+        DeletedDate = null;
+        IsDeleted = false;
+    }
+
+    public abstract AggregateState<TAggregateIdentifier> CreateState();
     public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
 
-    public IDomainEvent[] GetUncommittedChanges()
+    public IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges()
     {
         lock (_changes)
         {
@@ -45,16 +65,16 @@ public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
         }
     }
 
-    public IDomainEvent[] FlushUncommittedChanges()
+    public IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges()
     {
         lock (_changes)
         {
-            IDomainEvent[] changes = _changes.ToArray();
+            IDomainEvent<TAggregateIdentifier>[] changes = _changes.ToArray();
             int i = 0;
 
-            foreach (IDomainEvent change in changes)
+            foreach (IDomainEvent<TAggregateIdentifier> change in changes)
             {
-                if (change.AggregateIdentifier == Guid.Empty || AggregateIdentifier == Guid.Empty)
+                if (change.AggregateIdentifier.Empty() || AggregateIdentifier.Empty())
                 {
                     throw new MissingAggregateIdentifierException(GetType(), change.GetType());
                 }
@@ -72,21 +92,21 @@ public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
         }
     }
 
-    public void Rehydrate(IEnumerable<IDomainEvent> history)
+    public void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier>> history)
     {
         lock (_changes)
         {
-            foreach (IDomainEvent change in history)
+            foreach (IDomainEvent<TAggregateIdentifier> change in history)
             {
                 if (change.AggregateIdentifier != AggregateIdentifier)
                 {
-                    throw new UnmatchedDomainEventException(GetType(), change.GetType(), AggregateIdentifier,
-                        change.AggregateIdentifier);
+                    throw new UnmatchedDomainEventException(GetType(), change.GetType(), AggregateIdentifier.ToString(),
+                        change.AggregateIdentifier.ToString());
                 }
 
                 if (change.AggregateVersion != AggregateVersion + 1)
                 {
-                    throw new UnorderedEventsException(change.AggregateIdentifier);
+                    throw new UnorderedEventsException(change.AggregateIdentifier.ToString());
                 }
 
                 ApplyEvent(change);
@@ -96,7 +116,7 @@ public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
         }
     }
 
-    protected void Apply(IDomainEvent change)
+    protected void Apply(IDomainEvent<TAggregateIdentifier> change)
     {
         lock (_changes)
         {
@@ -106,7 +126,7 @@ public abstract class AggregateRoot : DeletebleObject, IAggregateRoot
         }
     }
 
-    protected virtual void ApplyEvent(IDomainEvent change)
+    protected virtual void ApplyEvent(IDomainEvent<TAggregateIdentifier> change)
     {
         State ??= CreateState();
         State.Apply(change);
