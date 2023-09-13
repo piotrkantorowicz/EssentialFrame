@@ -29,6 +29,4 @@
         <ProjectReference Include="..\..\Core\EssentialFrame\EssentialFrame.csproj"/>
     </ItemGroup>
 
-
-
 </Project>

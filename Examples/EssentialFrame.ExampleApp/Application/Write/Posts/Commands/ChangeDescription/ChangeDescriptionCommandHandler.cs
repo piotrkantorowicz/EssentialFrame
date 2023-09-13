@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
-using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
@@ -13,19 +13,21 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeDescr
 internal sealed class ChangeDescriptionCommandHandler : ICommandHandler<ChangeDescriptionCommand>,
     IAsyncCommandHandler<ChangeDescriptionCommand>
 {
-    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
+    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _eventSourcingAggregateRepository;
 
-    public ChangeDescriptionCommandHandler(IAggregateRepository<Post, PostIdentifier> aggregateRepository)
+    public ChangeDescriptionCommandHandler(
+        IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository)
     {
-        _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
+        _eventSourcingAggregateRepository = eventSourcingAggregateRepository ??
+                                            throw new ArgumentNullException(nameof(eventSourcingAggregateRepository));
     }
     
     public ICommandResult Handle(ChangeDescriptionCommand command)
     {
-        Post post = _aggregateRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
+        Post post = _eventSourcingAggregateRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
 
         post.ChangeDescription(Description.Create(command.Description), command.IdentityContext);
-        _aggregateRepository.Save(post);
+        _eventSourcingAggregateRepository.Save(post);
 
         return CommandResult.Success(post.State);
     }
@@ -33,11 +35,11 @@ internal sealed class ChangeDescriptionCommandHandler : ICommandHandler<ChangeDe
     public async Task<ICommandResult> HandleAsync(ChangeDescriptionCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
+        Post post = await _eventSourcingAggregateRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
             cancellationToken);
 
         post.ChangeDescription(Description.Create(command.Description), command.IdentityContext);
-        await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
+        await _eventSourcingAggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
 
         return CommandResult.Success(post.State);
     }

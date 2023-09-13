@@ -8,11 +8,6 @@ public sealed class CorrelationIdentifier : TypedGuidIdentifier
     {
     }
 
-    public static CorrelationIdentifier New()
-    {
-        return new CorrelationIdentifier(Guid.NewGuid());
-    }
-
     public static CorrelationIdentifier New(Guid value)
     {
         if (value == Guid.Empty)
