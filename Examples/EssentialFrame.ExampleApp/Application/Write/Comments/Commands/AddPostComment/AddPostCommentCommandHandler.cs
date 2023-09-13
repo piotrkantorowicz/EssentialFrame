@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
-using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
@@ -15,9 +15,9 @@ namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.AddPostC
 internal sealed class AddPostCommentCommandHandler : ICommandHandler<AddPostCommentCommand>,
     IAsyncCommandHandler<AddPostCommentCommand>
 {
-    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
+    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public AddPostCommentCommandHandler(IAggregateRepository<Post, PostIdentifier> aggregateRepository)
+    public AddPostCommentCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
     }

@@ -1,4 +1,4 @@
-using EssentialFrame.Domain.Events.Core.Snapshots;
+using EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Snapshots;

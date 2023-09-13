@@ -51,7 +51,7 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggr
         }
     }
 
-    public void ClearDomainEvents()
+    protected void ClearDomainEvents()
     {
         lock (_changes)
         {

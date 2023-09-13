@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
-using EssentialFrame.Domain.Events.Core.Factories;
-using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.EventSourcing.Core.Factories;
+using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
@@ -20,9 +20,9 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.Create;
 internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPostCommand>,
     IAsyncCommandHandler<CreateNewPostCommand>
 {
-    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
+    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public CreateNewPostCommandHandler(IAggregateRepository<Post, PostIdentifier> aggregateRepository)
+    public CreateNewPostCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
     }
@@ -48,7 +48,7 @@ internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPos
 
     private static Post Create(CreateNewPostCommand command)
     {
-        Post post = GenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(
+        Post post = EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(
             PostIdentifier.New(command.AggregateIdentifier));
 
         post.Create(Title.Default(command.Title), Description.Create(command.Description),

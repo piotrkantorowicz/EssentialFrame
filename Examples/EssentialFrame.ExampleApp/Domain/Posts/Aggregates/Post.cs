@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using EssentialFrame.Domain.Events.Core.Aggregates;
+using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
@@ -14,7 +14,7 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
-public sealed class Post : AggregateRoot<PostIdentifier>
+public sealed class Post : EventSourcingAggregateRoot<PostIdentifier>
 {
     private Post(PostIdentifier aggregateIdentifier) : base(aggregateIdentifier)
     {

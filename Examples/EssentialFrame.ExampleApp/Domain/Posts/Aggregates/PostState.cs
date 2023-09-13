@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EssentialFrame.Domain.Events.Core.Aggregates;
+using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
@@ -13,7 +13,7 @@ using EssentialFrame.Time;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
-public sealed class PostState : AggregateState<PostIdentifier>
+public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
 {
     private readonly PostIdentifier _aggregateIdentifier;
     private readonly Type _aggregateType;

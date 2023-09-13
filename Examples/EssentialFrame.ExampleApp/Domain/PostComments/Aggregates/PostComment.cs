@@ -1,6 +1,6 @@
 ﻿using System;
 using EssentialFrame.Domain.Aggregates;
-using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 using EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
@@ -43,7 +43,7 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
 
     public static PostComment Create(PostCommentIdentifier postCommentIdentifier, PostIdentifier postIdentifier,
         AuthorIdentifier userIdentifier, PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text,
-        IIdentityContext identityContext, IAggregateRepository<Post, PostIdentifier> aggregateRepository)
+        IIdentityContext identityContext, IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         PostComment postComment = new(postCommentIdentifier, postIdentifier, userIdentifier,
             replyToPostCommentIdentifier, text, TenantIdentifier.New(identityContext.Tenant.Identifier));
@@ -67,14 +67,13 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
     }
 
     public PostComment Reply(PostCommentText reply, AuthorIdentifier replierIdentifier,
-        IIdentityContext identityContext,
-        IAggregateRepository<Post, PostIdentifier> aggregateRepository)
+        IIdentityContext identityContext, IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         return Create(PostCommentIdentifier.New(), PostIdentifier, replierIdentifier, AggregateIdentifier, reply,
             identityContext, aggregateRepository);
     }
 
-    public void Edit(PostCommentText text, IAggregateRepository<Post, PostIdentifier> aggregateRepository,
+    public void Edit(PostCommentText text, IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository,
         IIdentityContext identityContext) 
     {
         CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier,
@@ -92,7 +91,8 @@ public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
             EditedDate, editorIdentifier));
     }
 
-    public void Remove(DeletedReason reason, IAggregateRepository<Post, PostIdentifier> aggregateRepository,
+    public void Remove(DeletedReason reason,
+        IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository,
         IIdentityContext identityContext)
     {
         CheckRule(new PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(AggregateIdentifier,

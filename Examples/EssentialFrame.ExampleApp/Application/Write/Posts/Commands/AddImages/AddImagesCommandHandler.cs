@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
-using EssentialFrame.Domain.Events.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
@@ -16,9 +16,9 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.AddImages;
 internal sealed class AddImagesCommandHandler : ICommandHandler<AddImagesCommand>,
     IAsyncCommandHandler<AddImagesCommand>
 {
-    private readonly IAggregateRepository<Post, PostIdentifier> _aggregateRepository;
+    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public AddImagesCommandHandler(IAggregateRepository<Post, PostIdentifier> aggregateRepository)
+    public AddImagesCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository)
     {
         _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
     }

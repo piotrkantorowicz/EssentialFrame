@@ -8,11 +8,6 @@ public sealed class UserIdentifier : TypedGuidIdentifier
     {
     }
 
-    public static UserIdentifier New()
-    {
-        return new UserIdentifier(Guid.NewGuid());
-    }
-
     public static UserIdentifier New(Guid value)
     {
         if (value == Guid.Empty)

@@ -8,11 +8,6 @@ public sealed class TenantIdentifier : TypedGuidIdentifier
     {
     }
 
-    public static TenantIdentifier New()
-    {
-        return new TenantIdentifier(Guid.NewGuid());
-    }
-
     public static TenantIdentifier New(Guid value)
     {
         return new TenantIdentifier(value);
