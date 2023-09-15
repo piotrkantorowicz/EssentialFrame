@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
-using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;

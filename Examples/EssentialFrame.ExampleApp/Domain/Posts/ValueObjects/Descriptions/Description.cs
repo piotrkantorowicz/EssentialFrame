@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using EssentialFrame.Domain.ValueObjects.Core;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions.Rules;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;

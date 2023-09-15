@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using EssentialFrame.Domain.Core.Rules.Base;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
-using EssentialFrame.Domain.Rules.Base;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;

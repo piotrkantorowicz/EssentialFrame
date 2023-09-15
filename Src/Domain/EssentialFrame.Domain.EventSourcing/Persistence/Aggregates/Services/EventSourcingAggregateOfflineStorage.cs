@@ -1,10 +1,11 @@
 ﻿using System.IO.Abstractions;
-using EssentialFrame.Domain.Events;
-using EssentialFrame.Domain.EventSourcing.Exceptions;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
+using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
-using EssentialFrame.Domain.ValueObjects.Core;
+using EssentialFrame.Domain.Exceptions;
+using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
+using EssentialFrame.Domain.Persistence.Models;
 using EssentialFrame.Files;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
@@ -51,10 +52,10 @@ internal sealed class EventSourcingAggregateOfflineStorage<TAggregateIdentifier>
             string aggregateDirectory = _fileSystem.Path.Combine(_offlineStorageDirectory,
                 eventSourcingAggregate.AggregateIdentifier.ToString());
 
-            (string eventsContents, string metaDataContents) = CreateFileContents(eventSourcingAggregate, events);
+            (string eventsContent, string metaDataContent) = CreateFileContents(eventSourcingAggregate, events);
 
-            IFileInfo eventsFileInfo = _fileStorage.Create(aggregateDirectory, EventsFileName, eventsContents);
-            _fileStorage.Create(aggregateDirectory, MetadataFileName, metaDataContents);
+            IFileInfo eventsFileInfo = _fileStorage.Create(aggregateDirectory, EventsFileName, eventsContent);
+            _fileStorage.Create(aggregateDirectory, MetadataFileName, metaDataContent);
 
             string indexFileContents =
                 $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{eventSourcingAggregate},{eventSourcingAggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{eventSourcingAggregate.TenantIdentifier}\n";
@@ -82,12 +83,12 @@ internal sealed class EventSourcingAggregateOfflineStorage<TAggregateIdentifier>
             string aggregateDirectory = _fileSystem.Path.Combine(_offlineStorageDirectory,
                 eventSourcingAggregate.AggregateIdentifier.ToString());
 
-            (string eventsContents, string metaDataContents) = CreateFileContents(eventSourcingAggregate, events);
+            (string eventsContent, string metaDataContent) = CreateFileContents(eventSourcingAggregate, events);
 
-            IFileInfo eventsFileInfo = await _fileStorage.CreateAsync(aggregateDirectory, EventsFileName,
-                eventsContents, cancellationToken: cancellationToken);
+            IFileInfo eventsFileInfo = await _fileStorage.CreateAsync(aggregateDirectory, EventsFileName, eventsContent,
+                cancellationToken: cancellationToken);
 
-            await _fileStorage.CreateAsync(aggregateDirectory, MetadataFileName, metaDataContents,
+            await _fileStorage.CreateAsync(aggregateDirectory, MetadataFileName, metaDataContent,
                 cancellationToken: cancellationToken);
 
             string indexFileContents =

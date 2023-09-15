@@ -12,9 +12,9 @@ public interface IFileStorage
     Task<string> ReadAsync(string directory, string fileName, Encoding encoding = null,
         CancellationToken cancellationToken = default);
 
-    IFileInfo Create(string directory, string fileName, string contents, Encoding encoding = null);
+    IFileInfo Create(string directory, string fileName, string content, Encoding encoding = null);
 
-    Task<IFileInfo> CreateAsync(string directory, string fileName, string contents, Encoding encoding = null,
+    Task<IFileInfo> CreateAsync(string directory, string fileName, string content, Encoding encoding = null,
         CancellationToken cancellationToken = default);
 
     void Delete(string filePath);

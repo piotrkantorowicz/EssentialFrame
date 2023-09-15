@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Bogus;
-using EssentialFrame.Domain.Events;
+using EssentialFrame.Domain.Core.Events;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.ExampleApp.Application.Identity;

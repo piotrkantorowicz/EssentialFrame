@@ -1,5 +1,5 @@
 using System;
-using EssentialFrame.Domain.Events;
+using EssentialFrame.Domain.Core.Events;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Identity;

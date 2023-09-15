@@ -1,11 +1,11 @@
-﻿using EssentialFrame.Domain.Events;
+﻿using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
-using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 
 public interface IEventSourcingAggregateRepository<TAggregate, TAggregateIdentifier>
-    where TAggregate : IEventSourcingAggregateRoot<TAggregateIdentifier>
+    where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier>
     where TAggregateIdentifier : TypedGuidIdentifier
 {
     TAggregate Get(TAggregateIdentifier aggregateIdentifier);

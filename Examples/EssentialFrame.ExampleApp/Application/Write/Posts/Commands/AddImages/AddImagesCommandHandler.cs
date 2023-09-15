@@ -16,21 +16,21 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.AddImages;
 internal sealed class AddImagesCommandHandler : ICommandHandler<AddImagesCommand>,
     IAsyncCommandHandler<AddImagesCommand>
 {
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _aggregateRepository;
+    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
 
-    public AddImagesCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository)
+    public AddImagesCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository)
     {
-        _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
+        _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
     }
 
     public ICommandResult Handle(AddImagesCommand command)
     {
-        Post post = _aggregateRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
+        Post post = _postRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
 
         post.AddImages(command.Images.Select(i => Image.Create(Name.Create(i.ImageName), BytesContent.Create(i.Bytes)))
             .ToHashSet(), command.IdentityContext);
 
-        _aggregateRepository.Save(post);
+        _postRepository.Save(post);
 
         return CommandResult.Success(post.State);
     }
@@ -38,13 +38,13 @@ internal sealed class AddImagesCommandHandler : ICommandHandler<AddImagesCommand
     public async Task<ICommandResult> HandleAsync(AddImagesCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
+        Post post = await _postRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
             cancellationToken);
 
         post.AddImages(command.Images.Select(i => Image.Create(Name.Create(i.ImageName), BytesContent.Create(i.Bytes)))
             .ToHashSet(), command.IdentityContext);
 
-        await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
+        await _postRepository.SaveAsync(post, cancellationToken: cancellationToken);
 
         return CommandResult.Success(post.State);
     }

@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.ValueObjects.Core;
+﻿using EssentialFrame.Domain.Core.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 

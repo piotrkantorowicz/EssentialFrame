@@ -1,17 +1,19 @@
-﻿using EssentialFrame.Domain.Events;
+﻿using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.EventSourcing.Exceptions;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
-using EssentialFrame.Domain.ValueObjects.Core;
+using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
+using EssentialFrame.Domain.Persistence.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
 
-public sealed class
+internal sealed class
     EventSourcingAggregateRepository<TAggregate, TAggregateIdentifier> : IEventSourcingAggregateRepository<TAggregate,
-        TAggregateIdentifier> where TAggregate : IEventSourcingAggregateRoot<TAggregateIdentifier>
+        TAggregateIdentifier> where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier>
     where TAggregateIdentifier : TypedGuidIdentifier
 {
     private readonly IEventSourcingAggregateMapper<TAggregateIdentifier> _eventSourcingAggregateMapper;
