@@ -1,4 +1,5 @@
 ﻿using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
+using EssentialFrame.Domain.Persistence.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 

@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Cache.Interfaces;
-using EssentialFrame.Domain.Events;
+using EssentialFrame.Domain.Core.Events;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
+using EssentialFrame.Domain.Persistence.Models;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
@@ -301,7 +303,7 @@ public class DefaultEventSourcingAggregateStoreTests
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        IEnumerable<Guid> result = aggregateStore.GetDeleted();
+        IEnumerable<Guid> result = aggregateStore.GetExpired();
 
         // Assert
         result.Should().BeEquivalentTo(aggregates.Select(a => a.AggregateIdentifier));
@@ -318,7 +320,7 @@ public class DefaultEventSourcingAggregateStoreTests
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        IEnumerable<Guid> result = await aggregateStore.GetDeletedAsync();
+        IEnumerable<Guid> result = await aggregateStore.GetExpiredAsync();
 
         // Assert
         result.Should().BeEquivalentTo(aggregates.Select(a => a.AggregateIdentifier));

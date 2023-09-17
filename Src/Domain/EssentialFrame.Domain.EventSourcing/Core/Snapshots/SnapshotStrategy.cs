@@ -1,11 +1,11 @@
-﻿using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
+﻿using EssentialFrame.Domain.Core.ValueObjects.Core;
+using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.Domain.EventSourcing.Core.Snapshots.Interfaces;
-using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 
 public class SnapshotStrategy<TAggregate, TAggregateIdentifier> : ISnapshotStrategy<TAggregate, TAggregateIdentifier>
-    where TAggregate : IEventSourcingAggregateRoot<TAggregateIdentifier>
+    where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier>
     where TAggregateIdentifier : TypedGuidIdentifier
 {
     private readonly int _interval;

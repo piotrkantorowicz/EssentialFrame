@@ -20,18 +20,18 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.Create;
 internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPostCommand>,
     IAsyncCommandHandler<CreateNewPostCommand>
 {
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _aggregateRepository;
+    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
 
-    public CreateNewPostCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository)
+    public CreateNewPostCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository)
     {
-        _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
+        _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
     }
 
     public ICommandResult Handle(CreateNewPostCommand command)
     {
         Post post = Create(command);
 
-        _aggregateRepository.Save(post);
+        _postRepository.Save(post);
 
         return CommandResult.Success(post.State);
     }
@@ -41,7 +41,7 @@ internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPos
     {
         Post post = Create(command);
 
-        await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
+        await _postRepository.SaveAsync(post, cancellationToken: cancellationToken);
 
         return CommandResult.Success(post.State);
     }

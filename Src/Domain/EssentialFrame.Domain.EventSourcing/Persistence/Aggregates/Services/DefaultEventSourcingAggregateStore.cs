@@ -1,6 +1,7 @@
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.Persistence.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
 
@@ -26,9 +27,9 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
         return _aggregateCache.Exists(aggregateIdentifier);
     }
 
-    public Task<bool> ExistsAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(_aggregateCache.Exists(aggregateIdentifier));
+        return await Task.FromResult(_aggregateCache.Exists(aggregateIdentifier));
     }
 
     public bool Exists(Guid aggregateIdentifier, int version)
@@ -66,14 +67,14 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
         return await Task.FromResult(Get(aggregateIdentifier, version));
     }
 
-    public IEnumerable<Guid> GetDeleted()
+    public IEnumerable<Guid> GetExpired()
     {
         return _aggregateCache.GetMany((_, v) => v.IsDeleted)?.Select(v => v.AggregateIdentifier);
     }
 
-    public async Task<IEnumerable<Guid>> GetDeletedAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Guid>> GetExpiredAsync(CancellationToken cancellationToken = default)
     {
-        return await Task.FromResult(GetDeleted());
+        return await Task.FromResult(GetExpired());
     }
 
     public void Save(EventSourcingAggregateDataModel eventSourcingAggregate, IEnumerable<DomainEventDataModel> events)

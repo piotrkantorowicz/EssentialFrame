@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.Domain.Core.Rules.Base;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;

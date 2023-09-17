@@ -1,5 +1,5 @@
 ﻿using System;
-using EssentialFrame.Domain.ValueObjects.Core;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 

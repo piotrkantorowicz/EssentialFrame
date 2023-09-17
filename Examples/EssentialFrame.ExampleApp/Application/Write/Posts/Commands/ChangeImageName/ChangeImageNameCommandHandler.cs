@@ -13,19 +13,19 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeImage
 internal sealed class ChangeImageNameCommandHandler : ICommandHandler<ChangeImageNameCommand>,
     IAsyncCommandHandler<ChangeImageNameCommand>
 {
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _aggregateRepository;
+    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
 
-    public ChangeImageNameCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository)
+    public ChangeImageNameCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository)
     {
-        _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
+        _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
     }
     
     public ICommandResult Handle(ChangeImageNameCommand command)
     {
-        Post post = _aggregateRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
+        Post post = _postRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
 
         post.ChangeImageName(command.ImageId, Name.Create(command.ImageName), command.IdentityContext);
-        _aggregateRepository.Save(post);
+        _postRepository.Save(post);
 
         return CommandResult.Success(post.State);
     }
@@ -33,11 +33,11 @@ internal sealed class ChangeImageNameCommandHandler : ICommandHandler<ChangeImag
     public async Task<ICommandResult> HandleAsync(ChangeImageNameCommand command,
         CancellationToken cancellationToken = default)
     {
-        Post post = await _aggregateRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
+        Post post = await _postRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
             cancellationToken);
 
         post.ChangeImageName(command.ImageId, Name.Create(command.ImageName), command.IdentityContext);
-        await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
+        await _postRepository.SaveAsync(post, cancellationToken: cancellationToken);
 
         return CommandResult.Success(post.State);
     }

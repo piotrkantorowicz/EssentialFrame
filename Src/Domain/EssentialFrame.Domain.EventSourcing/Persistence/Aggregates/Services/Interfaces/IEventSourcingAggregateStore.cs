@@ -1,4 +1,5 @@
 ﻿using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
+using EssentialFrame.Domain.Persistence.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 
@@ -22,9 +23,9 @@ public interface IEventSourcingAggregateStore
     Task<IReadOnlyCollection<DomainEventDataModel>> GetAsync(Guid aggregateIdentifier, int version,
         CancellationToken cancellationToken = default);
 
-    IEnumerable<Guid> GetDeleted();
+    IEnumerable<Guid> GetExpired();
 
-    Task<IEnumerable<Guid>> GetDeletedAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<Guid>> GetExpiredAsync(CancellationToken cancellationToken = default);
 
     void Save(EventSourcingAggregateDataModel eventSourcingAggregate, IEnumerable<DomainEventDataModel> events);
 

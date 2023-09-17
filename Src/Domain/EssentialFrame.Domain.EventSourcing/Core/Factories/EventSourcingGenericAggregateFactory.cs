@@ -1,13 +1,13 @@
 ﻿using System.Reflection;
+using EssentialFrame.Domain.Core.ValueObjects;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Domain.ValueObjects;
-using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Factories;
 
 public static class EventSourcingGenericAggregateFactory<T, TAggregateIdentifier>
-    where T : IEventSourcingAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+    where T : class, IEventSourcingAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
     public static T CreateAggregate(TAggregateIdentifier aggregateIdentifier)
     {

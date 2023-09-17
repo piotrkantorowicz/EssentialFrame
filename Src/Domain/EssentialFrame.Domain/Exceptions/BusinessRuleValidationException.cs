@@ -1,4 +1,4 @@
-using EssentialFrame.Domain.Rules;
+using EssentialFrame.Domain.Core.Rules;
 using EssentialFrame.Extensions;
 
 namespace EssentialFrame.Domain.Exceptions;

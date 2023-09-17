@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.Domain.Core.Rules.Base;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;

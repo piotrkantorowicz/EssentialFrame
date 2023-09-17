@@ -1,5 +1,5 @@
 ﻿using System;
-using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.Domain.Core.Rules.Base;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 

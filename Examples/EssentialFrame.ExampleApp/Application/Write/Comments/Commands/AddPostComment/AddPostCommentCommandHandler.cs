@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.Persistence.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
@@ -15,11 +16,16 @@ namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.AddPostC
 internal sealed class AddPostCommentCommandHandler : ICommandHandler<AddPostCommentCommand>,
     IAsyncCommandHandler<AddPostCommentCommand>
 {
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _aggregateRepository;
+    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
+    private readonly IAggregateRepository<PostComment, PostCommentIdentifier> _postCommentRepository;
 
-    public AddPostCommentCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository)
+    public AddPostCommentCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository,
+        IAggregateRepository<PostComment, PostCommentIdentifier> postCommentRepository)
     {
-        _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
+        _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
+
+        _postCommentRepository =
+            postCommentRepository ?? throw new ArgumentNullException(nameof(postCommentRepository));
     }
 
     public ICommandResult Handle(AddPostCommentCommand command)
@@ -27,9 +33,9 @@ internal sealed class AddPostCommentCommandHandler : ICommandHandler<AddPostComm
         PostComment postComment = PostComment.Create(PostCommentIdentifier.New(command.AggregateIdentifier),
             PostIdentifier.New(command.PostIdentifier), AuthorIdentifier.New(command.UserIdentifier),
             PostCommentIdentifier.New(command.ReplyToCommentIdentifier ?? Guid.Empty),
-            PostCommentText.Create(command.Comment), command.IdentityContext, _aggregateRepository);
+            PostCommentText.Create(command.Comment), command.IdentityContext, _postRepository);
 
-        // TODO: Save the aggregate
+        _postCommentRepository.Save(postComment);
 
         return CommandResult.Success(postComment);
     }
@@ -40,9 +46,9 @@ internal sealed class AddPostCommentCommandHandler : ICommandHandler<AddPostComm
         PostComment postComment = PostComment.Create(PostCommentIdentifier.New(command.AggregateIdentifier),
             PostIdentifier.New(command.PostIdentifier), AuthorIdentifier.New(command.UserIdentifier),
             PostCommentIdentifier.New(command.ReplyToCommentIdentifier ?? Guid.Empty),
-            PostCommentText.Create(command.Comment), command.IdentityContext, _aggregateRepository);
+            PostCommentText.Create(command.Comment), command.IdentityContext, _postRepository);
 
-        // TODO: Save the aggregate
+        await _postCommentRepository.SaveAsync(postComment, cancellationToken);
 
         return CommandResult.Success(postComment);
     }
