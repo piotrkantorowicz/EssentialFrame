@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EssentialFrame.Domain.Persistence.Services;
 
-public class AggregateOfflineStorage : IAggregateOfflineStorage
+internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
 {
     private const string StateFileName = "state.json";
     private const string MetadataFileName = "metadata.txt";

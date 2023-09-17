@@ -57,10 +57,10 @@ internal sealed class EventSourcingAggregateOfflineStorage<TAggregateIdentifier>
             IFileInfo eventsFileInfo = _fileStorage.Create(aggregateDirectory, EventsFileName, eventsContent);
             _fileStorage.Create(aggregateDirectory, MetadataFileName, metaDataContent);
 
-            string indexFileContents =
+            string indexFileContent =
                 $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{eventSourcingAggregate},{eventSourcingAggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{eventSourcingAggregate.TenantIdentifier}\n";
 
-            _fileStorage.Create(aggregateDirectory, IndexFileName, indexFileContents);
+            _fileStorage.Create(aggregateDirectory, IndexFileName, indexFileContent);
         }
         catch (Exception exception)
         {

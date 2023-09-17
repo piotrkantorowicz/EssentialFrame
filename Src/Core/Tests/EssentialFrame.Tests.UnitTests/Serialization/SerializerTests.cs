@@ -34,10 +34,13 @@ public class SerializerTests
         Faker.Lorem.Sentence(), Faker.Random.Decimal(), Faker.Date.RecentOffset(),
         new List<BasicSerializationTestObject> { BasicObject });
 
-    private static object[] _serializedTestObjects = { new object[] { BasicObject }, new object[] { ComplexObject } };
+    private static readonly object[] SerializedTestObjects =
+    {
+        new object[] { BasicObject }, new object[] { ComplexObject }
+    };
 
     [Test]
-    [TestCaseSource(nameof(_serializedTestObjects))]
+    [TestCaseSource(nameof(SerializedTestObjects))]
     public void Serialize_Always_ShouldSerializeObject(object serializedObject)
     {
         // Arrange
@@ -49,7 +52,7 @@ public class SerializerTests
     }
 
     [Test]
-    [TestCaseSource(nameof(_serializedTestObjects))]
+    [TestCaseSource(nameof(SerializedTestObjects))]
     public void SerializeWithOptions_Always_ShouldSerializeObject(object serializedObject)
     {
         // Arrange
