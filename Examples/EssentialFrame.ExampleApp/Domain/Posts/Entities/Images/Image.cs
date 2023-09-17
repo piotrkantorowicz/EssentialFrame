@@ -1,5 +1,5 @@
 using System;
-using EssentialFrame.Domain.Entities;
+using EssentialFrame.Domain.Core.Entities;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 

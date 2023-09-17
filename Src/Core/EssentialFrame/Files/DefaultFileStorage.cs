@@ -41,20 +41,20 @@ internal sealed class DefaultFileStorage : IFileStorage
         return await _fileSystem.File.ReadAllTextAsync(filePath, encoding ?? Encoding.Unicode, cancellationToken);
     }
 
-    public IFileInfo Create(string directory, string fileName, string contents, Encoding encoding = null)
+    public IFileInfo Create(string directory, string fileName, string content, Encoding encoding = null)
     {
         string filePath = CreateFilePath(directory, fileName);
 
-        _fileSystem.File.WriteAllText(filePath, contents, encoding ?? Encoding.Unicode);
+        _fileSystem.File.WriteAllText(filePath, content, encoding ?? Encoding.Unicode);
         return _fileSystem.FileInfo.New(filePath);
     }
 
-    public async Task<IFileInfo> CreateAsync(string directory, string fileName, string contents,
+    public async Task<IFileInfo> CreateAsync(string directory, string fileName, string content,
         Encoding encoding = null, CancellationToken cancellationToken = default)
     {
         string filePath = CreateFilePath(directory, fileName);
 
-        await _fileSystem.File.WriteAllTextAsync(filePath, contents, encoding ?? Encoding.Unicode, cancellationToken);
+        await _fileSystem.File.WriteAllTextAsync(filePath, content, encoding ?? Encoding.Unicode, cancellationToken);
         return _fileSystem.FileInfo.New(filePath);
     }
 

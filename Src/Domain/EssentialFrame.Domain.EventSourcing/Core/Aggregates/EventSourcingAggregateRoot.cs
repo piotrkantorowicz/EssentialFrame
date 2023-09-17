@@ -1,7 +1,7 @@
-﻿using EssentialFrame.Domain.Events;
+﻿using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.ValueObjects;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Domain.ValueObjects;
-using EssentialFrame.Domain.ValueObjects.Core;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
 
@@ -36,13 +36,16 @@ public abstract class
 
     public int AggregateVersion { get; private set; }
 
-    public TenantIdentifier TenantIdentifier { get; protected set; }
+    public TenantIdentifier TenantIdentifier { get; }
 
     public EventSourcingAggregateState<TAggregateIdentifier> State { get; protected set; }
 
     public DateTimeOffset? DeletedDate { get; private set; }
 
     public bool IsDeleted { get; private set; }
+
+    public abstract EventSourcingAggregateState<TAggregateIdentifier> CreateState();
+    public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
 
     public void SafeDelete()
     {
@@ -55,10 +58,7 @@ public abstract class
         DeletedDate = null;
         IsDeleted = false;
     }
-
-    public abstract EventSourcingAggregateState<TAggregateIdentifier> CreateState();
-    public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
-
+    
     public IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges()
     {
         lock (_changes)

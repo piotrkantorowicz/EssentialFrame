@@ -1,6 +1,6 @@
-﻿using EssentialFrame.Domain.EventSourcing.Core.Snapshots;
+﻿using EssentialFrame.Domain.Core.ValueObjects.Core;
+using EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
-using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Mappers.Interfaces;
 

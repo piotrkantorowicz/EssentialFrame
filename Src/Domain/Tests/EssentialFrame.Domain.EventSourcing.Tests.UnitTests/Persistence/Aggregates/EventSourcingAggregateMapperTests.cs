@@ -1,9 +1,9 @@
 ﻿using Bogus;
+using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
-using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using FluentAssertions;

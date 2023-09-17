@@ -1,7 +1,7 @@
-﻿using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
+﻿using EssentialFrame.Domain.Core.ValueObjects.Core;
+using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
-using EssentialFrame.Domain.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers;
 

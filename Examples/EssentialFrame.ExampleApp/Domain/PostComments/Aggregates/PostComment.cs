@@ -1,7 +1,7 @@
 ﻿using System;
-using EssentialFrame.Domain.Aggregates;
+using EssentialFrame.Domain.Core.Aggregates;
+using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
-using EssentialFrame.Domain.ValueObjects;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 using EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;

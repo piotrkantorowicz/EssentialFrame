@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bogus;
-using EssentialFrame.Domain.Events;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
+using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Persistence.Mappers;
+using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
+using EssentialFrame.Domain.Persistence.Models;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;

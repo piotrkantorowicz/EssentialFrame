@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using EssentialFrame.Domain.Rules.Base;
+using EssentialFrame.Domain.Core.Rules.Base;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates.Rules;
 

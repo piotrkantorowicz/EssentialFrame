@@ -5,16 +5,18 @@ namespace EssentialFrame.Cqrs.Queries.Core;
 
 public abstract class SortOrderQuery<T> : Query<T>, ISortOrderQuery
 {
-    protected SortOrderQuery(SortOrder[] sortOrders, IIdentityContext identityContext) : base(identityContext)
+    protected SortOrderQuery(IEnumerable<SortOrder> sortOrders, IIdentityContext identityContext) : base(
+        identityContext)
     {
-        SortOrders = sortOrders;
+        SortOrders = sortOrders.ToList();
     }
 
-    protected SortOrderQuery(Guid queryIdentifier, SortOrder[] sortOrders, IIdentityContext identityContext) : base(
+    protected SortOrderQuery(Guid queryIdentifier, IEnumerable<SortOrder> sortOrders,
+        IIdentityContext identityContext) : base(
         queryIdentifier, identityContext)
     {
-        SortOrders = sortOrders;
+        SortOrders = sortOrders.ToList();
     }
 
-    public SortOrder[] SortOrders { get; }
+    public IReadOnlyCollection<SortOrder> SortOrders { get; }
 }

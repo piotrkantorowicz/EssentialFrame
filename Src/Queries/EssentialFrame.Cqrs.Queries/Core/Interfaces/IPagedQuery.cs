@@ -6,5 +6,5 @@ public interface IPagedQuery
 
     int ResultsPerPage { get; }
 
-    SortOrder[] SortOrders { get; }
+    IReadOnlyCollection<SortOrder> SortOrders { get; } 
 }
