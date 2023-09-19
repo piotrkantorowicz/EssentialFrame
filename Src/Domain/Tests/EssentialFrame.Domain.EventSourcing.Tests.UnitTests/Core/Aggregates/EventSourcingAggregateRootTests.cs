@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.ExampleApp.Application.Identity;
@@ -187,6 +188,7 @@ public sealed class EventSourcingAggregateRootTests
     {
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
+        Mock<IDomainEventsPublisher<PostIdentifier>> domainEventsPublisherMock = new();
         const int aggregateVersion = 0;
 
         Post aggregate =
@@ -206,7 +208,7 @@ public sealed class EventSourcingAggregateRootTests
         aggregate.ExtendExpirationDate(expectedExpiration, _identityServiceMock.Object.GetCurrent());
 
         // Assert
-        IDomainEvent<PostIdentifier>[] changes = aggregate.FlushUncommittedChanges();
+        IDomainEvent<PostIdentifier>[] changes = aggregate.FlushUncommittedChanges(domainEventsPublisherMock.Object);
         changes.Should().HaveCount(4);
         aggregate.AggregateVersion.Should().Be(changes.Length);
         aggregate.GetUncommittedChanges().Should().BeEmpty();

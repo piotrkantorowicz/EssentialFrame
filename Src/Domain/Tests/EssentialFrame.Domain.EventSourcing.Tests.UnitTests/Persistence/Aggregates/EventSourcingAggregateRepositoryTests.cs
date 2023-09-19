@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.EventSourcing.Exceptions;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
@@ -39,6 +40,7 @@ public class EventSourcingAggregateRepositoryTests
     private readonly Mock<IDomainEventMapper<PostIdentifier>> _domainEventMapperMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IEventSourcingAggregateStore> _aggregateStoreMock = new();
+    private readonly Mock<IDomainEventsPublisher<PostIdentifier>> _domainEventsPublisherMock = new();
 
     [SetUp]
     public void SetUp()
@@ -53,6 +55,7 @@ public class EventSourcingAggregateRepositoryTests
         _identityServiceMock.Reset();
         _aggregateStoreMock.Reset();
         _aggregateMapperMock.Reset();
+        _domainEventsPublisherMock.Reset();
     }
 
     [Test]
@@ -86,7 +89,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         Post result = eventSourcingAggregateRepository.Get(aggregateIdentifier);
@@ -129,7 +132,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         Action getAggregateAction = () => eventSourcingAggregateRepository.Get(aggregateIdentifier);
@@ -173,7 +176,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         Action getAggregateAction = () => eventSourcingAggregateRepository.Get(aggregateIdentifier);
@@ -219,7 +222,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         Post result = await eventSourcingAggregateRepository.GetAsync(aggregateIdentifier);
@@ -264,7 +267,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         Func<Task> getAggregateAction =
@@ -309,7 +312,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         Func<Task> getAggregateAction =
@@ -362,7 +365,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         IDomainEvent<PostIdentifier>[] domainEvents = eventSourcingAggregateRepository.Save(aggregate);
@@ -399,7 +402,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         Action saveAction = () => eventSourcingAggregateRepository.Save(aggregate, expectedAggregateVersion);
@@ -450,7 +453,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         IDomainEvent<PostIdentifier>[] domainEvents = await eventSourcingAggregateRepository.SaveAsync(aggregate);
@@ -489,7 +492,7 @@ public class EventSourcingAggregateRepositoryTests
 
         IEventSourcingAggregateRepository<Post, PostIdentifier> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object);
+                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
         Func<Task> saveAction = async () =>

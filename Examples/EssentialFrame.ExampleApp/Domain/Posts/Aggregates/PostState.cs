@@ -54,7 +54,7 @@ public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
         Title = domainEvent.Title;
         Description = domainEvent.Description;
         Expiration = domainEvent.Expiration;
-        AuthorIdentifier = domainEvent.DomainEventIdentity.UserIdentity.Value;
+        AuthorIdentifier = domainEvent.DomainEventIdentity.UserIdentifier.Value;
 
         AddImages(domainEvent.Images ?? new HashSet<Image>());
 
@@ -67,7 +67,7 @@ public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
         CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
 
         CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType,
-            @event.DomainEventIdentity.UserIdentity.Value,
+            @event.DomainEventIdentity.UserIdentifier.Value,
             AuthorIdentifier));
 
         Title = @event.NewTitle;
@@ -79,7 +79,7 @@ public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
         CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
 
         CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType,
-            @event.DomainEventIdentity.UserIdentity.Value,
+            @event.DomainEventIdentity.UserIdentifier.Value,
             AuthorIdentifier));
 
         Description = @event.NewDescription;
@@ -91,7 +91,7 @@ public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
         CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
 
         CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType,
-            @event.DomainEventIdentity.UserIdentity.Value,
+            @event.DomainEventIdentity.UserIdentifier.Value,
             AuthorIdentifier));
 
         Expiration = @event.NewExpirationDate;
@@ -103,7 +103,7 @@ public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
         CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
 
         CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType,
-            @event.DomainEventIdentity.UserIdentity.Value,
+            @event.DomainEventIdentity.UserIdentifier.Value,
             AuthorIdentifier));
 
         AddImages(@event.NewImages);
@@ -115,7 +115,7 @@ public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
         CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
 
         CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType,
-            @event.DomainEventIdentity.UserIdentity.Value,
+            @event.DomainEventIdentity.UserIdentifier.Value,
             AuthorIdentifier));
 
         CheckRule(new PostMustHaveOnlyUniqueImagesRule(_aggregateIdentifier, _aggregateType, @event.NewImageName,
@@ -134,7 +134,7 @@ public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
         CheckRule(new PostMustBeCreatedBeforeBeModifiedRule(_aggregateIdentifier, _aggregateType, _isCreated));
 
         CheckRule(new PostCanBeOnlyUpdatedByAuthorRule(_aggregateIdentifier, _aggregateType,
-            @event.DomainEventIdentity.UserIdentity.Value,
+            @event.DomainEventIdentity.UserIdentifier.Value,
             AuthorIdentifier));
 
         foreach (Image image in @event.ImagesIds.Select(imageId =>

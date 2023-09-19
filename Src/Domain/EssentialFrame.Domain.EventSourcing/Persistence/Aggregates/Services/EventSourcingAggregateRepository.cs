@@ -1,4 +1,5 @@
 ﻿using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
@@ -19,16 +20,23 @@ internal sealed class
     private readonly IEventSourcingAggregateMapper<TAggregateIdentifier> _eventSourcingAggregateMapper;
     private readonly IDomainEventMapper<TAggregateIdentifier> _domainEventMapper;
     private readonly IEventSourcingAggregateStore _eventSourcingAggregateStore;
+    private readonly IDomainEventsPublisher<TAggregateIdentifier> _domainEventsPublisher;
 
     public EventSourcingAggregateRepository(IEventSourcingAggregateStore eventSourcingAggregateStore,
         IDomainEventMapper<TAggregateIdentifier> domainEventMapper,
-        IEventSourcingAggregateMapper<TAggregateIdentifier> eventSourcingAggregateMapper)
+        IEventSourcingAggregateMapper<TAggregateIdentifier> eventSourcingAggregateMapper,
+        IDomainEventsPublisher<TAggregateIdentifier> domainEventsPublisher)
     {
         _eventSourcingAggregateStore = eventSourcingAggregateStore ??
                                        throw new ArgumentNullException(nameof(eventSourcingAggregateStore));
+
         _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
+
         _eventSourcingAggregateMapper = eventSourcingAggregateMapper ??
                                         throw new ArgumentNullException(nameof(eventSourcingAggregateMapper));
+
+        _domainEventsPublisher =
+            domainEventsPublisher ?? throw new ArgumentNullException(nameof(domainEventsPublisher));
     }
 
     public TAggregate Get(TAggregateIdentifier aggregateIdentifier)
@@ -50,7 +58,7 @@ internal sealed class
         }
 
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
-        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges();
+        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges(_domainEventsPublisher);
         IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
 
         _eventSourcingAggregateStore.Save(eventSourcingAggregateDataModel, domainEventDataModels);
@@ -68,7 +76,7 @@ internal sealed class
         }
 
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
-        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges();
+        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges(_domainEventsPublisher);
         IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
 
         await _eventSourcingAggregateStore.SaveAsync(eventSourcingAggregateDataModel, domainEventDataModels,

@@ -6,26 +6,26 @@ public class DomainEventIdentity
 {
     public DomainEventIdentity(Guid tenantIdentity, Guid userIdentity, Guid correlationIdentity, string serviceIdentity)
     {
-        TenantIdentity = TenantIdentifier.New(tenantIdentity);
-        UserIdentity = UserIdentifier.New(userIdentity);
-        CorrelationIdentity = CorrelationIdentifier.New(correlationIdentity);
-        ServiceIdentity = ServiceIdentifier.New(serviceIdentity);
+        TenantIdentifier = TenantIdentifier.New(tenantIdentity);
+        UserIdentifier = UserIdentifier.New(userIdentity);
+        CorrelationIdentifier = CorrelationIdentifier.New(correlationIdentity);
+        ServiceIdentifier = ServiceIdentifier.New(serviceIdentity);
     }
 
-    public DomainEventIdentity(TenantIdentifier tenantIdentity, UserIdentifier userIdentity,
-        CorrelationIdentifier correlationIdentity, ServiceIdentifier serviceIdentity)
+    public DomainEventIdentity(TenantIdentifier tenantIdentifier, UserIdentifier userIdentifier,
+        CorrelationIdentifier correlationIdentifier, ServiceIdentifier serviceIdentifier)
     {
-        TenantIdentity = tenantIdentity;
-        UserIdentity = userIdentity;
-        CorrelationIdentity = correlationIdentity;
-        ServiceIdentity = serviceIdentity;
+        TenantIdentifier = tenantIdentifier;
+        UserIdentifier = userIdentifier;
+        CorrelationIdentifier = correlationIdentifier;
+        ServiceIdentifier = serviceIdentifier;
     }
 
-    public TenantIdentifier TenantIdentity { get; }
+    public TenantIdentifier TenantIdentifier { get; }
 
-    public UserIdentifier UserIdentity { get; }
+    public UserIdentifier UserIdentifier { get; }
 
-    public CorrelationIdentifier CorrelationIdentity { get; }
+    public CorrelationIdentifier CorrelationIdentifier { get; }
 
-    public ServiceIdentifier ServiceIdentity { get; }
+    public ServiceIdentifier ServiceIdentifier { get; }
 }

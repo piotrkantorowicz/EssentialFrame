@@ -339,9 +339,9 @@ public sealed class DomainEventTests
 
     private static void AssertIdentity(IIdentityContext provided, IDomainEvent<PostIdentifier> expected)
     {
-        provided.User.Identifier.Should().Be(expected.DomainEventIdentity.UserIdentity.Value);
-        provided.Service.GetFullIdentifier().Should().Be(expected.DomainEventIdentity.ServiceIdentity.Value);
-        provided.Tenant.Identifier.Should().Be(expected.DomainEventIdentity.TenantIdentity.Value);
-        provided.Correlation.Identifier.Should().Be(expected.DomainEventIdentity.CorrelationIdentity.Value);
+        provided.User.Identifier.Should().Be(expected.DomainEventIdentity.UserIdentifier.Value);
+        provided.Service.GetFullIdentifier().Should().Be(expected.DomainEventIdentity.ServiceIdentifier.Value);
+        provided.Tenant.Identifier.Should().Be(expected.DomainEventIdentity.TenantIdentifier.Value);
+        provided.Correlation.Identifier.Should().Be(expected.DomainEventIdentity.CorrelationIdentifier.Value);
     }
 }
