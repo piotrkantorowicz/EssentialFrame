@@ -6,7 +6,7 @@ public abstract class TypedStringIdentifier : TypedIdentifierBase<string>
     {
     }
 
-    public override bool Empty()
+    public override bool IsEmpty()
     {
         return string.IsNullOrEmpty(Value);
     }

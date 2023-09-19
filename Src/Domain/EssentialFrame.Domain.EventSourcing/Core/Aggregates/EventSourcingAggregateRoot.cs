@@ -76,7 +76,7 @@ public abstract class
 
             foreach (IDomainEvent<TAggregateIdentifier> change in changes)
             {
-                if (change.AggregateIdentifier.Empty() || AggregateIdentifier.Empty())
+                if (change.AggregateIdentifier.IsEmpty() || AggregateIdentifier.IsEmpty())
                 {
                     throw new MissingAggregateIdentifierException(GetType(), change.GetType());
                 }

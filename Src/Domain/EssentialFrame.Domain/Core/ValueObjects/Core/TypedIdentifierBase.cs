@@ -12,7 +12,7 @@ public abstract class TypedIdentifierBase<T> : ValueObject
 
     public T Value { get; }
 
-    public abstract bool Empty();
+    public abstract bool IsEmpty();
 
     public override string ToString()
     {

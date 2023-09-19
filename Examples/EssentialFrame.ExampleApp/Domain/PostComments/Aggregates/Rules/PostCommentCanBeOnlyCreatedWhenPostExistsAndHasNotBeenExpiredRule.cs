@@ -9,26 +9,32 @@ using EssentialFrame.Extensions;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 
-public class PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule : IdentifiableBusinessRule<PostCommentIdentifier>
+public class
+    PostCommentCanBeOnlyCreatedWhenPostExistsAndHasNotBeenExpiredRule : IdentifiableBusinessRule<PostCommentIdentifier>
 {
     private readonly PostIdentifier _postIdentifier;
     private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _aggregateRepository;
 
-    public PostCommentCanBeOnlyCreatedWhenPostHasNotBeenExpiredRule(PostCommentIdentifier domainObjectIdentifier,
-        Type businessObjectType, PostIdentifier postIdentifier,
-        IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository) : base(
-        domainObjectIdentifier, businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
+    public PostCommentCanBeOnlyCreatedWhenPostExistsAndHasNotBeenExpiredRule(
+        PostCommentIdentifier domainObjectIdentifier, Type businessObjectType, PostIdentifier postIdentifier,
+        IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository) : base(domainObjectIdentifier,
+        businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
     {
         _postIdentifier = postIdentifier;
         _aggregateRepository = aggregateRepository;
     }
 
     public override string Message =>
-        $"This ({DomainObjectType.FullName}) with identifier ({DomainObjectIdentifier}) can be created only when post has not been expired. Post identifier ({_postIdentifier})";
+        $"This ({DomainObjectType.FullName}) with identifier ({DomainObjectIdentifier}) can be created only when post exists and has not been expired. Post identifier ({_postIdentifier})";
 
     public override bool IsBroken()
     {
         Post post = _aggregateRepository.Get(_postIdentifier);
+
+        if (post is null)
+        {
+            return true;
+        }
 
         if (post.State is PostState postState)
         {
