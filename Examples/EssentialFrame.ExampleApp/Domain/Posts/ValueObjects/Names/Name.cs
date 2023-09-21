@@ -1,16 +1,20 @@
 ﻿using System.Collections.Generic;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names.Rules;
+using EssentialFrame.ExampleApp.Domain.PostComments.Shared.Rules;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 
 public sealed class Name : ValueObject
 {
+    private const int MinLenght = 3;
+    private const int MaxLenght = 150;
+
     private Name(string value)
     {
-        CheckRule(new NameCannotBeEmptyRule(GetType(), value));
-        CheckRule(new NameCanBeOnlyAlphaNumericTestRule(GetType(), value));
-        CheckRule(new NameCanHaveAtLeast3AndAtMost150CharactersRule(GetType(), value));
+        CheckRule(new TextCanNotBeNullOrEmptyRule(GetType(), value));
+        CheckRule(new TextCanBeOnlyAlphaNumericTestRule(GetType(), value));
+
+        CheckRule(new TextCanHaveSpecifiedNumberOfCharactersRule(GetType(), value, MinLenght, MaxLenght));
 
         Value = value;
     }

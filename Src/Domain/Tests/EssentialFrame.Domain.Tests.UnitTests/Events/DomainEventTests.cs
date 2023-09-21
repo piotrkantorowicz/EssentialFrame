@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Bogus;
-using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.ExampleApp.Application.Identity;
-using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
+using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
@@ -12,7 +12,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using EssentialFrame.Tests.Utils;
 using EssentialFrame.Time;
 using FluentAssertions;
@@ -29,48 +29,48 @@ public sealed class DomainEventTests
     public void CreateChangeTitleDomainEvent_Always_ShouldAssignCorrectValues()
     {
         // Arrange
-        IdentityContext identityContext = new();
+        AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Title title = Title.Default(_faker.Lorem.Sentence());
 
         // Act
-        ChangeTitleDomainEvent @event = new(aggregateIdentifier, identityContext, title);
+        TitleChangedDomainEvent @event = new(aggregateIdentifier, appIdentityContext, title);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
         @event.NewTitle.Should().Be(title);
 
         // Act
-        @event = new ChangeTitleDomainEvent(aggregateIdentifier, eventIdentifier, identityContext, title);
+        @event = new TitleChangedDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext, title);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
         @event.NewTitle.Should().Be(title);
 
         // Act
-        @event = new ChangeTitleDomainEvent(aggregateIdentifier, identityContext, aggregateVersion, title);
+        @event = new TitleChangedDomainEvent(aggregateIdentifier, appIdentityContext, aggregateVersion, title);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
         @event.NewTitle.Should().Be(title);
 
         // Act
-        @event = new ChangeTitleDomainEvent(aggregateIdentifier, eventIdentifier, identityContext, aggregateVersion,
+        @event = new TitleChangedDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext, aggregateVersion,
             title);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
@@ -81,48 +81,50 @@ public sealed class DomainEventTests
     public void CreateChangeDescriptionDomainEvent_Always_ShouldAssignCorrectValues()
     {
         // Arrange
-        IdentityContext identityContext = new();
+        AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Description description = Description.Create(_faker.Lorem.Sentences());
 
         // Act
-        ChangeDescriptionDomainEvent @event = new(aggregateIdentifier, identityContext, description);
+        DescriptionChangedDomainEvent @event = new(aggregateIdentifier, appIdentityContext, description);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
         @event.NewDescription.Should().Be(description);
 
         // Act
-        @event = new ChangeDescriptionDomainEvent(aggregateIdentifier, eventIdentifier, identityContext, description);
+        @event = new DescriptionChangedDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext,
+            description);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
         @event.NewDescription.Should().Be(description);
 
         // Act
-        @event = new ChangeDescriptionDomainEvent(aggregateIdentifier, identityContext, aggregateVersion, description);
+        @event = new DescriptionChangedDomainEvent(aggregateIdentifier, appIdentityContext, aggregateVersion,
+            description);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
         @event.NewDescription.Should().Be(description);
 
         // Act
-        @event = new ChangeDescriptionDomainEvent(aggregateIdentifier, eventIdentifier, identityContext,
+        @event = new DescriptionChangedDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext,
             aggregateVersion, description);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
@@ -133,50 +135,50 @@ public sealed class DomainEventTests
     public void CreateChangeExpirationDateDomainEvent_Always_ShouldAssignCorrectValues()
     {
         // Arrange
-        IdentityContext identityContext = new();
+        AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Date expirationOffset = Date.Create(_faker.Date.FutureOffset());
 
         // Act
-        ChangeExpirationDateDomainEvent @event = new(aggregateIdentifier, identityContext, expirationOffset);
+        ExpirationChangedDateDomainEvent @event = new(aggregateIdentifier, appIdentityContext, expirationOffset);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
         @event.NewExpirationDate.Should().Be(expirationOffset);
 
         // Act
-        @event = new ChangeExpirationDateDomainEvent(aggregateIdentifier, eventIdentifier, identityContext,
+        @event = new ExpirationChangedDateDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext,
             expirationOffset);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
         @event.NewExpirationDate.Should().Be(expirationOffset);
 
         // Act
-        @event = new ChangeExpirationDateDomainEvent(aggregateIdentifier, identityContext, aggregateVersion,
+        @event = new ExpirationChangedDateDomainEvent(aggregateIdentifier, appIdentityContext, aggregateVersion,
             expirationOffset);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
         @event.NewExpirationDate.Should().Be(expirationOffset);
 
         // Act
-        @event = new ChangeExpirationDateDomainEvent(aggregateIdentifier, eventIdentifier, identityContext,
+        @event = new ExpirationChangedDateDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext,
             aggregateVersion, expirationOffset);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
@@ -187,7 +189,7 @@ public sealed class DomainEventTests
     public void AddImagesDomainEvent_Always_ShouldAssignCorrectValues()
     {
         // Arrange
-        IdentityContext identityContext = new();
+        AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
@@ -201,41 +203,41 @@ public sealed class DomainEventTests
         };
 
         // Act
-        AddImagesDomainEvent @event = new(aggregateIdentifier, identityContext, images);
+        ImagesAddedDomainEvent @event = new(aggregateIdentifier, appIdentityContext, images);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
         @event.NewImages.Should().BeSameAs(images);
 
         // Act
-        @event = new AddImagesDomainEvent(aggregateIdentifier, eventIdentifier, identityContext, images);
+        @event = new ImagesAddedDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext, images);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
         @event.NewImages.Should().BeSameAs(images);
 
         // Act
-        @event = new AddImagesDomainEvent(aggregateIdentifier, identityContext, aggregateVersion, images);
+        @event = new ImagesAddedDomainEvent(aggregateIdentifier, appIdentityContext, aggregateVersion, images);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
         @event.NewImages.Should().BeSameAs(images);
 
         // Act
-        @event = new AddImagesDomainEvent(aggregateIdentifier, eventIdentifier, identityContext, aggregateVersion,
+        @event = new ImagesAddedDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext, aggregateVersion,
             images);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
@@ -246,7 +248,7 @@ public sealed class DomainEventTests
     public void ChangeImageNameDomainEvent_Always_ShouldAssignCorrectValues()
     {
         // Arrange
-        IdentityContext identityContext = new();
+        AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         Guid eventIdentifier = _faker.Random.Guid();
         Guid imageId = _faker.Random.Guid();
@@ -254,10 +256,10 @@ public sealed class DomainEventTests
         Name imageName = Name.Create(_faker.Address.City());
 
         // Act
-        ChangeImageNameDomainEvent @event = new(aggregateIdentifier, identityContext, imageId, imageName);
+        ImageNameChangedDomainEvent @event = new(aggregateIdentifier, appIdentityContext, imageId, imageName);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
@@ -265,11 +267,11 @@ public sealed class DomainEventTests
         @event.NewImageName.Should().Be(imageName);
 
         // Act
-        @event = new ChangeImageNameDomainEvent(aggregateIdentifier, eventIdentifier, identityContext, imageId,
+        @event = new ImageNameChangedDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext, imageId,
             imageName);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(0);
@@ -277,11 +279,11 @@ public sealed class DomainEventTests
         @event.NewImageName.Should().Be(imageName);
 
         // Act
-        @event = new ChangeImageNameDomainEvent(aggregateIdentifier, identityContext, aggregateVersion, imageId,
+        @event = new ImageNameChangedDomainEvent(aggregateIdentifier, appIdentityContext, aggregateVersion, imageId,
             imageName);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().NotBe(Guid.Empty);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
@@ -289,11 +291,12 @@ public sealed class DomainEventTests
         @event.NewImageName.Should().Be(imageName);
 
         // Act
-        @event = new ChangeImageNameDomainEvent(aggregateIdentifier, eventIdentifier, identityContext, aggregateVersion,
+        @event = new ImageNameChangedDomainEvent(aggregateIdentifier, eventIdentifier, appIdentityContext,
+            aggregateVersion,
             imageId, imageName);
 
         // Assert
-        AssertIdentity(identityContext, @event);
+        AssertIdentity(appIdentityContext, @event);
         @event.EventIdentifier.Should().Be(eventIdentifier);
         @event.AggregateIdentifier.Should().Be(aggregateIdentifier);
         @event.AggregateVersion.Should().Be(aggregateVersion);
@@ -308,7 +311,7 @@ public sealed class DomainEventTests
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Number();
 
-        ChangeTitleDomainEvent @event = new(aggregateIdentifier, new IdentityContext(),
+        TitleChangedDomainEvent @event = new(aggregateIdentifier, new AppIdentityContext(),
             Title.Default(_faker.Lorem.Sentence()));
 
         // Act
@@ -326,7 +329,7 @@ public sealed class DomainEventTests
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Number();
 
-        ChangeTitleDomainEvent @event = new(PostIdentifier.New(_faker.Random.Guid()), new IdentityContext(),
+        TitleChangedDomainEvent @event = new(PostIdentifier.New(_faker.Random.Guid()), new AppIdentityContext(),
             Title.Default(_faker.Lorem.Sentence()));
 
         // Act

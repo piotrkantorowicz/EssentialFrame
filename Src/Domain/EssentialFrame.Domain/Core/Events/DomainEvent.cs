@@ -1,6 +1,6 @@
-﻿using EssentialFrame.Domain.Core.ValueObjects.Core;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.Exceptions;
-using EssentialFrame.Identity;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Core.Events;
@@ -8,39 +8,31 @@ namespace EssentialFrame.Domain.Core.Events;
 public abstract class DomainEvent<TAggregateIdentifier> : IDomainEvent<TAggregateIdentifier>
     where TAggregateIdentifier : TypedGuidIdentifier
 {
-    private DomainEvent(IIdentityContext identityContext)
+    private DomainEvent(DomainIdentity domainIdentity)
     {
-        if (identityContext == null)
-        {
-            throw new ArgumentNullException(nameof(identityContext));
-        }
-
-        DomainEventIdentity = new DomainEventIdentity(identityContext.Tenant.Identifier,
-            identityContext.User.Identifier, identityContext.Correlation.Identifier,
-            identityContext.Service.GetFullIdentifier());
+        DomainEventIdentity = domainIdentity ?? throw new ArgumentNullException(nameof(domainIdentity));
     }
 
-    protected DomainEvent(TAggregateIdentifier aggregateIdentifier, IIdentityContext identityContext) : this(
-        identityContext)
+    protected DomainEvent(TAggregateIdentifier aggregateIdentifier, DomainIdentity domainIdentity) : this(
+        domainIdentity)
     {
         AggregateIdentifier = aggregateIdentifier;
     }
 
-    protected DomainEvent(TAggregateIdentifier aggregateIdentifier, Guid eventIdentifier,
-        IIdentityContext identityContext) : this(aggregateIdentifier, identityContext)
+    protected DomainEvent(TAggregateIdentifier aggregateIdentifier, Guid eventIdentifier, DomainIdentity domainIdentity)
+        : this(aggregateIdentifier, domainIdentity)
     {
         EventIdentifier = eventIdentifier;
     }
 
-    protected DomainEvent(TAggregateIdentifier aggregateIdentifier, IIdentityContext identityContext,
-        int expectedVersion) : this(aggregateIdentifier, identityContext)
+    protected DomainEvent(TAggregateIdentifier aggregateIdentifier, DomainIdentity domainIdentity, int expectedVersion)
+        : this(aggregateIdentifier, domainIdentity)
     {
         AggregateVersion = expectedVersion;
     }
 
-    protected DomainEvent(TAggregateIdentifier aggregateIdentifier, Guid eventIdentifier,
-        IIdentityContext identityContext,
-        int expectedVersion) : this(aggregateIdentifier, eventIdentifier, identityContext)
+    protected DomainEvent(TAggregateIdentifier aggregateIdentifier, Guid eventIdentifier, DomainIdentity domainIdentity,
+        int expectedVersion) : this(aggregateIdentifier, eventIdentifier, domainIdentity)
     {
         AggregateVersion = expectedVersion;
     }
@@ -54,14 +46,14 @@ public abstract class DomainEvent<TAggregateIdentifier> : IDomainEvent<TAggregat
 
         AggregateVersion = aggregateVersion;
     }
-
+    
     public Guid EventIdentifier { get; } = Guid.NewGuid();
 
     public TAggregateIdentifier AggregateIdentifier { get; }
 
     public int AggregateVersion { get; private set; }
 
-    public DomainEventIdentity DomainEventIdentity { get; }
+    public DomainIdentity DomainEventIdentity { get; }
 
     public DateTimeOffset EventTime { get; } = SystemClock.UtcNow;
 }

@@ -8,14 +8,19 @@ public sealed class PostCommentIdentifier : TypedGuidIdentifier
     private PostCommentIdentifier(Guid value) : base(value)
     {
     }
-    
+
+    public static implicit operator PostCommentIdentifier(Guid identifier)
+    {
+        return New(identifier);
+    }
+
     public static PostCommentIdentifier New()
     {
         return new PostCommentIdentifier(Guid.NewGuid());
     }
 
     public static PostCommentIdentifier New(Guid value)
-    {
+    { 
         return new PostCommentIdentifier(value);
     }
 

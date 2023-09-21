@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates.Rules;
+using EssentialFrame.ExampleApp.Domain.PostComments.Shared.Rules;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 

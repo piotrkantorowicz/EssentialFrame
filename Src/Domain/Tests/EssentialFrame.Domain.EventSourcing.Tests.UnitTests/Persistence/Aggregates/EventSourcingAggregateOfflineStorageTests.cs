@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 using Bogus;
-using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
@@ -16,13 +16,13 @@ using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
 using EssentialFrame.Domain.Persistence.Models;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
-using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
+using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
 using EssentialFrame.Files;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -38,7 +38,7 @@ public class EventSourcingAggregateOfflineStorageTests
     [SetUp]
     public void SetUp()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new AppIdentityContext());
         _logger = NullLoggerFactory.Instance.CreateLogger<EventSourcingAggregateOfflineStorage<PostIdentifier>>();
 
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
@@ -59,9 +59,9 @@ public class EventSourcingAggregateOfflineStorageTests
 
         _domainEvents = new List<IDomainEvent<PostIdentifier>>
         {
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new TitleChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Title.Default(_faker.Lorem.Sentence())),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new DescriptionChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Description.Create(_faker.Lorem.Sentences()))
         };
 

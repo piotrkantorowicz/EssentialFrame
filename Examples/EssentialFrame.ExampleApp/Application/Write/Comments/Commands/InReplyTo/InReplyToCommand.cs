@@ -6,7 +6,7 @@ namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.InReplyT
 
 public class InReplyToCommand : Command
 {
-    public InReplyToCommand(Guid aggregateIdentifier, IIdentityContext identityContext) : base(aggregateIdentifier,
+    public InReplyToCommand(Guid aggregateIdentifier, IdentityContext identityContext) : base(aggregateIdentifier,
         identityContext)
     {
     }

@@ -6,7 +6,7 @@ namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.AddPostC
 
 public class AddPostCommentCommand : Command
 {
-    public AddPostCommentCommand(Guid aggregateIdentifier, IIdentityContext identityContext, Guid postIdentifier,
+    public AddPostCommentCommand(Guid aggregateIdentifier, IdentityContext identityContext, Guid postIdentifier,
         Guid? replyToCommentIdentifier, string comment) : base(aggregateIdentifier,
         identityContext)
     {

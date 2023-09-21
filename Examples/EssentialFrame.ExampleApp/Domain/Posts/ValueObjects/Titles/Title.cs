@@ -1,17 +1,21 @@
 using System.Collections.Generic;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles.Rules;
+using EssentialFrame.ExampleApp.Domain.PostComments.Shared.Rules;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 
 public sealed class Title : ValueObject
 {
+    private const int MinLenght = 3;
+    private const int MaxLenght = 250;
+    
     private Title(string value)
     {
-        CheckRule(new TitleValueCannotBeEmptyRule(GetType(), value));
-        CheckRule(new TitleCanBeOnlyAlphaNumericWithCommonCharactersTestRule(GetType(), value));
-        CheckRule(new TitleCanHaveAtLeast3AndAtMost250CharactersRule(GetType(), value));
+        CheckRule(new TextCanNotBeNullOrEmptyRule(GetType(), value));
+        CheckRule(new TextCanBeOnlyAlphaNumericTestRule(GetType(), value));
 
+        CheckRule(new TextCanHaveSpecifiedNumberOfCharactersRule(GetType(), value, MinLenght, MaxLenght));
+        
         Value = value;
     }
 

@@ -1,5 +1,4 @@
-﻿using EssentialFrame.Domain.Core.Events;
-using EssentialFrame.Domain.Core.Events.Interfaces;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.Shared;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
@@ -20,8 +19,7 @@ public interface IEventSourcingAggregateRoot<TAggregateIdentifier> : IDeletableD
 
     EventSourcingAggregateState<TAggregateIdentifier> State { get; }
 
-    IDomainEvent<TAggregateIdentifier>[]
-        FlushUncommittedChanges(IDomainEventsPublisher<TAggregateIdentifier> publisher);
+    IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges();
 
     void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier>> history);
 

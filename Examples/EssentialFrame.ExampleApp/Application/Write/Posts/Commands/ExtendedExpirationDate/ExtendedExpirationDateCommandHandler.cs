@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
+using EssentialFrame.Domain.Core.Events;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
@@ -24,7 +25,7 @@ internal sealed class ExtendedExpirationDateCommandHandler : ICommandHandler<Ext
     {
         Post post = _postRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
 
-        post.ExtendExpirationDate(Date.Create(command.ExpirationDate), command.IdentityContext);
+        post.ExtendExpirationDate(Date.Create(command.ExpirationDate), DomainIdentity.New(command.IdentityContext));
         _postRepository.Save(post);
 
         return CommandResult.Success(post.State);
@@ -36,7 +37,7 @@ internal sealed class ExtendedExpirationDateCommandHandler : ICommandHandler<Ext
         Post post = await _postRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
             cancellationToken);
 
-        post.ExtendExpirationDate(Date.Create(command.ExpirationDate), command.IdentityContext);
+        post.ExtendExpirationDate(Date.Create(command.ExpirationDate), DomainIdentity.New(command.IdentityContext));
         await _postRepository.SaveAsync(post, cancellationToken: cancellationToken);
 
         return CommandResult.Success(post.State);

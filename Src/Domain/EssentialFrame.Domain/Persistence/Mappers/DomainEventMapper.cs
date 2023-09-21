@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.Core.Events;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Persistence.Mappers.Interfaces;

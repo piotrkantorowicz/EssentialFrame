@@ -1,5 +1,5 @@
 ﻿using EssentialFrame.Cache.Interfaces;
-using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
@@ -146,7 +146,6 @@ public class
         _snapshotStore.Save(snapshotDataModel);
         _snapshotStore.Box(aggregate.AggregateIdentifier.Value);
         _eventSourcingAggregateStore.Box(aggregate.AggregateIdentifier.Value);
-
         _snapshotsCache.Remove(aggregate.AggregateIdentifier);
     }
 
@@ -158,7 +157,6 @@ public class
         await _snapshotStore.SaveAsync(snapshotDataModel, cancellationToken);
         await _snapshotStore.BoxAsync(aggregate.AggregateIdentifier.Value, cancellationToken);
         await _eventSourcingAggregateStore.BoxAsync(aggregate.AggregateIdentifier.Value, cancellationToken);
-
         _snapshotsCache.Remove(aggregate.AggregateIdentifier);
     }
 

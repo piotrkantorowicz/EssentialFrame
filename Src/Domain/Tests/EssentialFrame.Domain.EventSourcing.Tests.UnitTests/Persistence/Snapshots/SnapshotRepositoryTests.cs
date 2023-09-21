@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Cache.Interfaces;
-using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 using EssentialFrame.Domain.EventSourcing.Core.Snapshots.Interfaces;
@@ -17,12 +17,12 @@ using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
 using EssentialFrame.Domain.Persistence.Models;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
-using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
+using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
 using Moq;
@@ -47,7 +47,7 @@ public class SnapshotRepositoryTests
     [SetUp]
     public void SetUp()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new AppIdentityContext());
     }
 
     [TearDown]
@@ -642,14 +642,14 @@ public class SnapshotRepositoryTests
     {
         List<IDomainEvent<PostIdentifier>> domainEvents = new()
         {
-            new CreateNewPostDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
+            new NewPostCreatedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 1,
                 Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
                 Date.Create(_faker.Date.FutureOffset()), null),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
+            new DescriptionChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 2,
                 Description.Create(_faker.Lorem.Sentences())),
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
+            new TitleChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 3,
                 Title.Default(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)))),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 4,
+            new DescriptionChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(), 4,
                 Description.Create(_faker.Lorem.Sentences()))
         };
 

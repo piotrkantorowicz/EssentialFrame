@@ -7,7 +7,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -26,7 +26,7 @@ public class SnapshotStrategyTests
     [SetUp]
     public void Setup()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new AppIdentityContext());
 
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 1;

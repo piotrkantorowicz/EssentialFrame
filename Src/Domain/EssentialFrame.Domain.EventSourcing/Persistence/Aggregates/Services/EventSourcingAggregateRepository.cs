@@ -1,5 +1,5 @@
-﻿using EssentialFrame.Domain.Core.Events;
-using EssentialFrame.Domain.Core.Events.Interfaces;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
+using EssentialFrame.Domain.Core.Events.Services.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
@@ -58,11 +58,16 @@ internal sealed class
         }
 
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
-        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges(_domainEventsPublisher);
+        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges();
         IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
 
         _eventSourcingAggregateStore.Save(eventSourcingAggregateDataModel, domainEventDataModels);
 
+        foreach (IDomainEvent<TAggregateIdentifier> domainEvent in domainEvents)
+        {
+            _domainEventsPublisher.Publish(domainEvent);
+        }
+        
         return domainEvents;
     }
 
@@ -76,11 +81,16 @@ internal sealed class
         }
 
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
-        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges(_domainEventsPublisher);
+        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges();
         IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
 
         await _eventSourcingAggregateStore.SaveAsync(eventSourcingAggregateDataModel, domainEventDataModels,
             cancellationToken);
+
+        foreach (IDomainEvent<TAggregateIdentifier> domainEvent in domainEvents)
+        {
+            await _domainEventsPublisher.PublishAsync(domainEvent, cancellationToken);
+        }
 
         return domainEvents;
     }

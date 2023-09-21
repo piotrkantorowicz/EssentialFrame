@@ -1,5 +1,4 @@
-﻿using EssentialFrame.Domain.Core.Events;
-using EssentialFrame.Domain.Core.Events.Interfaces;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.Rules;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
@@ -44,21 +43,19 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggr
         IsDeleted = false;
     }
 
-    public IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges(
-        IDomainEventsPublisher<TAggregateIdentifier> publisher)
+    public IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges()
     {
         lock (_changes)
         {
-            IDomainEvent<TAggregateIdentifier>[] changes = _changes.ToArray();
+            return _changes.ToArray();
+        }
+    }
 
-            foreach (IDomainEvent<TAggregateIdentifier> change in changes)
-            {
-                publisher.Publish(change);
-            }
-            
+    public void ClearDomainEvents()
+    {
+        lock (_changes)
+        {
             _changes.Clear();
-
-            return changes;
         }
     }
 

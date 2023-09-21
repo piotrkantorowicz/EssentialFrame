@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Cache.Interfaces;
-using EssentialFrame.Domain.Core.Events;
+using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
@@ -14,7 +14,7 @@ using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
 using EssentialFrame.Domain.Persistence.Models;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
-using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
+using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
@@ -23,7 +23,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -36,7 +36,7 @@ public class DefaultEventSourcingAggregateStoreTests
     [SetUp]
     public void SetUp()
     {
-        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new AppIdentityContext());
     }
 
     [TearDown]
@@ -510,26 +510,26 @@ public class DefaultEventSourcingAggregateStoreTests
     {
         List<IDomainEvent<PostIdentifier>> domainEvents = new()
         {
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new DescriptionChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Description.Create(_faker.Lorem.Sentences())),
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new TitleChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Title.Default(_faker.Lorem.Sentence())),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new DescriptionChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Description.Create(_faker.Lorem.Sentences())),
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new TitleChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Title.Default(_faker.Lorem.Sentence())),
-            new ChangeTitleDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new TitleChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Title.Default(_faker.Lorem.Sentence())),
-            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ImagesAddedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 new HashSet<Image>
                 {
                     Image.Create(_faker.Random.Guid(),
                         Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
                         BytesContent.Create(_faker.Random.Bytes(389)))
                 }),
-            new ChangeDescriptionDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new DescriptionChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Description.Create(_faker.Lorem.Sentences())),
-            new AddImagesDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ImagesAddedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 new HashSet<Image>
                 {
                     Image.Create(_faker.Random.Guid(),
@@ -539,9 +539,9 @@ public class DefaultEventSourcingAggregateStoreTests
                         Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
                         BytesContent.Create(_faker.Random.Bytes(982)))
                 }),
-            new ChangeImageNameDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ImageNameChangedDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 _faker.Random.Guid(), Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)))),
-            new ChangeExpirationDateDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
+            new ExpirationChangedDateDomainEvent(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
                 Date.Create(_faker.Date.Future()))
         };
 

@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using EssentialFrame.Domain.Core.Events;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
-using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents;
+using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
+using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
-using EssentialFrame.Identity;
 using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
@@ -50,47 +51,53 @@ public sealed class Post : EventSourcingAggregateRoot<PostIdentifier>
     }
 
     public void Create(Title title, Description description, Date expirationDate, HashSet<Image> images,
-        IIdentityContext identityContext)
+        DomainIdentity domainIdentity)
     {
-        CreateNewPostDomainEvent domainEvent = new(AggregateIdentifier, identityContext, title, description,
+        NewPostCreatedDomainEvent createdDomainEvent = new(AggregateIdentifier, domainIdentity, title, description,
             expirationDate, images);
 
-        Apply(domainEvent);
+        Apply(createdDomainEvent);
     }
 
-    public void ChangeTitle(Title title, IIdentityContext identityContext)
+    public void ChangeTitle(Title title, DomainIdentity domainIdentity)
     {
-        ChangeTitleDomainEvent @event = new(AggregateIdentifier, identityContext, title);
+        TitleChangedDomainEvent @event = new(AggregateIdentifier, domainIdentity, title);
         Apply(@event);
     }
 
-    public void ChangeDescription(Description description, IIdentityContext identityContext)
+    public void ChangeDescription(Description description, DomainIdentity domainIdentity)
     {
-        ChangeDescriptionDomainEvent @event = new(AggregateIdentifier, identityContext, description);
+        DescriptionChangedDomainEvent @event = new(AggregateIdentifier, domainIdentity, description);
         Apply(@event);
     }
 
-    public void ExtendExpirationDate(Date newExpirationDate, IIdentityContext identityContext)
+    public void ExtendExpirationDate(Date newExpirationDate, DomainIdentity domainIdentity)
     {
-        ChangeExpirationDateDomainEvent @event = new(AggregateIdentifier, identityContext, newExpirationDate);
+        ExpirationChangedDateDomainEvent @event = new(AggregateIdentifier, domainIdentity, newExpirationDate);
         Apply(@event);
     }
 
-    public void AddImages(HashSet<Image> images, IIdentityContext identityContext)
+    public void AddImages(HashSet<Image> images, DomainIdentity domainIdentity)
     {
-        AddImagesDomainEvent @event = new(AggregateIdentifier, identityContext, images);
+        ImagesAddedDomainEvent @event = new(AggregateIdentifier, domainIdentity, images);
         Apply(@event);
     }
 
-    public void ChangeImageName(Guid imageId, Name name, IIdentityContext identityContext)
+    public void ChangeImageName(Guid imageId, Name name, DomainIdentity domainIdentity)
     {
-        ChangeImageNameDomainEvent @event = new(AggregateIdentifier, identityContext, imageId, name);
+        ImageNameChangedDomainEvent @event = new(AggregateIdentifier, domainIdentity, imageId, name);
         Apply(@event);
     }
 
-    public void DeleteImages(HashSet<Guid> imageIds, IIdentityContext identityContext)
+    public void DeleteImages(HashSet<Guid> imageIds, DomainIdentity domainIdentity)
     {
-        DeleteImagesDomainEvent @event = new(AggregateIdentifier, identityContext, imageIds);
+        ImagesDeletedDomainEvent @event = new(AggregateIdentifier, domainIdentity, imageIds);
+        Apply(@event);
+    }
+
+    public void Delete(IReadOnlyCollection<PostCommentIdentifier> postCommentIdentifiers, DomainIdentity domainIdentity)
+    {
+        PostDeletedDomainEvent @event = new(AggregateIdentifier, domainIdentity, postCommentIdentifiers);
         Apply(@event);
     }
 }

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
+using EssentialFrame.Domain.Core.Events;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 using EssentialFrame.ExampleApp.Domain.PostComments.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
@@ -24,7 +25,7 @@ internal sealed class EditPostCommentCommandHandler : ICommandHandler<EditPostCo
     public ICommandResult Handle(EditPostCommentCommand command)
     {
         PostComment postComment = _postCommentDomainService.Edit(PostCommentIdentifier.New(command.AggregateIdentifier),
-            PostCommentText.Create(command.Comment), command.IdentityContext);
+            PostCommentText.Create(command.Comment), DomainIdentity.New(command.IdentityContext));
 
         return CommandResult.Success(postComment);
     }
@@ -34,7 +35,7 @@ internal sealed class EditPostCommentCommandHandler : ICommandHandler<EditPostCo
     {
         PostComment postComment = await _postCommentDomainService.EditAsync(
             PostCommentIdentifier.New(command.AggregateIdentifier), PostCommentText.Create(command.Comment),
-            command.IdentityContext, cancellationToken);
+            DomainIdentity.New(command.IdentityContext), cancellationToken);
 
         return CommandResult.Success(postComment);
     }

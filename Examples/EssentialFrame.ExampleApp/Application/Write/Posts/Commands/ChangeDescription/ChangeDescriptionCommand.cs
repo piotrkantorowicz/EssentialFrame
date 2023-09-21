@@ -6,19 +6,19 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeDescr
 
 public class ChangeDescriptionCommand : Command
 {
-    public ChangeDescriptionCommand(Guid aggregateIdentifier, IIdentityContext identityContext, string description) :
+    public ChangeDescriptionCommand(Guid aggregateIdentifier, IdentityContext identityContext, string description) :
         base(aggregateIdentifier, identityContext)
     {
         Description = description;
     }
 
-    public ChangeDescriptionCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
+    public ChangeDescriptionCommand(Guid aggregateIdentifier, Guid commandIdentifier, IdentityContext identityContext,
         string description) : base(aggregateIdentifier, commandIdentifier, identityContext)
     {
         Description = description;
     }
 
-    public ChangeDescriptionCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
+    public ChangeDescriptionCommand(Guid aggregateIdentifier, Guid commandIdentifier, IdentityContext identityContext,
         int expectedVersion, string description) : base(aggregateIdentifier, commandIdentifier, expectedVersion,
         identityContext)
     {

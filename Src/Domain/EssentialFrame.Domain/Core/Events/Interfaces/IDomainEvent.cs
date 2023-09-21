@@ -1,6 +1,6 @@
 ﻿using EssentialFrame.Domain.Core.ValueObjects.Core;
 
-namespace EssentialFrame.Domain.Core.Events;
+namespace EssentialFrame.Domain.Core.Events.Interfaces;
 
 public interface IDomainEvent<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
 {
@@ -10,7 +10,7 @@ public interface IDomainEvent<TAggregateIdentifier> where TAggregateIdentifier :
 
     int AggregateVersion { get; }
 
-    DomainEventIdentity DomainEventIdentity { get; }
+    DomainIdentity DomainEventIdentity { get; }
 
     DateTimeOffset EventTime { get; }
 

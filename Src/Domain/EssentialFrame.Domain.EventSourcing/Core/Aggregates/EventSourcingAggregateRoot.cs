@@ -1,5 +1,4 @@
-﻿using EssentialFrame.Domain.Core.Events;
-using EssentialFrame.Domain.Core.Events.Interfaces;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.Exceptions;
@@ -68,8 +67,7 @@ public abstract class
         }
     }
 
-    public IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges(
-        IDomainEventsPublisher<TAggregateIdentifier> publisher)
+    public IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges()
     {
         lock (_changes)
         {
@@ -86,7 +84,6 @@ public abstract class
                 i++;
 
                 change.AdjustAggregateVersion(AggregateIdentifier, AggregateVersion + i);
-                publisher.Publish(change);
             }
             
             AggregateVersion += changes.Length;

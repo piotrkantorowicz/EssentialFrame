@@ -1,5 +1,4 @@
-﻿using EssentialFrame.Domain.Core.Events;
-using EssentialFrame.Domain.Core.Events.Interfaces;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.Shared;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
@@ -13,6 +12,7 @@ public interface IAggregateRoot<TAggregateIdentifier> : IDeletableDomainObject
 
     TenantIdentifier TenantIdentifier { get; }
 
-    IDomainEvent<TAggregateIdentifier>[]
-        FlushUncommittedChanges(IDomainEventsPublisher<TAggregateIdentifier> publisher);
+    IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges();
+
+    void ClearDomainEvents();
 }

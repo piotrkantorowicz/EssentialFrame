@@ -6,7 +6,7 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeTitle
 
 public class ChangeTitleCommand : Command
 {
-    public ChangeTitleCommand(Guid aggregateIdentifier, IIdentityContext identityContext, string title, bool uppercase)
+    public ChangeTitleCommand(Guid aggregateIdentifier, IdentityContext identityContext, string title, bool uppercase)
         : base(aggregateIdentifier, identityContext)
     {
         Title = title;

@@ -7,7 +7,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
 using Moq;
@@ -31,7 +31,7 @@ public class SnapshotTests
         ;
         const int aggregateVersion = 0;
 
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new AppIdentityContext());
 
         Post aggregate =
             EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier,
