@@ -94,6 +94,7 @@ public class
 
         TAggregate aggregate =
             EventSourcingGenericAggregateFactory<TAggregate, TAggregateIdentifier>.CreateAggregate(aggregateIdentifier);
+        
         int snapshotVersion =
             await RestoreAggregateFromSnapshotAsync(aggregateIdentifier, aggregate, cancellationToken);
 

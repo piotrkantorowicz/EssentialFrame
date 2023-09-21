@@ -47,17 +47,17 @@ public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
         return state;
     }
 
-    public void When(NewPostCreatedDomainEvent createdDomainEvent)
+    public void When(NewPostCreatedDomainEvent postCreatedDomainEvent)
     {
         CheckRule(new CannotCreateOutdatedPostRule(_aggregateIdentifier, _aggregateType,
-            createdDomainEvent.Expiration));
+            postCreatedDomainEvent.Expiration));
 
-        Title = createdDomainEvent.Title;
-        Description = createdDomainEvent.Description;
-        Expiration = createdDomainEvent.Expiration;
-        AuthorIdentifier = createdDomainEvent.DomainEventIdentity.UserIdentifier.Value;
+        Title = postCreatedDomainEvent.Title;
+        Description = postCreatedDomainEvent.Description;
+        Expiration = postCreatedDomainEvent.Expiration;
+        AuthorIdentifier = postCreatedDomainEvent.DomainEventIdentity.UserIdentifier.Value;
 
-        AddImages(createdDomainEvent.Images ?? new HashSet<Image>());
+        AddImages(postCreatedDomainEvent.Images ?? new HashSet<Image>());
 
         _isCreated = true;
     }

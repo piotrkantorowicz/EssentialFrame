@@ -25,11 +25,12 @@ internal sealed class
         _aggregateMapper = aggregateMapper ?? throw new ArgumentNullException(nameof(aggregateMapper));
         _domainEventsPublisher =
             domainEventsPublisher ?? throw new ArgumentNullException(nameof(domainEventsPublisher));
+        
     }
 
     public TAggregate Get(TAggregateIdentifier aggregateIdentifier)
     {
-        AggregateDataModel aggregateDataModel = _aggregateStore.Get(aggregateIdentifier.Value);
+        AggregateDataModel aggregateDataModel = _aggregateStore.Get(aggregateIdentifier);
 
         if (aggregateDataModel?.State is null)
         {
@@ -47,7 +48,7 @@ internal sealed class
 
     public TAggregate Get(TAggregateIdentifier aggregateIdentifier, ISerializer serializer)
     {
-        AggregateDataModel aggregateDataModel = _aggregateStore.Get(aggregateIdentifier.Value);
+        AggregateDataModel aggregateDataModel = _aggregateStore.Get(aggregateIdentifier);
 
         if (aggregateDataModel.State is not string stateString)
         {
@@ -62,8 +63,7 @@ internal sealed class
     public async Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier,
         CancellationToken cancellationToken = default)
     {
-        AggregateDataModel aggregateDataModel =
-            await _aggregateStore.GetAsync(aggregateIdentifier.Value, cancellationToken);
+        AggregateDataModel aggregateDataModel = await _aggregateStore.GetAsync(aggregateIdentifier, cancellationToken);
 
         if (aggregateDataModel?.State is null)
         {
@@ -82,8 +82,7 @@ internal sealed class
     public async Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, ISerializer serializer,
         CancellationToken cancellationToken = default)
     {
-        AggregateDataModel aggregateDataModel =
-            await _aggregateStore.GetAsync(aggregateIdentifier.Value, cancellationToken);
+        AggregateDataModel aggregateDataModel = await _aggregateStore.GetAsync(aggregateIdentifier, cancellationToken);
 
         if (aggregateDataModel.State is not string stateString)
         {
@@ -125,5 +124,15 @@ internal sealed class
         }
 
         aggregate.ClearDomainEvents();
+    }
+
+    public void Box(TAggregateIdentifier aggregateIdentifier)
+    {
+        _aggregateStore.Box(aggregateIdentifier);
+    }
+
+    public async Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default)
+    {
+        await _aggregateStore.BoxAsync(aggregateIdentifier, cancellationToken);
     }
 }

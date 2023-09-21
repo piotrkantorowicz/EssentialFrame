@@ -53,10 +53,10 @@ public sealed class Post : EventSourcingAggregateRoot<PostIdentifier>
     public void Create(Title title, Description description, Date expirationDate, HashSet<Image> images,
         DomainIdentity domainIdentity)
     {
-        NewPostCreatedDomainEvent createdDomainEvent = new(AggregateIdentifier, domainIdentity, title, description,
+        NewPostCreatedDomainEvent postCreatedDomainEvent = new(AggregateIdentifier, domainIdentity, title, description,
             expirationDate, images);
 
-        Apply(createdDomainEvent);
+        Apply(postCreatedDomainEvent);
     }
 
     public void ChangeTitle(Title title, DomainIdentity domainIdentity)

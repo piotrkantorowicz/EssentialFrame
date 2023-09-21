@@ -32,6 +32,7 @@ internal sealed class PostDeletedDomainEventHandler : IEventHandler<PostDeletedD
                 @event.DomainEventIdentity);
 
             _postCommentRepository.Save(postComment);
+            _postCommentRepository.Box(postCommentIdentifier);
         }
     }
 
@@ -45,6 +46,7 @@ internal sealed class PostDeletedDomainEventHandler : IEventHandler<PostDeletedD
                 @event.DomainEventIdentity);
 
             await _postCommentRepository.SaveAsync(postComment, cancellationToken);
+            await _postCommentRepository.BoxAsync(postCommentIdentifier, cancellationToken);
         }
     }
 }

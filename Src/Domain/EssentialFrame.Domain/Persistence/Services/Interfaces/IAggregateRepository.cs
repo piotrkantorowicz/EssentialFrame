@@ -19,4 +19,8 @@ public interface IAggregateRepository<TAggregate, in TAggregateIdentifier>
     void Save(TAggregate aggregate);
 
     Task SaveAsync(TAggregate aggregate, CancellationToken cancellationToken = default);
+
+    void Box(TAggregateIdentifier aggregateIdentifier);
+
+    Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
 }

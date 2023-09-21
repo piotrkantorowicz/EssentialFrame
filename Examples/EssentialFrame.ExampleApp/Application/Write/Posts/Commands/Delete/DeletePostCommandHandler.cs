@@ -9,11 +9,11 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.Delete;
 
-internal sealed class DeleteCommandHandler : ICommandHandler<DeleteCommand>, IAsyncCommandHandler<DeleteCommand>
+internal sealed class DeletePostCommandHandler : ICommandHandler<DeleteCommand>, IAsyncCommandHandler<DeleteCommand>
 {
     private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
 
-    public DeleteCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository)
+    public DeletePostCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
     }
@@ -26,6 +26,7 @@ internal sealed class DeleteCommandHandler : ICommandHandler<DeleteCommand>, IAs
         post.SafeDelete();
 
         _postRepository.Save(post);
+        _postRepository.Box(post.AggregateIdentifier);
 
         return CommandResult.Success();
     }
@@ -38,6 +39,7 @@ internal sealed class DeleteCommandHandler : ICommandHandler<DeleteCommand>, IAs
         post.SafeDelete();
 
         await _postRepository.SaveAsync(post, cancellationToken: cancellationToken);
+        await _postRepository.BoxAsync(post.AggregateIdentifier, cancellationToken);
 
         return CommandResult.Success();
     }

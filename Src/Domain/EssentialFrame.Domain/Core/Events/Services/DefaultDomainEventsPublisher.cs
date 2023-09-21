@@ -42,7 +42,7 @@ public class DefaultDomainEventsPublisher<TAggregateIdentifier> : IDomainEventsP
     private static THandler FindHandler<TDomainEvent, THandler>(TDomainEvent @event, IComponentContext lifetimeScope)
         where TDomainEvent : class, IDomainEvent<TAggregateIdentifier> where THandler : class, IEventHandler
     {
-        bool isTenantHandlerFound = lifetimeScope.TryResolveKeyed(@event.DomainEventIdentity.TenantIdentifier.Value,
+        bool isTenantHandlerFound = lifetimeScope.TryResolveKeyed(@event.DomainEventIdentity.TenantIdentifier,
             out THandler eventHandler);
 
         if (isTenantHandlerFound)

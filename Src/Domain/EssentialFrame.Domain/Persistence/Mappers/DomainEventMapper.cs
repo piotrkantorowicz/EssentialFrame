@@ -15,7 +15,7 @@ internal sealed class DomainEventMapper<TAggregateIdentifier> : IDomainEventMapp
     {
         return new DomainEventDataModel
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
+            AggregateIdentifier = domainEvent.AggregateIdentifier,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),
@@ -29,7 +29,7 @@ internal sealed class DomainEventMapper<TAggregateIdentifier> : IDomainEventMapp
     {
         return new DomainEventDataModel
         {
-            AggregateIdentifier = domainEvent.AggregateIdentifier.Value,
+            AggregateIdentifier = domainEvent.AggregateIdentifier,
             AggregateVersion = domainEvent.AggregateVersion,
             EventIdentifier = domainEvent.EventIdentifier,
             EventType = domainEvent.GetTypeFullName(),

@@ -95,6 +95,16 @@ internal sealed class
         return domainEvents;
     }
 
+    public void Box(TAggregateIdentifier aggregateIdentifier)
+    {
+        _eventSourcingAggregateStore.Box(aggregateIdentifier);
+    }
+
+    public async Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default)
+    {
+        await _eventSourcingAggregateStore.BoxAsync(aggregateIdentifier, cancellationToken);
+    }
+
     private TAggregate Rehydrate(TAggregateIdentifier aggregateIdentifier)
     {
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel =

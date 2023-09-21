@@ -1,6 +1,6 @@
 ﻿namespace EssentialFrame.Domain.Core.ValueObjects.Core;
 
-public class TypedGuidIdentifier : TypedIdentifierBase<Guid>
+public abstract class TypedGuidIdentifier : TypedIdentifierBase<Guid>
 {
     protected TypedGuidIdentifier(Guid value) : base(value)
     {
@@ -8,7 +8,7 @@ public class TypedGuidIdentifier : TypedIdentifierBase<Guid>
 
     public static implicit operator Guid(TypedGuidIdentifier typedGuidIdentifier)
     {
-        return typedGuidIdentifier.Value;
+        return typedGuidIdentifier;
     }
 
     public override bool IsEmpty()

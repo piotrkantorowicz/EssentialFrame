@@ -6,6 +6,11 @@ public abstract class TypedStringIdentifier : TypedIdentifierBase<string>
     {
     }
 
+    public static implicit operator string(TypedStringIdentifier typedStringIdentifier)
+    {
+        return typedStringIdentifier.Value;
+    }
+    
     public override bool IsEmpty()
     {
         return string.IsNullOrEmpty(Value);
