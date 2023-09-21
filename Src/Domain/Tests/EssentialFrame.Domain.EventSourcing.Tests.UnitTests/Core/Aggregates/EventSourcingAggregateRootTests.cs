@@ -377,8 +377,7 @@ public sealed class EventSourcingAggregateRootTests
             Image.Create(imageId, Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150))),
                 BytesContent.Create(_faker.Random.Bytes(200)))
         };
-
-
+        
         Post expectedAggregate =
             EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier,
                 aggregateVersion);

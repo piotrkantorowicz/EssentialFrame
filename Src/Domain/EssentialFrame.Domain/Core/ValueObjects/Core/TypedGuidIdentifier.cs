@@ -8,7 +8,7 @@ public abstract class TypedGuidIdentifier : TypedIdentifierBase<Guid>
 
     public static implicit operator Guid(TypedGuidIdentifier typedGuidIdentifier)
     {
-        return typedGuidIdentifier;
+        return typedGuidIdentifier.Value;
     }
 
     public override bool IsEmpty()

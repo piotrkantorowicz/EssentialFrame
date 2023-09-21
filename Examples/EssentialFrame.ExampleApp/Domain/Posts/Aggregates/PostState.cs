@@ -55,7 +55,7 @@ public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
         Title = postCreatedDomainEvent.Title;
         Description = postCreatedDomainEvent.Description;
         Expiration = postCreatedDomainEvent.Expiration;
-        AuthorIdentifier = postCreatedDomainEvent.DomainEventIdentity.UserIdentifier.Value;
+        AuthorIdentifier = postCreatedDomainEvent.DomainEventIdentity.UserIdentifier;
 
         AddImages(postCreatedDomainEvent.Images ?? new HashSet<Image>());
 
