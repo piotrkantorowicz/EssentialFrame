@@ -6,7 +6,7 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ExtendedExp
 
 public class ExtendedExpirationDateCommand : Command
 {
-    public ExtendedExpirationDateCommand(Guid aggregateIdentifier, IIdentityContext identityContext,
+    public ExtendedExpirationDateCommand(Guid aggregateIdentifier, IdentityContext identityContext,
         DateTimeOffset expirationDate) : base(aggregateIdentifier, identityContext)
     {
         ExpirationDate = expirationDate;

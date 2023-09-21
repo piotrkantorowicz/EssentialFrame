@@ -8,7 +8,7 @@ using EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence.Models;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeTitle;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using EssentialFrame.Time;
 using FluentAssertions;
 using Moq;
@@ -34,7 +34,7 @@ public class DefaultCommandStoreTests
         _commandsCacheMock = new Mock<ICache<Guid, CommandDataModel>>();
         _identityServiceMock = new Mock<IIdentityService>();
 
-        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new AppIdentityContext());
     }
 
     [TearDown]

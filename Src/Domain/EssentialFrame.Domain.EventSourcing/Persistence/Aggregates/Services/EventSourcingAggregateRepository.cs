@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Domain.Core.Events;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
+using EssentialFrame.Domain.Core.Events.Services.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
@@ -19,16 +20,23 @@ internal sealed class
     private readonly IEventSourcingAggregateMapper<TAggregateIdentifier> _eventSourcingAggregateMapper;
     private readonly IDomainEventMapper<TAggregateIdentifier> _domainEventMapper;
     private readonly IEventSourcingAggregateStore _eventSourcingAggregateStore;
+    private readonly IDomainEventsPublisher<TAggregateIdentifier> _domainEventsPublisher;
 
     public EventSourcingAggregateRepository(IEventSourcingAggregateStore eventSourcingAggregateStore,
         IDomainEventMapper<TAggregateIdentifier> domainEventMapper,
-        IEventSourcingAggregateMapper<TAggregateIdentifier> eventSourcingAggregateMapper)
+        IEventSourcingAggregateMapper<TAggregateIdentifier> eventSourcingAggregateMapper,
+        IDomainEventsPublisher<TAggregateIdentifier> domainEventsPublisher)
     {
         _eventSourcingAggregateStore = eventSourcingAggregateStore ??
                                        throw new ArgumentNullException(nameof(eventSourcingAggregateStore));
+
         _domainEventMapper = domainEventMapper ?? throw new ArgumentNullException(nameof(domainEventMapper));
+
         _eventSourcingAggregateMapper = eventSourcingAggregateMapper ??
                                         throw new ArgumentNullException(nameof(eventSourcingAggregateMapper));
+
+        _domainEventsPublisher =
+            domainEventsPublisher ?? throw new ArgumentNullException(nameof(domainEventsPublisher));
     }
 
     public TAggregate Get(TAggregateIdentifier aggregateIdentifier)
@@ -55,6 +63,11 @@ internal sealed class
 
         _eventSourcingAggregateStore.Save(eventSourcingAggregateDataModel, domainEventDataModels);
 
+        foreach (IDomainEvent<TAggregateIdentifier> domainEvent in domainEvents)
+        {
+            _domainEventsPublisher.Publish(domainEvent);
+        }
+        
         return domainEvents;
     }
 
@@ -74,7 +87,22 @@ internal sealed class
         await _eventSourcingAggregateStore.SaveAsync(eventSourcingAggregateDataModel, domainEventDataModels,
             cancellationToken);
 
+        foreach (IDomainEvent<TAggregateIdentifier> domainEvent in domainEvents)
+        {
+            await _domainEventsPublisher.PublishAsync(domainEvent, cancellationToken);
+        }
+
         return domainEvents;
+    }
+
+    public void Box(TAggregateIdentifier aggregateIdentifier)
+    {
+        _eventSourcingAggregateStore.Box(aggregateIdentifier);
+    }
+
+    public async Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default)
+    {
+        await _eventSourcingAggregateStore.BoxAsync(aggregateIdentifier, cancellationToken);
     }
 
     private TAggregate Rehydrate(TAggregateIdentifier aggregateIdentifier)

@@ -7,7 +7,7 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services.Interfaces;
 using EssentialFrame.ExampleApp.Application.Identity;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -24,7 +24,7 @@ public class DefaultSnapshotStoreTests
         _identityServiceMock = new Mock<IIdentityService>();
         _snapshotOfflineStorageMock = new Mock<ISnapshotOfflineStorage>();
 
-        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new AppIdentityContext());
     }
 
     [TearDown]

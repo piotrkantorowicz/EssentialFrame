@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
+using EssentialFrame.Domain.Core.Events;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 using EssentialFrame.ExampleApp.Domain.PostComments.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
@@ -25,7 +26,7 @@ internal sealed class InReplyToCommandHandler : ICommandHandler<InReplyToCommand
     {
         PostComment postComment = _postCommentDomainService.InReplyTo(
             PostCommentIdentifier.New(command.AggregateIdentifier), PostCommentText.Create(command.Comment),
-            command.IdentityContext);
+            DomainIdentity.New(command.IdentityContext));
 
         return CommandResult.Success(postComment);
     }
@@ -35,7 +36,7 @@ internal sealed class InReplyToCommandHandler : ICommandHandler<InReplyToCommand
     {
         PostComment postComment = await _postCommentDomainService.InReplyToAsync(
             PostCommentIdentifier.New(command.AggregateIdentifier), PostCommentText.Create(command.Comment),
-            command.IdentityContext, cancellationToken);
+            DomainIdentity.New(command.IdentityContext), cancellationToken);
 
         return CommandResult.Success(postComment);
     }

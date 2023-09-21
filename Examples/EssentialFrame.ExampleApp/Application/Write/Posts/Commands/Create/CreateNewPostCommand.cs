@@ -8,7 +8,7 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.Create;
 
 public class CreateNewPostCommand : Command
 {
-    public CreateNewPostCommand(IIdentityContext identityContext, string title, string description,
+    public CreateNewPostCommand(IdentityContext identityContext, string title, string description,
         DateTimeOffset expiration, HashSet<ImageDto> images) : base(identityContext)
     {
         Title = title;
@@ -17,7 +17,7 @@ public class CreateNewPostCommand : Command
         Images = images;
     }
 
-    public CreateNewPostCommand(Guid aggregateIdentifier, IIdentityContext identityContext, string title,
+    public CreateNewPostCommand(Guid aggregateIdentifier, IdentityContext identityContext, string title,
         string description, DateTimeOffset expiration, HashSet<ImageDto> images) : base(aggregateIdentifier,
         identityContext)
     {
@@ -27,7 +27,7 @@ public class CreateNewPostCommand : Command
         Images = images;
     }
 
-    public CreateNewPostCommand(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext,
+    public CreateNewPostCommand(Guid aggregateIdentifier, Guid commandIdentifier, IdentityContext identityContext,
         string title, string description, DateTimeOffset expiration, HashSet<ImageDto> images) : base(
         aggregateIdentifier, commandIdentifier, identityContext)
     {
@@ -38,7 +38,7 @@ public class CreateNewPostCommand : Command
     }
 
     public CreateNewPostCommand(Guid aggregateIdentifier, Guid commandIdentifier, int expectedVersion,
-        IIdentityContext identityContext, string title, string description, DateTimeOffset expiration,
+        IdentityContext identityContext, string title, string description, DateTimeOffset expiration,
         HashSet<ImageDto> images) : base(aggregateIdentifier, commandIdentifier, expectedVersion, identityContext)
     {
         Title = title;

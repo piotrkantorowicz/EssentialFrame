@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.Core.Events;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.Rules;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
@@ -51,7 +51,7 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggr
         }
     }
 
-    protected void ClearDomainEvents()
+    public void ClearDomainEvents()
     {
         lock (_changes)
         {

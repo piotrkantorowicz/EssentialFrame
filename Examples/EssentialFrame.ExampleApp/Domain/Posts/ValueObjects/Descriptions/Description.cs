@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
-using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions.Rules;
+using EssentialFrame.ExampleApp.Domain.PostComments.Shared.Rules;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 
 public sealed class Description : ValueObject
 {
+    private const int MaxLenght = 4000;
+    
     private Description(string value)
     {
-        CheckRule(new DescriptionCanBeOnlyAlphaNumericWithCommonCharactersTestRule(GetType(), value));
-        CheckRule(new DescriptionCanHaveAtMost4ThousandsCharactersRule(GetType(), value));
+        CheckRule(new TextCanBeOnlyAlphaNumericWithCommonCharactersTestRule(GetType(), value));
+        CheckRule(new TextCanHaveSpecifiedNumberOfCharactersRule(GetType(), value, maxLength: MaxLenght));
 
         Value = value;
     }

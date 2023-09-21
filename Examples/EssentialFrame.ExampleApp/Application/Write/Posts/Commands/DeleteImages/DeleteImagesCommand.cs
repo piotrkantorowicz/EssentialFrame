@@ -7,7 +7,7 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.DeleteImage
 
 public class DeleteImagesCommand : Command
 {
-    public DeleteImagesCommand(Guid aggregateIdentifier, IIdentityContext identityContext, HashSet<Guid> imagesIds) :
+    public DeleteImagesCommand(Guid aggregateIdentifier, IdentityContext identityContext, HashSet<Guid> imagesIds) :
         base(aggregateIdentifier, identityContext)
     {
         ImagesIds = imagesIds;

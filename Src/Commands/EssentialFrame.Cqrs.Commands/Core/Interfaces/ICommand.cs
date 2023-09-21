@@ -10,6 +10,6 @@ public interface ICommand
 
     int? ExpectedVersion { get; }
 
-    public IIdentityContext IdentityContext { get; }
+    public IdentityContext IdentityContext { get; }
 }
     

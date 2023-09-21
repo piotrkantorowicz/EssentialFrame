@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.Core.Events;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 
@@ -16,4 +16,8 @@ public interface IEventSourcingAggregateRepository<TAggregate, TAggregateIdentif
 
     Task<IDomainEvent<TAggregateIdentifier>[]> SaveAsync(TAggregate aggregate, int? version = null,
         CancellationToken cancellationToken = default);
+
+    void Box(TAggregateIdentifier aggregateIdentifier);
+
+    Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
 }

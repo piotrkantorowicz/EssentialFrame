@@ -6,7 +6,7 @@ namespace EssentialFrame.ExampleApp.Application.Write.Comments.Commands.RemovePo
 
 public class RemovePostCommand : Command
 {
-    public RemovePostCommand(Guid aggregateIdentifier, IIdentityContext identityContext, string reason) : base(
+    public RemovePostCommand(Guid aggregateIdentifier, IdentityContext identityContext, string reason) : base(
         aggregateIdentifier, identityContext)
     {
         Reason = reason;

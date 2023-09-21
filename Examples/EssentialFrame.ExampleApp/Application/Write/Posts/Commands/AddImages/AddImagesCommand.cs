@@ -8,7 +8,7 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.AddImages;
 
 public class AddImagesCommand : Command
 {
-    public AddImagesCommand(Guid aggregateIdentifier, IIdentityContext identityContext, HashSet<ImageDto> images) :
+    public AddImagesCommand(Guid aggregateIdentifier, IdentityContext identityContext, HashSet<ImageDto> images) :
         base(aggregateIdentifier, identityContext)
     {
         Images = images;

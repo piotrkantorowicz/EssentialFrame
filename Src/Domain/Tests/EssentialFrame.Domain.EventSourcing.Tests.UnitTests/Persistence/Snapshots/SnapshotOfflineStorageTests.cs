@@ -10,7 +10,7 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services.Interfaces;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.Files;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Tests.Utils;
 using FluentAssertions;
@@ -27,7 +27,7 @@ public class SnapshotOfflineStorageTests
     [SetUp]
     public void SetUp()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new AppIdentityContext());
         _logger = NullLoggerFactory.Instance.CreateLogger<SnapshotOfflineStorage>();
         Guid aggregateIdentifier = _faker.Random.Guid();
         const int aggregateVersion = 0;

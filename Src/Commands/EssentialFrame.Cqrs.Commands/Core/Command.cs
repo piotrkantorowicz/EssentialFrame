@@ -5,7 +5,7 @@ namespace EssentialFrame.Cqrs.Commands.Core;
 
 public abstract class Command : ICommand
 {
-    protected Command(IIdentityContext identityContext)
+    protected Command(IdentityContext identityContext)
     {
         if (identityContext == null)
         {
@@ -35,12 +35,12 @@ public abstract class Command : ICommand
         IdentityContext = identityContext;
     }
 
-    protected Command(Guid aggregateIdentifier, IIdentityContext identityContext) : this(identityContext)
+    protected Command(Guid aggregateIdentifier, IdentityContext identityContext) : this(identityContext)
     {
         AggregateIdentifier = aggregateIdentifier;
     }
 
-    protected Command(Guid aggregateIdentifier, Guid commandIdentifier, IIdentityContext identityContext) : this(
+    protected Command(Guid aggregateIdentifier, Guid commandIdentifier, IdentityContext identityContext) : this(
         identityContext)
     {
         AggregateIdentifier = aggregateIdentifier;
@@ -48,7 +48,7 @@ public abstract class Command : ICommand
     }
 
     protected Command(Guid aggregateIdentifier, Guid commandIdentifier, int expectedVersion,
-        IIdentityContext identityContext) : this(aggregateIdentifier, commandIdentifier, identityContext)
+        IdentityContext identityContext) : this(aggregateIdentifier, commandIdentifier, identityContext)
     {
         ExpectedVersion = expectedVersion;
     }
@@ -57,7 +57,7 @@ public abstract class Command : ICommand
 
     public int? ExpectedVersion { get; }
 
-    public IIdentityContext IdentityContext { get; }
+    public IdentityContext IdentityContext { get; }
 
     public Guid CommandIdentifier { get; } = Guid.NewGuid();
 }

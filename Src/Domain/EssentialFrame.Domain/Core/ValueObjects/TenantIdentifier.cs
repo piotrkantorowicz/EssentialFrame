@@ -8,6 +8,11 @@ public sealed class TenantIdentifier : TypedGuidIdentifier
     {
     }
 
+    public static implicit operator TenantIdentifier(Guid identifier)
+    {
+        return New(identifier);
+    }
+
     public static TenantIdentifier New(Guid value)
     {
         return new TenantIdentifier(value);

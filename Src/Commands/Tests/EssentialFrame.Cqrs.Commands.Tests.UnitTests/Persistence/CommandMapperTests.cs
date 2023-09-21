@@ -10,6 +10,7 @@ using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeTitle;
 using EssentialFrame.Extensions;
 using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Tests.Utils;
 using EssentialFrame.Time;
@@ -25,7 +26,7 @@ public class CommandMapperTests
     [SetUp]
     public void Setup()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new AppIdentityContext());
     }
 
     [TearDown]
@@ -285,7 +286,7 @@ public class CommandMapperTests
         Guid aggregateIdentifier = _faker.Random.Guid();
         string title = _faker.Lorem.Sentence();
         bool isUppercase = _faker.Random.Bool();
-        IIdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
+        IdentityContext identityContext = _identityServiceMock.Object.GetCurrent();
 
         for (int i = 0; i < _faker.Random.Int(1, 20); i++)
         {

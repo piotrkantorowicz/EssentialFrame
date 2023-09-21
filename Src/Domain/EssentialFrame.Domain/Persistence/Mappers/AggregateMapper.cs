@@ -13,8 +13,8 @@ internal sealed class AggregateMapper<TAggregateIdentifier> : IAggregateMapper<T
     {
         return new AggregateDataModel
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
-            TenantIdentifier = aggregate.TenantIdentifier.Value,
+            AggregateIdentifier = aggregate.AggregateIdentifier,
+            TenantIdentifier = aggregate.TenantIdentifier,
             State = aggregate,
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted
@@ -25,8 +25,8 @@ internal sealed class AggregateMapper<TAggregateIdentifier> : IAggregateMapper<T
     {
         return new AggregateDataModel
         {
-            AggregateIdentifier = aggregate.AggregateIdentifier.Value,
-            TenantIdentifier = aggregate.TenantIdentifier.Value,
+            AggregateIdentifier = aggregate.AggregateIdentifier,
+            TenantIdentifier = aggregate.TenantIdentifier,
             State = serializer.Serialize(aggregate),
             DeletedDate = aggregate.DeletedDate,
             IsDeleted = aggregate.IsDeleted

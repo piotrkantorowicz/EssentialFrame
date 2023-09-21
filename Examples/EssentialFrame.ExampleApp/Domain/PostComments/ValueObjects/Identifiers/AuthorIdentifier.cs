@@ -9,9 +9,9 @@ public sealed class AuthorIdentifier : TypedGuidIdentifier
     {
     }
 
-    public static AuthorIdentifier New()
+    public static implicit operator AuthorIdentifier(Guid identifier)
     {
-        return new AuthorIdentifier(Guid.NewGuid());
+        return New(identifier);
     }
 
     public static AuthorIdentifier New(Guid value)

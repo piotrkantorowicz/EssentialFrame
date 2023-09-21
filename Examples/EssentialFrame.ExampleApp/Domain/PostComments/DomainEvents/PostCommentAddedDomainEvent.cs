@@ -3,16 +3,14 @@ using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
-using EssentialFrame.Identity;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
 
 public class PostCommentAddedDomainEvent : DomainEvent<PostCommentIdentifier>
 {
-    public PostCommentAddedDomainEvent(PostCommentIdentifier aggregateIdentifier, IIdentityContext identityContext,
+    public PostCommentAddedDomainEvent(PostCommentIdentifier aggregateIdentifier, DomainIdentity domainIdentity,
         PostIdentifier postIdentifier, AuthorIdentifier authorIdentifier, PostCommentText text,
-        Date createdDate) : base(
-        aggregateIdentifier, identityContext)
+        Date createdDate) : base(aggregateIdentifier, domainIdentity)
     {
         PostIdentifier = postIdentifier;
         AuthorIdentifier = authorIdentifier;

@@ -7,7 +7,7 @@ using EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 using EssentialFrame.Cqrs.Commands.Persistence.Models;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeTitle;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Tests.Utils;
 using EssentialFrame.Time;
@@ -32,7 +32,7 @@ public class CommandDataModelServiceTests
             CreatedAt = SystemClock.UtcNow
         };
 
-        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new AppIdentityContext());
     }
 
     [TearDown]

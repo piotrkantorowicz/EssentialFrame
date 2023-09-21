@@ -1,5 +1,5 @@
 using EssentialFrame.Cqrs.Queries.Core.Interfaces;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 
 namespace EssentialFrame.Cqrs.Queries.Core;
 

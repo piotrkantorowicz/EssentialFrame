@@ -1,4 +1,4 @@
-﻿using EssentialFrame.Domain.Core.Events;
+﻿using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.Exceptions;
@@ -85,9 +85,8 @@ public abstract class
 
                 change.AdjustAggregateVersion(AggregateIdentifier, AggregateVersion + i);
             }
-
+            
             AggregateVersion += changes.Length;
-
             _changes.Clear();
 
             return changes;

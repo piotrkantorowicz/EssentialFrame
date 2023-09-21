@@ -5,7 +5,7 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Mappers;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
-using EssentialFrame.Identity;
+using EssentialFrame.Identity.Interfaces;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -18,7 +18,7 @@ public class SnapshotMapperTests
     [SetUp]
     public void Setup()
     {
-        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new IdentityContext());
+        _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new AppIdentityContext());
     }
 
     [TearDown]

@@ -6,7 +6,7 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeImage
 
 public class ChangeImageNameCommand : Command
 {
-    public ChangeImageNameCommand(Guid aggregateIdentifier, IIdentityContext identityContext, Guid imageId,
+    public ChangeImageNameCommand(Guid aggregateIdentifier, IdentityContext identityContext, Guid imageId,
         string imageName) : base(aggregateIdentifier, identityContext)
     {
         ImageId = imageId;
