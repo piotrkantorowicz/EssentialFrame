@@ -12,6 +12,8 @@
         <ProjectReference Include="..\..\Src\Core\Tests\EssentialFrame.Tests.UnitTests\EssentialFrame.Tests.UnitTests.csproj"/>
         <ProjectReference Include="..\..\Src\Domain\EssentialFrame.Domain.EventSourcing\EssentialFrame.Domain.EventSourcing.csproj"/>
         <ProjectReference Include="..\..\Src\Domain\EssentialFrame.Domain\EssentialFrame.Domain.csproj"/>
+
+
     </ItemGroup>
 
 

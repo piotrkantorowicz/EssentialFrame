@@ -18,4 +18,9 @@ public sealed class PostCommentIdentifier : TypedGuidIdentifier
     {
         return new PostCommentIdentifier(value);
     }
+
+    public static PostCommentIdentifier Empty()
+    {
+        return new PostCommentIdentifier(Guid.Empty);
+    }
 }

@@ -6,7 +6,7 @@ public abstract class TypedIntIdentifier : TypedIdentifierBase<int>
     {
     }
 
-    public override bool Empty()
+    public override bool IsEmpty()
     {
         return Value == 0;
     }
