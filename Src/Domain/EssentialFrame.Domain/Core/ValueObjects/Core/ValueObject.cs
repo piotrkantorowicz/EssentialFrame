@@ -3,7 +3,7 @@ using EssentialFrame.Domain.Exceptions;
 
 namespace EssentialFrame.Domain.Core.ValueObjects.Core;
 
-public abstract class ValueObject
+public abstract class ValueObject 
 {
     public override int GetHashCode()
     {
@@ -64,7 +64,7 @@ public abstract class ValueObject
         {
             rule.AddExtraParameters();
         }
-
+        
         throw new BusinessRuleValidationException(rule);
     }
 

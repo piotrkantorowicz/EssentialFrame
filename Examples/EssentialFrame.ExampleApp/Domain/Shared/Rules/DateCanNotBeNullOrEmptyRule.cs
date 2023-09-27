@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using EssentialFrame.Domain.Core.Rules.Base;
 
-namespace EssentialFrame.ExampleApp.Domain.PostComments.Shared.Rules;
+namespace EssentialFrame.ExampleApp.Domain.Shared.Rules;
 
 internal sealed class DateCanNotBeNullOrEmptyRule : BusinessRule
 {

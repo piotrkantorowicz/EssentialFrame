@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Domain.Core.Events;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.Repositories;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
@@ -14,9 +14,9 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ExtendedExp
 internal sealed class ExtendedExpirationDateCommandHandler : ICommandHandler<ExtendedExpirationDateCommand>,
     IAsyncCommandHandler<ExtendedExpirationDateCommand>
 {
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
+    private readonly IPostRepository _postRepository;
 
-    public ExtendedExpirationDateCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository)
+    public ExtendedExpirationDateCommandHandler(IPostRepository postRepository)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
     }

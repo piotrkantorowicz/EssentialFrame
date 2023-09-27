@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using EssentialFrame.Domain.Core.Rules.Base;
 using EssentialFrame.Extensions;
 
-namespace EssentialFrame.ExampleApp.Domain.PostComments.Shared.Rules;
+namespace EssentialFrame.ExampleApp.Domain.Shared.Rules;
 
 public class TextCanBeOnlyAlphaNumericTestRule : BusinessRule
 {

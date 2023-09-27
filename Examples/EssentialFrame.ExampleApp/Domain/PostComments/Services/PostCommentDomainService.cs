@@ -2,27 +2,25 @@
 using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Domain.Core.Events;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
-using EssentialFrame.Domain.Persistence.Services.Interfaces;
 using EssentialFrame.Domain.Services;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 using EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
+using EssentialFrame.ExampleApp.Domain.PostComments.Repositories;
 using EssentialFrame.ExampleApp.Domain.PostComments.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.DeletedReasons;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
-using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.Repositories;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Services;
 
 public class PostCommentDomainService : DomainService, IPostCommentDomainService
 {
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
-    private readonly IAggregateRepository<PostComment, PostCommentIdentifier> _postCommentRepository;
+    private readonly IPostRepository _postRepository;
+    private readonly IPostCommentRepository _postCommentRepository;
 
-    public PostCommentDomainService(IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository,
-        IAggregateRepository<PostComment, PostCommentIdentifier> postCommentRepository)
+    public PostCommentDomainService(IPostRepository aggregateRepository, IPostCommentRepository postCommentRepository)
     {
         _postRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
 

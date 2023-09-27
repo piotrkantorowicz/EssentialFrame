@@ -1,4 +1,6 @@
-﻿namespace EssentialFrame.Domain.Core.Rules.Base;
+﻿using EssentialFrame.Extensions;
+
+namespace EssentialFrame.Domain.Core.Rules.Base;
 
 public abstract class BusinessRule : IBusinessRule
 {
@@ -26,4 +28,11 @@ public abstract class BusinessRule : IBusinessRule
 
     public abstract bool IsBroken();
     public abstract void AddExtraParameters();
+
+    public virtual string GetDetails()
+    {
+        IEnumerable<string> parameters = Parameters.Select(p => $"Parameter: {p.Key}, Value: {p.Value}\n");
+
+        return $"{this.GetTypeFullName()}: {Message} \nParameters: {parameters}";
+    }
 }

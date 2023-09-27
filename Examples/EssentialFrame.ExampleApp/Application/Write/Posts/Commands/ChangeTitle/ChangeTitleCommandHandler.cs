@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.Repositories;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 
@@ -13,9 +13,9 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeTitle
 internal sealed class ChangeTitleCommandHandler : ICommandHandler<ChangeTitleCommand>,
     IAsyncCommandHandler<ChangeTitleCommand>
 {
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
+    private readonly IPostRepository _postRepository;
 
-    public ChangeTitleCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository)
+    public ChangeTitleCommandHandler(IPostRepository postRepository)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
     }
