@@ -6,9 +6,10 @@ using EssentialFrame.Domain.Exceptions;
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 
-public abstract class EventSourcingAggregateState<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+public abstract class EventSourcingAggregateState<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    public void Apply(IDomainEvent<TAggregateIdentifier> domainEvent)
+    public void Apply(IDomainEvent<TAggregateIdentifier, TType> domainEvent)
     {
         MethodInfo when = GetType().GetMethod("When", new[] { domainEvent.GetType() });
 

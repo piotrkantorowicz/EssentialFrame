@@ -1,8 +1,10 @@
 ﻿using EssentialFrame.Domain.Core.Shared;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Core.Entities;
 
-public interface IEntity : IDeletableDomainObject
+public interface IEntity<out TEntityIdentifier, TType> : IDeletableDomainObject
+    where TEntityIdentifier : TypedIdentifierBase<TType>
 {
-    public Guid EntityIdentifier { get; }
+    public TEntityIdentifier EntityIdentifier { get; }
 }

@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public class PostImageMustExistsWhenUpdatingOrDeletingRule : IdentifiableBusinessRule<PostIdentifier>
+public class PostImageMustExistsWhenUpdatingOrDeletingRule : IdentifiableBusinessRule<PostIdentifier, Guid>
 {
     private readonly Image _image;
 

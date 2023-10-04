@@ -8,10 +8,10 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Persistence.Mappers;
 
-internal sealed class DomainEventMapper<TAggregateIdentifier> : IDomainEventMapper<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+internal sealed class DomainEventMapper<TAggregateIdentifier, TType> : IDomainEventMapper<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    public DomainEventDataModel Map(IDomainEvent<TAggregateIdentifier> domainEvent)
+    public DomainEventDataModel Map(IDomainEvent<TAggregateIdentifier, TType> domainEvent)
     {
         return new DomainEventDataModel
         {
@@ -25,7 +25,7 @@ internal sealed class DomainEventMapper<TAggregateIdentifier> : IDomainEventMapp
         };
     }
 
-    public DomainEventDataModel Map(IDomainEvent<TAggregateIdentifier> domainEvent, ISerializer serializer)
+    public DomainEventDataModel Map(IDomainEvent<TAggregateIdentifier, TType> domainEvent, ISerializer serializer)
     {
         return new DomainEventDataModel
         {
@@ -39,28 +39,31 @@ internal sealed class DomainEventMapper<TAggregateIdentifier> : IDomainEventMapp
         };
     }
 
-    public IReadOnlyCollection<DomainEventDataModel> Map(IEnumerable<IDomainEvent<TAggregateIdentifier>> domainEvents)
+    public IReadOnlyCollection<DomainEventDataModel> Map(
+        IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> domainEvents)
     {
         return domainEvents.Select(Map).ToList();
     }
 
-    public IReadOnlyCollection<DomainEventDataModel> Map(IEnumerable<IDomainEvent<TAggregateIdentifier>> domainEvents,
+    public IReadOnlyCollection<DomainEventDataModel> Map(
+        IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> domainEvents,
         ISerializer serializer)
     {
         return domainEvents.Select(de => Map(de, serializer)).ToList();
     }
 
-    public IDomainEvent<TAggregateIdentifier> Map(DomainEventDataModel domainEventDataModel)
+    public IDomainEvent<TAggregateIdentifier, TType> Map(DomainEventDataModel domainEventDataModel)
     {
-        return domainEventDataModel.DomainEvent as IDomainEvent<TAggregateIdentifier>;
+        return domainEventDataModel.DomainEvent as IDomainEvent<TAggregateIdentifier, TType>;
     }
 
-    public IDomainEvent<TAggregateIdentifier> Map(DomainEventDataModel domainEventDataModel, ISerializer serializer)
+    public IDomainEvent<TAggregateIdentifier, TType> Map(DomainEventDataModel domainEventDataModel,
+        ISerializer serializer)
     {
         string serializedEvent = domainEventDataModel.DomainEvent as string;
 
-        IDomainEvent<TAggregateIdentifier> deserialized =
-            serializer.Deserialize<IDomainEvent<TAggregateIdentifier>>(serializedEvent,
+        IDomainEvent<TAggregateIdentifier, TType> deserialized =
+            serializer.Deserialize<IDomainEvent<TAggregateIdentifier, TType>>(serializedEvent,
                 Type.GetType(domainEventDataModel.EventClass));
 
         if (deserialized is null)
@@ -71,13 +74,14 @@ internal sealed class DomainEventMapper<TAggregateIdentifier> : IDomainEventMapp
         return deserialized;
     }
 
-    public IReadOnlyCollection<IDomainEvent<TAggregateIdentifier>> Map(
+    public IReadOnlyCollection<IDomainEvent<TAggregateIdentifier, TType>> Map(
         IEnumerable<DomainEventDataModel> domainEventDataModels)
     {
         return domainEventDataModels.Select(Map).ToList();
     }
 
-    public IReadOnlyCollection<IDomainEvent<TAggregateIdentifier>> Map(IEnumerable<DomainEventDataModel> domainEvents,
+    public IReadOnlyCollection<IDomainEvent<TAggregateIdentifier, TType>> Map(
+        IEnumerable<DomainEventDataModel> domainEvents,
         ISerializer serializer)
     {
         return domainEvents.Select(de => Map(de, serializer)).ToList();

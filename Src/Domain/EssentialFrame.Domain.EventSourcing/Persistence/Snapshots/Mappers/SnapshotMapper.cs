@@ -5,32 +5,33 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Mappers;
 
-public class SnapshotMapper<TAggregateIdentifier> : ISnapshotMapper<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+public class SnapshotMapper<TAggregateIdentifier, TType> : ISnapshotMapper<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    public SnapshotDataModel Map(Snapshot<TAggregateIdentifier> snapshot)
+    public SnapshotDataModel Map(Snapshot<TAggregateIdentifier, TType> snapshot)
     {
         return new SnapshotDataModel
         {
-            AggregateIdentifier = snapshot.AggregateIdentifier.Value,
+            AggregateIdentifier = snapshot.AggregateIdentifier,
             AggregateVersion = snapshot.AggregateVersion,
             AggregateState = snapshot.AggregateState
         };
     }
 
-    public IReadOnlyCollection<SnapshotDataModel> Map(IEnumerable<Snapshot<TAggregateIdentifier>> snapshots)
+    public IReadOnlyCollection<SnapshotDataModel> Map(IEnumerable<Snapshot<TAggregateIdentifier, TType>> snapshots)
     {
         return snapshots.Select(Map).ToList();
     }
 
-    public Snapshot<TAggregateIdentifier> Map(SnapshotDataModel snapshotDataModel)
+    public Snapshot<TAggregateIdentifier, TType> Map(SnapshotDataModel snapshotDataModel)
     {
-        return new Snapshot<TAggregateIdentifier>(
-            TypedGuidIdentifier.New<TAggregateIdentifier>(snapshotDataModel.AggregateIdentifier),
+        return new Snapshot<TAggregateIdentifier, TType>(
+            TypedIdentifierBase<TType>.New<TAggregateIdentifier>(snapshotDataModel.AggregateIdentifier),
             snapshotDataModel.AggregateVersion, snapshotDataModel.AggregateState);
     }
 
-    public IReadOnlyCollection<Snapshot<TAggregateIdentifier>> Map(IEnumerable<SnapshotDataModel> snapshotDataModels)
+    public IReadOnlyCollection<Snapshot<TAggregateIdentifier, TType>> Map(
+        IEnumerable<SnapshotDataModel> snapshotDataModels)
     {
         return snapshotDataModels.Select(Map).ToList();
     }

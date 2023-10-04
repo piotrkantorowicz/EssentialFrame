@@ -1,22 +1,19 @@
 using EssentialFrame.Domain.Core.Rules;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Core.Entities;
 
-public abstract class Entity : IEntity
+public abstract class Entity<TEntityIdentifier, TType> : IEntity<TEntityIdentifier, TType>
+    where TEntityIdentifier : TypedIdentifierBase<TType>
 {
-    protected Entity()
-    {
-        EntityIdentifier = Guid.NewGuid();
-    }
-
-    protected Entity(Guid entityIdentifier)
+    protected Entity(TEntityIdentifier entityIdentifier)
     {
         EntityIdentifier = entityIdentifier;
     }
-    
-    public Guid EntityIdentifier { get; }
+
+    public TEntityIdentifier EntityIdentifier { get; }
 
     public DateTimeOffset? DeletedDate { get; private set; }
 

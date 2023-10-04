@@ -5,15 +5,16 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers;
 
-public class EventSourcingAggregateMapper<TAggregateIdentifier> : IEventSourcingAggregateMapper<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+public class
+    EventSourcingAggregateMapper<TAggregateIdentifier, TType> : IEventSourcingAggregateMapper<TAggregateIdentifier,
+        TType> where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     public EventSourcingAggregateDataModel Map(
-        IEventSourcingAggregateRoot<TAggregateIdentifier> eventSourcingAggregateRoot)
+        IEventSourcingAggregateRoot<TAggregateIdentifier, TType> eventSourcingAggregateRoot)
     {
         return new EventSourcingAggregateDataModel
         {
-            AggregateIdentifier = eventSourcingAggregateRoot.AggregateIdentifier.Value,
+            AggregateIdentifier = eventSourcingAggregateRoot.AggregateIdentifier,
             AggregateVersion = eventSourcingAggregateRoot.AggregateVersion,
             TenantIdentifier = eventSourcingAggregateRoot.TenantIdentifier.Value,
             DeletedDate = eventSourcingAggregateRoot.DeletedDate,

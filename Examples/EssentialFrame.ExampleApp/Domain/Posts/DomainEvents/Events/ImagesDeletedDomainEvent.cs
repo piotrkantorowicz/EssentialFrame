@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 
-public class ImagesDeletedDomainEvent : DomainEvent<PostIdentifier>
+public class ImagesDeletedDomainEvent : DomainEvent<PostIdentifier, Guid>
 {
     public ImagesDeletedDomainEvent(PostIdentifier aggregateIdentifier, DomainIdentity identityContext,
         HashSet<Guid> imagesIds) : base(aggregateIdentifier, identityContext)

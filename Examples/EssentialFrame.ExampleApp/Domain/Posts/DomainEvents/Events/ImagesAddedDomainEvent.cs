@@ -6,7 +6,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 
-public class ImagesAddedDomainEvent : DomainEvent<PostIdentifier>
+public class ImagesAddedDomainEvent : DomainEvent<PostIdentifier, Guid>
 {
     public ImagesAddedDomainEvent(PostIdentifier aggregateIdentifier, DomainIdentity domainIdentity,
         HashSet<Image> newImages) : base(aggregateIdentifier, domainIdentity)

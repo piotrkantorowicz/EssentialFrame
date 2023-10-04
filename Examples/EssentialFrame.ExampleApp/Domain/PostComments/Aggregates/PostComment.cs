@@ -12,7 +12,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates;
 
-public sealed class PostComment : AggregateRoot<PostCommentIdentifier>
+public sealed class PostComment : AggregateRoot<PostCommentIdentifier, Guid>
 {
     private PostComment(PostCommentIdentifier postCommentIdentifier, PostIdentifier postIdentifier,
         AuthorIdentifier authorIdentifier, PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text,

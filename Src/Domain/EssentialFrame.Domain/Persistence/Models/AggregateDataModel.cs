@@ -2,7 +2,7 @@
 
 public class AggregateDataModel
 {
-    public virtual Guid AggregateIdentifier { get; set; }
+    public virtual string AggregateIdentifier { get; set; }
 
     public virtual Guid? TenantIdentifier { get; set; }
 

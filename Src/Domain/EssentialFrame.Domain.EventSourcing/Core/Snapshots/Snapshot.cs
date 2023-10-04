@@ -2,7 +2,7 @@
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 
-public class Snapshot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+public class Snapshot<TAggregateIdentifier, TType> where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     public Snapshot(TAggregateIdentifier aggregateIdentifier, int aggregateVersion, object aggregateState)
     {

@@ -13,14 +13,14 @@ internal class SnapshotBoxingFailedException : EssentialFrameException
     {
     }
 
-    public static SnapshotBoxingFailedException Unexpected(Guid aggregateIdentifier, Exception innerException)
+    public static SnapshotBoxingFailedException Unexpected(string aggregateIdentifier, Exception innerException)
     {
         return new SnapshotBoxingFailedException(
             $"Unexpected error while boxing snapshot for aggregate with id: ({aggregateIdentifier}). See inner exception for more details",
             innerException);
     }
 
-    public static SnapshotBoxingFailedException SnapshotNotFound(Guid aggregateIdentifier)
+    public static SnapshotBoxingFailedException SnapshotNotFound(string aggregateIdentifier)
     {
         return new SnapshotBoxingFailedException(
             $"Unable to box snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details");

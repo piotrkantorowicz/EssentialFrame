@@ -2,7 +2,7 @@
 
 namespace EssentialFrame.Domain.Core.ValueObjects;
 
-public sealed class CorrelationIdentifier : TypedGuidIdentifier
+public sealed class CorrelationIdentifier : TypedIdentifierBase<Guid>
 {
     private CorrelationIdentifier(Guid value) : base(value)
     {
@@ -13,6 +13,11 @@ public sealed class CorrelationIdentifier : TypedGuidIdentifier
         return New(identifier);
     }
 
+    public static implicit operator Guid(CorrelationIdentifier identifier)
+    {
+        return identifier.Value;
+    }
+
     public static CorrelationIdentifier New(Guid value)
     {
         if (value == Guid.Empty)
@@ -21,5 +26,10 @@ public sealed class CorrelationIdentifier : TypedGuidIdentifier
         }
 
         return new CorrelationIdentifier(value);
+    }
+
+    public override bool IsEmpty()
+    {
+        return Value == Guid.Empty;
     }
 }

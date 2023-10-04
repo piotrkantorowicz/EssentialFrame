@@ -1,3 +1,4 @@
+using System;
 using Bogus;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
@@ -21,7 +22,7 @@ public sealed class GenericEventSourcingAggregateFactoryTests
 
         // Act
         Post aggregate =
-            EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier);
+            EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(aggregateIdentifier);
 
         // Assert
         aggregate.Should().NotBeNull();
@@ -36,8 +37,8 @@ public sealed class GenericEventSourcingAggregateFactoryTests
         int aggregateVersion = _faker.Random.Int();
 
         // Act
-        Post aggregate =
-            EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier,
+        Post aggregate = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
+            aggregateIdentifier,
                 aggregateVersion);
 
         // Assert
@@ -55,8 +56,8 @@ public sealed class GenericEventSourcingAggregateFactoryTests
         TenantIdentifier tenantIdentifier = TenantIdentifier.New(_faker.Random.Guid());
 
         // Act
-        Post aggregate =
-            EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier,
+        Post aggregate = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
+            aggregateIdentifier,
                 aggregateVersion, tenantIdentifier);
 
         // Assert

@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public sealed class PostMustBeCreatedBeforeBeModifiedRule : IdentifiableBusinessRule<PostIdentifier>
+public sealed class PostMustBeCreatedBeforeBeModifiedRule : IdentifiableBusinessRule<PostIdentifier, Guid>
 {
     private readonly bool _isCreated;
 

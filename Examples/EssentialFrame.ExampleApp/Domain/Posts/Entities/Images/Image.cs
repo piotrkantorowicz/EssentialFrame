@@ -1,18 +1,13 @@
 using System;
 using EssentialFrame.Domain.Core.Entities;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 
-public sealed class Image : Entity
+public sealed class Image : Entity<ImageIdentifier, Guid>
 {
-    private Image(Name name, BytesContent bytes)
-    {
-        Name = name;
-        Bytes = bytes;
-    }
-
     private Image(Guid entityIdentifier, Name name, BytesContent bytes) : base(entityIdentifier)
     {
         Name = name;
@@ -25,7 +20,7 @@ public sealed class Image : Entity
 
     public static Image Create(Name name, BytesContent bytes)
     {
-        return new Image(name, bytes);
+        return new Image(Guid.NewGuid(), name, bytes);
     }
 
     public static Image Create(Guid imageIdentifier, Name name, BytesContent bytes)

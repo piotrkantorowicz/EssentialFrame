@@ -11,12 +11,13 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Handlers;
 
-internal sealed class PostDeletedDomainEventHandler : IEventHandler<PostDeletedDomainEvent, PostIdentifier>,
-    IAsyncEventHandler<PostDeletedDomainEvent, PostIdentifier>
+internal sealed class PostDeletedDomainEventHandler : IEventHandler<PostDeletedDomainEvent, PostIdentifier, Guid>,
+    IAsyncEventHandler<PostDeletedDomainEvent, PostIdentifier, Guid>
 {
-    private readonly IAggregateRepository<PostComment, PostCommentIdentifier> _postCommentRepository;
+    private readonly IAggregateRepository<PostComment, PostCommentIdentifier, Guid> _postCommentRepository;
 
-    public PostDeletedDomainEventHandler(IAggregateRepository<PostComment, PostCommentIdentifier> postCommentRepository)
+    public PostDeletedDomainEventHandler(
+        IAggregateRepository<PostComment, PostCommentIdentifier, Guid> postCommentRepository)
     {
         _postCommentRepository =
             postCommentRepository ?? throw new ArgumentNullException(nameof(postCommentRepository));

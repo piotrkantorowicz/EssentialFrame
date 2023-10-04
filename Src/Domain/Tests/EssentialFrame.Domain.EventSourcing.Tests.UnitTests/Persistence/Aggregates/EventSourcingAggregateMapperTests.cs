@@ -1,4 +1,5 @@
-﻿using Bogus;
+﻿using System;
+using Bogus;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers;
@@ -16,8 +17,8 @@ public class EventSourcingAggregateMapperTests
 {
     private readonly Faker _faker = new();
 
-    private readonly IEventSourcingAggregateMapper<PostIdentifier> _eventSourcingAggregateMapper =
-        new EventSourcingAggregateMapper<PostIdentifier>();
+    private readonly IEventSourcingAggregateMapper<PostIdentifier, Guid> _eventSourcingAggregateMapper =
+        new EventSourcingAggregateMapper<PostIdentifier, Guid>();
 
     [Test]
     public void MapToAggregateDataModel_WhenCalledWithValidAggregateRoot_ReturnsAggregateDataModel()
@@ -27,8 +28,8 @@ public class EventSourcingAggregateMapperTests
         int aggregateVersion = _faker.Random.Int();
         TenantIdentifier tenantIdentifier = TenantIdentifier.New(_faker.Random.Guid());
 
-        Post aggregateRoot =
-            EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier,
+        Post aggregateRoot = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
+            aggregateIdentifier,
                 aggregateVersion, tenantIdentifier);
 
         // Act
@@ -37,8 +38,8 @@ public class EventSourcingAggregateMapperTests
 
         // Assert
         eventSourcingAggregateDataModel.Should().NotBeNull();
-        eventSourcingAggregateDataModel.AggregateIdentifier.Should().Be(aggregateIdentifier.Value);
+        eventSourcingAggregateDataModel.AggregateIdentifier.Should().Be(aggregateIdentifier);
         eventSourcingAggregateDataModel.AggregateVersion.Should().Be(aggregateVersion);
-        eventSourcingAggregateDataModel.TenantIdentifier.Should().Be(tenantIdentifier.Value);
+        eventSourcingAggregateDataModel.TenantIdentifier.Should().Be(tenantIdentifier);
     }
 }

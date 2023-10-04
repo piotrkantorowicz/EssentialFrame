@@ -9,7 +9,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 
-public class NewPostCreatedDomainEvent : DomainEvent<PostIdentifier>
+public class NewPostCreatedDomainEvent : DomainEvent<PostIdentifier, Guid>
 {
     public NewPostCreatedDomainEvent(PostIdentifier aggregateIdentifier, DomainIdentity identityContext, Title title,
         Description description, Date expiration, HashSet<Image> images) : base(aggregateIdentifier, identityContext)

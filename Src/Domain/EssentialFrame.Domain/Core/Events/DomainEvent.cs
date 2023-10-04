@@ -1,12 +1,13 @@
 ﻿using EssentialFrame.Domain.Core.Events.Interfaces;
+using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Core.Events;
 
-public abstract class DomainEvent<TAggregateIdentifier> : IDomainEvent<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+public abstract class DomainEvent<TAggregateIdentifier, TType> : IDomainEvent<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     private DomainEvent(DomainIdentity domainIdentity)
     {
@@ -37,7 +38,7 @@ public abstract class DomainEvent<TAggregateIdentifier> : IDomainEvent<TAggregat
         AggregateVersion = expectedVersion;
     }
 
-    public virtual void AdjustAggregateVersion(TAggregateIdentifier aggregateIdentifier, int aggregateVersion)
+    public void AdjustAggregateVersion(TAggregateIdentifier aggregateIdentifier, int aggregateVersion)
     {
         if (AggregateIdentifier != aggregateIdentifier)
         {
@@ -46,8 +47,8 @@ public abstract class DomainEvent<TAggregateIdentifier> : IDomainEvent<TAggregat
 
         AggregateVersion = aggregateVersion;
     }
-    
-    public Guid EventIdentifier { get; } = Guid.NewGuid();
+
+    public DomainEventIdentifier EventIdentifier { get; } = Guid.NewGuid();
 
     public TAggregateIdentifier AggregateIdentifier { get; }
 

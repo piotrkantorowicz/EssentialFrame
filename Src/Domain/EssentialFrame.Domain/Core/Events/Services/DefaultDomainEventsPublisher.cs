@@ -7,8 +7,9 @@ using EssentialFrame.Extensions;
 
 namespace EssentialFrame.Domain.Core.Events.Services;
 
-public class DefaultDomainEventsPublisher<TAggregateIdentifier> : IDomainEventsPublisher<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+public class
+    DefaultDomainEventsPublisher<TAggregateIdentifier, TType> : IDomainEventsPublisher<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     private readonly ILifetimeScope _lifetimeScope;
 
@@ -18,29 +19,29 @@ public class DefaultDomainEventsPublisher<TAggregateIdentifier> : IDomainEventsP
     }
 
     public void Publish<TDomainEvent>(TDomainEvent @event)
-        where TDomainEvent : class, IDomainEvent<TAggregateIdentifier>
+        where TDomainEvent : class, IDomainEvent<TAggregateIdentifier, TType>
     {
         using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
 
-        IEventHandler<TDomainEvent, TAggregateIdentifier> handler =
-            FindHandler<TDomainEvent, IEventHandler<TDomainEvent, TAggregateIdentifier>>(@event, scope);
+        IEventHandler<TDomainEvent, TAggregateIdentifier, TType> handler =
+            FindHandler<TDomainEvent, IEventHandler<TDomainEvent, TAggregateIdentifier, TType>>(@event, scope);
 
         handler.Handle(@event);
     }
 
     public async Task PublishAsync<TDomainEvent>(TDomainEvent @event, CancellationToken cancellationToken = default)
-        where TDomainEvent : class, IDomainEvent<TAggregateIdentifier>
+        where TDomainEvent : class, IDomainEvent<TAggregateIdentifier, TType>
     {
         await using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
 
-        IAsyncEventHandler<TDomainEvent, TAggregateIdentifier> handler =
-            FindHandler<TDomainEvent, IAsyncEventHandler<TDomainEvent, TAggregateIdentifier>>(@event, scope);
+        IAsyncEventHandler<TDomainEvent, TAggregateIdentifier, TType> handler =
+            FindHandler<TDomainEvent, IAsyncEventHandler<TDomainEvent, TAggregateIdentifier, TType>>(@event, scope);
 
         await handler.HandleAsync(@event, cancellationToken);
     }
 
     private static THandler FindHandler<TDomainEvent, THandler>(TDomainEvent @event, IComponentContext lifetimeScope)
-        where TDomainEvent : class, IDomainEvent<TAggregateIdentifier> where THandler : class, IEventHandler
+        where TDomainEvent : class, IDomainEvent<TAggregateIdentifier, TType> where THandler : class, IEventHandler
     {
         bool isTenantHandlerFound = lifetimeScope.TryResolveKeyed(@event.DomainEventIdentity.TenantIdentifier,
             out THandler eventHandler);

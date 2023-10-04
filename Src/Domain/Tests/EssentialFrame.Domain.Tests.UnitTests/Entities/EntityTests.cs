@@ -1,7 +1,7 @@
-using System;
 using Bogus;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 using FluentAssertions;
 using NUnit.Framework;
@@ -17,7 +17,7 @@ public class EntityTests
     public void CreateEntity_Always_ShouldAssignCorrectValues()
     {
         // Arrange
-        Guid entityIdentifier = _faker.Random.Guid();
+        ImageIdentifier entityIdentifier = ImageIdentifier.New(_faker.Random.Guid());
         BytesContent bytes = BytesContent.Create(_faker.Random.Bytes(300));
         Name name = Name.Create(_faker.Random.AlphaNumeric(_faker.Random.Number(3, 150)));
 

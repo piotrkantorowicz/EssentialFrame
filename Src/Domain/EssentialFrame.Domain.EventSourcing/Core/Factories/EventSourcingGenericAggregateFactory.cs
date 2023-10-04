@@ -6,8 +6,9 @@ using EssentialFrame.Domain.Exceptions;
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Factories;
 
-public static class EventSourcingGenericAggregateFactory<T, TAggregateIdentifier>
-    where T : class, IEventSourcingAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+public static class EventSourcingGenericAggregateFactory<T, TAggregateIdentifier, TType>
+    where T : class, IEventSourcingAggregateRoot<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     public static T CreateAggregate(TAggregateIdentifier aggregateIdentifier)
     {

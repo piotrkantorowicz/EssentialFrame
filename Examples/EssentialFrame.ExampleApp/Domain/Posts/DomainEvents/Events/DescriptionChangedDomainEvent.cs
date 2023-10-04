@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 
-public class DescriptionChangedDomainEvent : DomainEvent<PostIdentifier>
+public class DescriptionChangedDomainEvent : DomainEvent<PostIdentifier, Guid>
 {
     public DescriptionChangedDomainEvent(PostIdentifier aggregateIdentifier, DomainIdentity identityContext,
         Description newDescription) : base(aggregateIdentifier, identityContext)

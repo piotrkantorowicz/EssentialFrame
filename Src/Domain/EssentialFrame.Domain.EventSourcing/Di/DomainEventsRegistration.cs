@@ -13,13 +13,14 @@ internal static class DomainEventsRegistration
     {
         ContainerBuilder containerBuilder = essentialFrameBuilder.Builder;
 
-        containerBuilder.RegisterAssemblyTypes(assemblies).AsClosedTypesOf(typeof(IEventSourcingAggregateRepository<,>))
+        containerBuilder.RegisterAssemblyTypes(assemblies)
+            .AsClosedTypesOf(typeof(IEventSourcingAggregateRepository<,,>))
             .InstancePerLifetimeScope();
 
-        containerBuilder.RegisterAssemblyTypes(assemblies).AsClosedTypesOf(typeof(ISnapshotRepository<,>))
+        containerBuilder.RegisterAssemblyTypes(assemblies).AsClosedTypesOf(typeof(ISnapshotRepository<,,>))
             .InstancePerLifetimeScope();
 
-        containerBuilder.RegisterAssemblyTypes(assemblies).AsClosedTypesOf(typeof(ISnapshotStrategy<,>))
+        containerBuilder.RegisterAssemblyTypes(assemblies).AsClosedTypesOf(typeof(ISnapshotStrategy<,,>))
             .InstancePerLifetimeScope();
 
         return essentialFrameBuilder;

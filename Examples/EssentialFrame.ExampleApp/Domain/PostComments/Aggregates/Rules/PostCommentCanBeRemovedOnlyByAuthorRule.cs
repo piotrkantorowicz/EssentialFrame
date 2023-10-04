@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 
-public class PostCommentCanBeRemovedOnlyByAuthorRule : IdentifiableBusinessRule<PostCommentIdentifier>
+public class PostCommentCanBeRemovedOnlyByAuthorRule : IdentifiableBusinessRule<PostCommentIdentifier, Guid>
 {
     private readonly AuthorIdentifier _authorIdentifier;
     private readonly AuthorIdentifier _removerIdentifier;

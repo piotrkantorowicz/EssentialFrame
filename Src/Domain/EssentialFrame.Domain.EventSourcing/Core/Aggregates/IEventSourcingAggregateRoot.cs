@@ -6,8 +6,8 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 
-public interface IEventSourcingAggregateRoot<TAggregateIdentifier> : IDeletableDomainObject
-    where TAggregateIdentifier : TypedGuidIdentifier
+public interface IEventSourcingAggregateRoot<TAggregateIdentifier, TType> : IDeletableDomainObject
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     TAggregateIdentifier AggregateIdentifier { get; }
 
@@ -15,13 +15,13 @@ public interface IEventSourcingAggregateRoot<TAggregateIdentifier> : IDeletableD
 
     int AggregateVersion { get; }
 
-    IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges();
+    IDomainEvent<TAggregateIdentifier, TType>[] GetUncommittedChanges();
 
-    EventSourcingAggregateState<TAggregateIdentifier> State { get; }
+    EventSourcingAggregateState<TAggregateIdentifier, TType> State { get; }
 
-    IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges();
+    IDomainEvent<TAggregateIdentifier, TType>[] FlushUncommittedChanges();
 
-    void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier>> history);
+    void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> history);
 
     void RestoreState(object aggregateState, ISerializer serializer = null);
 }

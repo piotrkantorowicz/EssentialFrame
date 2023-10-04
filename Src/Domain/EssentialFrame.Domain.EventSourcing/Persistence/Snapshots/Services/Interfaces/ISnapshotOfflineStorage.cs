@@ -8,7 +8,7 @@ public interface ISnapshotOfflineStorage
 
     Task SaveAsync(SnapshotDataModel snapshot, CancellationToken cancellationToken = default);
 
-    SnapshotDataModel Restore(Guid aggregateIdentifier);
+    SnapshotDataModel Restore(string aggregateIdentifier);
 
-    Task<SnapshotDataModel> RestoreAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier, CancellationToken cancellationToken = default);
 }

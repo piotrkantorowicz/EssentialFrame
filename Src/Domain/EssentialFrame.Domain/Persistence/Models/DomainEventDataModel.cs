@@ -2,7 +2,7 @@ namespace EssentialFrame.Domain.Persistence.Models;
 
 public class DomainEventDataModel
 {
-    public virtual Guid AggregateIdentifier { get; set; }
+    public virtual string AggregateIdentifier { get; set; }
 
     public virtual int AggregateVersion { get; set; }
 

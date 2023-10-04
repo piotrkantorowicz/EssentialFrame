@@ -2,30 +2,30 @@
 
 namespace EssentialFrame.Domain.Core.ValueObjects;
 
-public sealed class UserIdentifier : TypedIdentifierBase<Guid>
+public sealed class DomainEventIdentifier : TypedIdentifierBase<Guid>
 {
-    private UserIdentifier(Guid value) : base(value)
+    private DomainEventIdentifier(Guid value) : base(value)
     {
     }
 
-    public static implicit operator UserIdentifier(Guid identifier)
+    public static implicit operator DomainEventIdentifier(Guid identifier)
     {
         return New(identifier);
     }
 
-    public static implicit operator Guid(UserIdentifier identifier)
+    public static implicit operator Guid(DomainEventIdentifier identifier)
     {
         return identifier.Value;
     }
 
-    public static UserIdentifier New(Guid value)
+    public static DomainEventIdentifier New(Guid value)
     {
         if (value == Guid.Empty)
         {
             throw new ArgumentException("Value cannot be empty", nameof(value));
         }
 
-        return new UserIdentifier(value);
+        return new DomainEventIdentifier(value);
     }
 
     public override bool IsEmpty()

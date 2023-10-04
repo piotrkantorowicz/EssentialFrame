@@ -4,9 +4,10 @@ using EssentialFrame.Domain.EventSourcing.Core.Snapshots.Interfaces;
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 
-public class SnapshotStrategy<TAggregate, TAggregateIdentifier> : ISnapshotStrategy<TAggregate, TAggregateIdentifier>
-    where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+public class
+    SnapshotStrategy<TAggregate, TAggregateIdentifier, TType> : ISnapshotStrategy<TAggregate, TAggregateIdentifier,
+        TType> where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     private readonly int _interval;
 

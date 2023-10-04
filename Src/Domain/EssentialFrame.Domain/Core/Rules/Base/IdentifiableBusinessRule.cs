@@ -2,8 +2,8 @@
 
 namespace EssentialFrame.Domain.Core.Rules.Base;
 
-public abstract class IdentifiableBusinessRule<TDomainObjectIdentifier> : BusinessRule
-    where TDomainObjectIdentifier : TypedGuidIdentifier
+public abstract class IdentifiableBusinessRule<TDomainObjectIdentifier, TType> : BusinessRule
+    where TDomainObjectIdentifier : TypedIdentifierBase<TType>
 {
     protected IdentifiableBusinessRule(TDomainObjectIdentifier domainObjectIdentifier, Type domainObjectType,
         string businessRuleType) : base(domainObjectType, businessRuleType)

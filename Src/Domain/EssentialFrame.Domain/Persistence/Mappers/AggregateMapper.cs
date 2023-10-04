@@ -6,10 +6,11 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Persistence.Mappers;
 
-internal sealed class AggregateMapper<TAggregateIdentifier> : IAggregateMapper<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+internal sealed class AggregateMapper<TAggregateIdentifier, TType> : IAggregateMapper<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    public AggregateDataModel Map(IAggregateRoot<TAggregateIdentifier> aggregate)
+    public AggregateDataModel Map(IAggregateRoot<TAggregateIdentifier, TType> aggregate)
+
     {
         return new AggregateDataModel
         {
@@ -21,7 +22,7 @@ internal sealed class AggregateMapper<TAggregateIdentifier> : IAggregateMapper<T
         };
     }
 
-    public AggregateDataModel Map(IAggregateRoot<TAggregateIdentifier> aggregate, ISerializer serializer)
+    public AggregateDataModel Map(IAggregateRoot<TAggregateIdentifier, TType> aggregate, ISerializer serializer)
     {
         return new AggregateDataModel
         {
