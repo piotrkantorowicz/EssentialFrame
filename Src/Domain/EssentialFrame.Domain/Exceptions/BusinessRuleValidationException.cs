@@ -1,9 +1,9 @@
 using EssentialFrame.Domain.Core.Rules;
-using EssentialFrame.Extensions;
+using EssentialFrame.Exceptions;
 
 namespace EssentialFrame.Domain.Exceptions;
 
-public class BusinessRuleValidationException : Exception
+public class BusinessRuleValidationException : EssentialFrameException
 {
     public BusinessRuleValidationException(IBusinessRule brokenRule) : base(brokenRule.Message)
     {
@@ -20,8 +20,6 @@ public class BusinessRuleValidationException : Exception
 
     public override string ToString()
     {
-        IEnumerable<string> parameters = Parameters.Select(p => $"Parameter: {p.Key}, Value: {p.Value}\n");
-
-        return $"{BrokenRule?.GetTypeFullName()}: {BrokenRule?.Message} \nParameters: {parameters}";
+        return BrokenRule.GetDetails();
     }
 }

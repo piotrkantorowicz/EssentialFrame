@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Entities.Images;
+using EssentialFrame.ExampleApp.Domain.Posts.Repositories;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.BytesContents;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
@@ -20,9 +20,9 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.Create;
 internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPostCommand>,
     IAsyncCommandHandler<CreateNewPostCommand>
 {
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
+    private readonly IPostRepository _postRepository;
 
-    public CreateNewPostCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository)
+    public CreateNewPostCommandHandler(IPostRepository postRepository)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
     }

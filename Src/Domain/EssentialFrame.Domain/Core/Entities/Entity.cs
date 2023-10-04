@@ -15,7 +15,7 @@ public abstract class Entity : IEntity
     {
         EntityIdentifier = entityIdentifier;
     }
-
+    
     public Guid EntityIdentifier { get; }
 
     public DateTimeOffset? DeletedDate { get; private set; }

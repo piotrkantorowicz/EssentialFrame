@@ -8,4 +8,5 @@ public interface IBusinessRule
 
     bool IsBroken();
     void AddExtraParameters();
+    string GetDetails();
 }

@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using EssentialFrame.Cqrs.Commands.Core;
 using EssentialFrame.Cqrs.Commands.Core.Interfaces;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.Repositories;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 
@@ -13,9 +13,9 @@ namespace EssentialFrame.ExampleApp.Application.Write.Posts.Commands.ChangeImage
 internal sealed class ChangeImageNameCommandHandler : ICommandHandler<ChangeImageNameCommand>,
     IAsyncCommandHandler<ChangeImageNameCommand>
 {
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _postRepository;
+    private readonly IPostRepository _postRepository;
 
-    public ChangeImageNameCommandHandler(IEventSourcingAggregateRepository<Post, PostIdentifier> postRepository)
+    public ChangeImageNameCommandHandler(IPostRepository postRepository)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
     }
