@@ -39,8 +39,8 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
     {
         try
         {
-            string aggregateDirectory = _fileSystem.Path.Combine(_offlineStorageDirectory,
-                aggregate.AggregateIdentifier.ToString());
+            string aggregateDirectory =
+                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregate.AggregateIdentifier);
 
             (string stateContent, string metaDataContent) = CreateFileContents(aggregate);
 
@@ -71,7 +71,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         try
         {
             string aggregateDirectory = _fileSystem.Path.Combine(_offlineStorageDirectory,
-                aggregate.AggregateIdentifier.ToString());
+                aggregate.AggregateIdentifier);
 
             (string stateContent, string metaDataContent) = CreateFileContents(aggregate);
 
@@ -105,7 +105,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
 
         Dictionary<string, string> metaData = new()
         {
-            { "AggregateIdentifier", aggregate.AggregateIdentifier.ToString() },
+            { "AggregateIdentifier", aggregate.AggregateIdentifier },
             { "AggregateType", aggregate.GetType().FullName },
             { "State", _serializer.Serialize(aggregateState) },
             { "Local Date/Time Boxed", $"{SystemClock.Now:dddd, MMMM d, yyyy HH:mm} Local" },

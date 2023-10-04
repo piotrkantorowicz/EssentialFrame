@@ -1,10 +1,11 @@
-﻿using EssentialFrame.Domain.Core.ValueObjects.Core;
+﻿using EssentialFrame.Domain.Core.ValueObjects;
+using EssentialFrame.Domain.Core.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Core.Events.Interfaces;
 
-public interface IDomainEvent<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+public interface IDomainEvent<TAggregateIdentifier, TType> where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    Guid EventIdentifier { get; }
+    DomainEventIdentifier EventIdentifier { get; }
 
     TAggregateIdentifier AggregateIdentifier { get; }
 

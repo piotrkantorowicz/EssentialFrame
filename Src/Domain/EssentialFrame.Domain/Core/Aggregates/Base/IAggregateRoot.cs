@@ -5,14 +5,14 @@ using EssentialFrame.Domain.Core.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Core.Aggregates;
 
-public interface IAggregateRoot<TAggregateIdentifier> : IDeletableDomainObject
-    where TAggregateIdentifier : TypedGuidIdentifier
+public interface IAggregateRoot<TAggregateIdentifier, TType> : IDeletableDomainObject
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     TAggregateIdentifier AggregateIdentifier { get; }
 
     TenantIdentifier TenantIdentifier { get; }
 
-    IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges();
+    IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> GetUncommittedChanges();
 
     void ClearDomainEvents();
 }

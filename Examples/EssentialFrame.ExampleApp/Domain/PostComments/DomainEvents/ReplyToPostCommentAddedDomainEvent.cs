@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Domain.Core.Events;
+﻿using System;
+using EssentialFrame.Domain.Core.Events;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.CommentTexts;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Dates;
@@ -6,7 +7,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.DomainEvents;
 
-public class ReplyToPostCommentAddedDomainEvent : DomainEvent<PostCommentIdentifier>
+public class ReplyToPostCommentAddedDomainEvent : DomainEvent<PostCommentIdentifier, Guid>
 {
     public ReplyToPostCommentAddedDomainEvent(PostCommentIdentifier aggregateIdentifier, DomainIdentity identityContext,
         PostIdentifier postIdentifier, AuthorIdentifier authorIdentifier,

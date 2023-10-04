@@ -7,10 +7,10 @@ using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.Core.Aggregates;
 
-public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+public abstract class AggregateRoot<TAggregateIdentifier, TType> : IAggregateRoot<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    private readonly List<IDomainEvent<TAggregateIdentifier>> _changes = new();
+    private readonly List<IDomainEvent<TAggregateIdentifier, TType>> _changes = new();
 
     protected AggregateRoot(TAggregateIdentifier aggregateIdentifier)
     {
@@ -43,7 +43,7 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggr
         IsDeleted = false;
     }
 
-    public IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges()
+    public IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> GetUncommittedChanges()
     {
         lock (_changes)
         {
@@ -59,7 +59,7 @@ public abstract class AggregateRoot<TAggregateIdentifier> : IAggregateRoot<TAggr
         }
     }
 
-    protected void AddDomainEvent(IDomainEvent<TAggregateIdentifier> domainEvent)
+    protected void AddDomainEvent(IDomainEvent<TAggregateIdentifier, TType> domainEvent)
     {
         lock (_changes)
         {

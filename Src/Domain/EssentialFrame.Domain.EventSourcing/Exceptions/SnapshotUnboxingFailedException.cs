@@ -13,14 +13,14 @@ internal class SnapshotUnboxingFailedException : EssentialFrameException
     {
     }
 
-    public static SnapshotUnboxingFailedException Unexpected(Guid aggregateIdentifier, Exception innerException)
+    public static SnapshotUnboxingFailedException Unexpected(string aggregateIdentifier, Exception innerException)
     {
         return new SnapshotUnboxingFailedException(
             $"Unexpected error while unboxing snapshot for aggregate with id: ({aggregateIdentifier}). See inner exception for more details",
             innerException);
     }
 
-    public static SnapshotUnboxingFailedException SnapshotNotFound(Guid aggregateIdentifier)
+    public static SnapshotUnboxingFailedException SnapshotNotFound(string aggregateIdentifier)
     {
         return new SnapshotUnboxingFailedException(
             $"Unable to unbox snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details");

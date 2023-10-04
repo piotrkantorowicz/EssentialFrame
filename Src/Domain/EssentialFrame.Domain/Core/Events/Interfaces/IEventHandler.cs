@@ -2,14 +2,16 @@
 
 namespace EssentialFrame.Domain.Core.Events.Interfaces;
 
-public interface IAsyncEventHandler<in TDomainEvent, TAggregateIdentifier> : IEventHandler
-    where TDomainEvent : class, IDomainEvent<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+public interface IAsyncEventHandler<in TDomainEvent, TAggregateIdentifier, TType> : IEventHandler
+    where TDomainEvent : class, IDomainEvent<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     Task HandleAsync(TDomainEvent @event, CancellationToken cancellationToken = default);
 }
 
-public interface IEventHandler<in TDomainEvent, TAggregateIdentifier> : IEventHandler
-    where TDomainEvent : class, IDomainEvent<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+public interface IEventHandler<in TDomainEvent, TAggregateIdentifier, TType> : IEventHandler
+    where TDomainEvent : class, IDomainEvent<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     void Handle(TDomainEvent @event);
 }

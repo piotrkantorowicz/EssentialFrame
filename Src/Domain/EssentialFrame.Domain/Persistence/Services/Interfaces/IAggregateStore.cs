@@ -4,23 +4,23 @@ namespace EssentialFrame.Domain.Persistence.Services.Interfaces;
 
 public interface IAggregateStore
 {
-    bool Exists(Guid aggregateIdentifier);
+    bool Exists(string aggregateIdentifier);
 
-    Task<bool> ExistsAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(string aggregateIdentifier, CancellationToken cancellationToken = default);
 
-    AggregateDataModel Get(Guid aggregateIdentifier);
+    AggregateDataModel Get(string aggregateIdentifier);
 
-    Task<AggregateDataModel> GetAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<AggregateDataModel> GetAsync(string aggregateIdentifier, CancellationToken cancellationToken = default);
 
-    IEnumerable<Guid> GetExpired();
+    IEnumerable<string> GetExpired();
 
-    Task<IEnumerable<Guid>> GetExpiredAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken = default);
 
     void Save(AggregateDataModel aggregate);
 
     Task SaveAsync(AggregateDataModel aggregate, CancellationToken cancellationToken = default);
 
-    void Box(Guid aggregateIdentifier);
+    void Box(string aggregateIdentifier);
 
-    Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default);
 }

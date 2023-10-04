@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using EssentialFrame.Domain.Core.Rules.Base;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
 using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
+using EssentialFrame.ExampleApp.Domain.Posts.Repositories;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Extensions;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 
 public class
-    PostCommentCanBeOnlyCreatedWhenPostExistsAndHasNotBeenExpiredRule : IdentifiableBusinessRule<PostCommentIdentifier>
+    PostCommentCanBeOnlyCreatedWhenPostExistsAndHasNotBeenExpiredRule : IdentifiableBusinessRule<PostCommentIdentifier,
+        Guid>
 {
     private readonly PostIdentifier _postIdentifier;
-    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier> _aggregateRepository;
+    private readonly IPostRepository _aggregateRepository;
 
     public PostCommentCanBeOnlyCreatedWhenPostExistsAndHasNotBeenExpiredRule(
         PostCommentIdentifier domainObjectIdentifier, Type businessObjectType, PostIdentifier postIdentifier,
-        IEventSourcingAggregateRepository<Post, PostIdentifier> aggregateRepository) : base(domainObjectIdentifier,
+        IPostRepository aggregateRepository) : base(domainObjectIdentifier,
         businessObjectType, BusinessRuleTypes.AggregateBusinessRule)
     {
         _postIdentifier = postIdentifier;

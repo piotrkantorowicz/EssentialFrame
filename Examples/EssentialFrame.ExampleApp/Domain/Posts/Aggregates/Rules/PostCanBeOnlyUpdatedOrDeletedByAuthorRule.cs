@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public sealed class PostCanBeOnlyUpdatedOrDeletedByAuthorRule : IdentifiableBusinessRule<PostIdentifier>
+public sealed class PostCanBeOnlyUpdatedOrDeletedByAuthorRule : IdentifiableBusinessRule<PostIdentifier, Guid>
 {
     private readonly Guid _authorIdentifier;
     private readonly Guid _updaterIdentifier;

@@ -5,24 +5,24 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Persistence.Mappers.Interfaces;
 
-public interface IDomainEventMapper<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+public interface IDomainEventMapper<TAggregateIdentifier, TType> where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    DomainEventDataModel Map(IDomainEvent<TAggregateIdentifier> domainEvent);
+    DomainEventDataModel Map(IDomainEvent<TAggregateIdentifier, TType> domainEvent);
 
-    DomainEventDataModel Map(IDomainEvent<TAggregateIdentifier> domainEvent, ISerializer serializer);
+    DomainEventDataModel Map(IDomainEvent<TAggregateIdentifier, TType> domainEvent, ISerializer serializer);
 
-    IReadOnlyCollection<DomainEventDataModel> Map(IEnumerable<IDomainEvent<TAggregateIdentifier>> domainEvents);
+    IReadOnlyCollection<DomainEventDataModel> Map(IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> domainEvents);
 
-    IReadOnlyCollection<DomainEventDataModel> Map(IEnumerable<IDomainEvent<TAggregateIdentifier>> domainEvents,
+    IReadOnlyCollection<DomainEventDataModel> Map(IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> domainEvents,
         ISerializer serializer);
 
-    IDomainEvent<TAggregateIdentifier> Map(DomainEventDataModel domainEventDataModel);
+    IDomainEvent<TAggregateIdentifier, TType> Map(DomainEventDataModel domainEventDataModel);
 
-    IDomainEvent<TAggregateIdentifier> Map(DomainEventDataModel domainEventDataModel, ISerializer serializer);
+    IDomainEvent<TAggregateIdentifier, TType> Map(DomainEventDataModel domainEventDataModel, ISerializer serializer);
 
-    IReadOnlyCollection<IDomainEvent<TAggregateIdentifier>>
-        Map(IEnumerable<DomainEventDataModel> domainEventDataModels);
+    IReadOnlyCollection<IDomainEvent<TAggregateIdentifier, TType>> Map(
+        IEnumerable<DomainEventDataModel> domainEventDataModels);
 
-    IReadOnlyCollection<IDomainEvent<TAggregateIdentifier>> Map(IEnumerable<DomainEventDataModel> domainEvents,
+    IReadOnlyCollection<IDomainEvent<TAggregateIdentifier, TType>> Map(IEnumerable<DomainEventDataModel> domainEvents,
         ISerializer serializer);
 }

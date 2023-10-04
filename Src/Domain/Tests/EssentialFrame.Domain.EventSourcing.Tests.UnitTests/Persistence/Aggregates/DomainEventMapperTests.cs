@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bogus;
 using EssentialFrame.Domain.Core.Events.Interfaces;
@@ -37,7 +38,7 @@ public class DomainEventMapperTests
     private readonly Faker _faker = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<ISerializer> _serializerMock = new();
-    private readonly IDomainEventMapper<PostIdentifier> _mapper = new DomainEventMapper<PostIdentifier>();
+    private readonly IDomainEventMapper<PostIdentifier, Guid> _mapper = new DomainEventMapper<PostIdentifier, Guid>();
 
     [Test]
     public void Map_WhenEventIsNotSerialized_ShouldMapDomainEventToDomainEventDataModel()
@@ -64,14 +65,14 @@ public class DomainEventMapperTests
         TitleChangedDomainEvent changedDomainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
             Title.Default(_faker.Lorem.Sentence()));
 
-        _serializerMock.Setup(s => s.Serialize<IDomainEvent<PostIdentifier>>(changedDomainEvent))
+        _serializerMock.Setup(s => s.Serialize<IDomainEvent<PostIdentifier, Guid>>(changedDomainEvent))
             .Returns(serializedEvent);
 
         // Act
         DomainEventDataModel result = _mapper.Map(changedDomainEvent, _serializerMock.Object);
 
         // Assert
-        _serializerMock.Verify(s => s.Serialize<IDomainEvent<PostIdentifier>>(changedDomainEvent), Times.Once);
+        _serializerMock.Verify(s => s.Serialize<IDomainEvent<PostIdentifier, Guid>>(changedDomainEvent), Times.Once);
 
         AssertEvent(result, changedDomainEvent, _serializerMock.Object);
     }
@@ -87,7 +88,7 @@ public class DomainEventMapperTests
 
         // Act
         IEnumerable<DomainEventDataModel> result =
-            _mapper.Map(new List<IDomainEvent<PostIdentifier>> { changedDomainEvent });
+            _mapper.Map(new List<IDomainEvent<PostIdentifier, Guid>> { changedDomainEvent });
 
         // Assert
         result.Should().HaveCount(1);
@@ -105,16 +106,16 @@ public class DomainEventMapperTests
         TitleChangedDomainEvent changedDomainEvent = new(aggregateIdentifier, _identityServiceMock.Object.GetCurrent(),
             Title.Default(_faker.Lorem.Sentence()));
 
-        _serializerMock.Setup(s => s.Serialize<IDomainEvent<PostIdentifier>>(changedDomainEvent))
+        _serializerMock.Setup(s => s.Serialize<IDomainEvent<PostIdentifier, Guid>>(changedDomainEvent))
             .Returns(serializedEvent);
 
         // Act
         IEnumerable<DomainEventDataModel> result = _mapper.Map(
-            new List<IDomainEvent<PostIdentifier>> { changedDomainEvent },
+            new List<IDomainEvent<PostIdentifier, Guid>> { changedDomainEvent },
             _serializerMock.Object);
 
         // Assert
-        _serializerMock.Verify(s => s.Serialize<IDomainEvent<PostIdentifier>>(changedDomainEvent), Times.Once);
+        _serializerMock.Verify(s => s.Serialize<IDomainEvent<PostIdentifier, Guid>>(changedDomainEvent), Times.Once);
 
         result.Should().HaveCount(1);
         DomainEventDataModel domainEventDataModel = result.First();
@@ -132,7 +133,7 @@ public class DomainEventMapperTests
 
         DomainEventDataModel domainEventDataModel = new()
         {
-            AggregateIdentifier = changedDomainEvent.AggregateIdentifier.Value,
+            AggregateIdentifier = changedDomainEvent.AggregateIdentifier,
             AggregateVersion = changedDomainEvent.AggregateVersion,
             EventIdentifier = changedDomainEvent.EventIdentifier,
             EventType = changedDomainEvent.GetTypeFullName(),
@@ -142,7 +143,7 @@ public class DomainEventMapperTests
         };
 
         // Act
-        IDomainEvent<PostIdentifier> result = _mapper.Map(domainEventDataModel);
+        IDomainEvent<PostIdentifier, Guid> result = _mapper.Map(domainEventDataModel);
 
         // Assert
         AssertEvent(domainEventDataModel, result);
@@ -160,7 +161,7 @@ public class DomainEventMapperTests
 
         DomainEventDataModel domainEventDataModel = new()
         {
-            AggregateIdentifier = changedDomainEvent.AggregateIdentifier.Value,
+            AggregateIdentifier = changedDomainEvent.AggregateIdentifier,
             AggregateVersion = changedDomainEvent.AggregateVersion,
             EventIdentifier = changedDomainEvent.EventIdentifier,
             EventType = changedDomainEvent.GetTypeFullName(),
@@ -169,18 +170,19 @@ public class DomainEventMapperTests
             CreatedAt = changedDomainEvent.EventTime
         };
 
-        _serializerMock.Setup(s => s.Serialize(It.IsAny<IDomainEvent<PostIdentifier>>())).Returns(serializedEvent);
+        _serializerMock.Setup(s => s.Serialize(It.IsAny<IDomainEvent<PostIdentifier, Guid>>()))
+            .Returns(serializedEvent);
 
-        _serializerMock.Setup(s =>
-            s.Deserialize<IDomainEvent<PostIdentifier>>(domainEventDataModel.DomainEvent as string,
+        _serializerMock.Setup(s => s.Deserialize<IDomainEvent<PostIdentifier, Guid>>(
+            domainEventDataModel.DomainEvent as string,
                 changedDomainEvent.GetType())).Returns(changedDomainEvent);
 
         // Act
-        IDomainEvent<PostIdentifier> result = _mapper.Map(domainEventDataModel, _serializerMock.Object);
+        IDomainEvent<PostIdentifier, Guid> result = _mapper.Map(domainEventDataModel, _serializerMock.Object);
 
         // Assert
-        _serializerMock.Verify(
-            s => s.Deserialize<IDomainEvent<PostIdentifier>>(domainEventDataModel.DomainEvent as string,
+        _serializerMock.Verify(s => s.Deserialize<IDomainEvent<PostIdentifier, Guid>>(
+            domainEventDataModel.DomainEvent as string,
                 changedDomainEvent.GetType()), Times.Once);
 
         AssertEvent(domainEventDataModel, result, _serializerMock.Object);
@@ -197,7 +199,7 @@ public class DomainEventMapperTests
 
         DomainEventDataModel domainEventDataModel = new()
         {
-            AggregateIdentifier = changedDomainEvent.AggregateIdentifier.Value,
+            AggregateIdentifier = changedDomainEvent.AggregateIdentifier,
             AggregateVersion = changedDomainEvent.AggregateVersion,
             EventIdentifier = changedDomainEvent.EventIdentifier,
             EventType = changedDomainEvent.GetTypeFullName(),
@@ -207,12 +209,12 @@ public class DomainEventMapperTests
         };
 
         // Act
-        IEnumerable<IDomainEvent<PostIdentifier>> result =
+        IEnumerable<IDomainEvent<PostIdentifier, Guid>> result =
             _mapper.Map(new List<DomainEventDataModel> { domainEventDataModel });
 
         // Assert
         result.Should().HaveCount(1);
-        IDomainEvent<PostIdentifier> domainEventResult = result.First();
+        IDomainEvent<PostIdentifier, Guid> domainEventResult = result.First();
         AssertEvent(domainEventDataModel, domainEventResult);
     }
 
@@ -228,7 +230,7 @@ public class DomainEventMapperTests
 
         DomainEventDataModel domainEventDataModel = new()
         {
-            AggregateIdentifier = changedDomainEvent.AggregateIdentifier.Value,
+            AggregateIdentifier = changedDomainEvent.AggregateIdentifier,
             AggregateVersion = changedDomainEvent.AggregateVersion,
             EventIdentifier = changedDomainEvent.EventIdentifier,
             EventType = changedDomainEvent.GetTypeFullName(),
@@ -237,32 +239,34 @@ public class DomainEventMapperTests
             CreatedAt = changedDomainEvent.EventTime
         };
 
-        _serializerMock.Setup(s => s.Serialize(It.IsAny<IDomainEvent<PostIdentifier>>())).Returns(serializedEvent);
+        _serializerMock.Setup(s => s.Serialize(It.IsAny<IDomainEvent<PostIdentifier, Guid>>()))
+            .Returns(serializedEvent);
 
-        _serializerMock.Setup(s =>
-            s.Deserialize<IDomainEvent<PostIdentifier>>(domainEventDataModel.DomainEvent as string,
+        _serializerMock.Setup(s => s.Deserialize<IDomainEvent<PostIdentifier, Guid>>(
+            domainEventDataModel.DomainEvent as string,
                 changedDomainEvent.GetType())).Returns(changedDomainEvent);
 
         // Act
-        IEnumerable<IDomainEvent<PostIdentifier>> result = _mapper.Map(
+        IEnumerable<IDomainEvent<PostIdentifier, Guid>> result = _mapper.Map(
             new List<DomainEventDataModel> { domainEventDataModel }, _serializerMock.Object);
 
         // Assert
-        _serializerMock.Verify(
-            s => s.Deserialize<IDomainEvent<PostIdentifier>>(domainEventDataModel.DomainEvent as string,
+        _serializerMock.Verify(s => s.Deserialize<IDomainEvent<PostIdentifier, Guid>>(
+            domainEventDataModel.DomainEvent as string,
                 changedDomainEvent.GetType()), Times.Once);
 
         result.Should().HaveCount(1);
-        IDomainEvent<PostIdentifier> domainEventResult = result.First();
+        IDomainEvent<PostIdentifier, Guid> domainEventResult = result.First();
         AssertEvent(domainEventDataModel, domainEventResult, _serializerMock.Object);
     }
 
-    private static void AssertEvent(DomainEventDataModel domainEventDataModel, IDomainEvent<PostIdentifier> domainEvent,
+    private static void AssertEvent(DomainEventDataModel domainEventDataModel,
+        IDomainEvent<PostIdentifier, Guid> domainEvent,
         ISerializer serializer = null)
     {
-        domainEventDataModel.AggregateIdentifier.Should().Be(domainEvent.AggregateIdentifier.Value);
+        domainEventDataModel.AggregateIdentifier.Should().Be(domainEvent.AggregateIdentifier);
         domainEventDataModel.AggregateVersion.Should().Be(domainEvent.AggregateVersion);
-        domainEventDataModel.EventIdentifier.Should().Be(domainEvent.EventIdentifier);
+        domainEventDataModel.EventIdentifier.Should().Be(domainEvent.EventIdentifier.Value);
         domainEventDataModel.EventType.Should().Be(domainEvent.GetTypeFullName());
         domainEventDataModel.EventClass.Should().Be(domainEvent.GetClassName());
 

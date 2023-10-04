@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 
-public class ImageNameChangedDomainEvent : DomainEvent<PostIdentifier>
+public class ImageNameChangedDomainEvent : DomainEvent<PostIdentifier, Guid>
 {
     public ImageNameChangedDomainEvent(PostIdentifier aggregateIdentifier, DomainIdentity identityContext,
         Guid imageId,

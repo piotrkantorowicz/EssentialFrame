@@ -4,13 +4,13 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Mappers.Interfaces;
 
-public interface ISnapshotMapper<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+public interface ISnapshotMapper<TAggregateIdentifier, TType> where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    SnapshotDataModel Map(Snapshot<TAggregateIdentifier> snapshot);
+    SnapshotDataModel Map(Snapshot<TAggregateIdentifier, TType> snapshot);
 
-    IReadOnlyCollection<SnapshotDataModel> Map(IEnumerable<Snapshot<TAggregateIdentifier>> snapshots);
+    IReadOnlyCollection<SnapshotDataModel> Map(IEnumerable<Snapshot<TAggregateIdentifier, TType>> snapshots);
 
-    Snapshot<TAggregateIdentifier> Map(SnapshotDataModel snapshotDataModel);
+    Snapshot<TAggregateIdentifier, TType> Map(SnapshotDataModel snapshotDataModel);
 
-    IReadOnlyCollection<Snapshot<TAggregateIdentifier>> Map(IEnumerable<SnapshotDataModel> snapshotDataModels);
+    IReadOnlyCollection<Snapshot<TAggregateIdentifier, TType>> Map(IEnumerable<SnapshotDataModel> snapshotDataModels);
 }

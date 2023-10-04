@@ -1,3 +1,4 @@
+using System;
 using Bogus;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.ExampleApp.Application.Identity;
@@ -28,13 +29,12 @@ public class SnapshotTests
     {
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        ;
         const int aggregateVersion = 0;
 
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new AppIdentityContext());
 
-        Post aggregate =
-            EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier,
+        Post aggregate = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
+            aggregateIdentifier,
                 aggregateVersion);
 
         Title expectedTitle = Title.Default(_faker.Lorem.Sentence());

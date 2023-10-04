@@ -15,7 +15,7 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
-public sealed class Post : EventSourcingAggregateRoot<PostIdentifier>
+public sealed class Post : EventSourcingAggregateRoot<PostIdentifier, Guid>
 {
     private Post(PostIdentifier aggregateIdentifier) : base(aggregateIdentifier)
     {

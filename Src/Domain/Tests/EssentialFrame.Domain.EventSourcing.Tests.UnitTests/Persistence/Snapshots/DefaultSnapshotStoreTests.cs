@@ -7,6 +7,7 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services.Interfaces;
 using EssentialFrame.ExampleApp.Application.Identity;
+using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.Identity.Interfaces;
 using FluentAssertions;
 using Moq;
@@ -17,10 +18,15 @@ namespace EssentialFrame.Domain.EventSourcing.Tests.UnitTests.Persistence.Snapsh
 [TestFixture]
 public class DefaultSnapshotStoreTests
 {
+    private readonly Faker _faker = new();
+    private Mock<ICache<string, SnapshotDataModel>> _snapshotCacheMock;
+    private Mock<IIdentityService> _identityServiceMock;
+    private Mock<ISnapshotOfflineStorage> _snapshotOfflineStorageMock;
+    
     [SetUp]
     public void SetUp()
     {
-        _snapshotCacheMock = new Mock<ICache<Guid, SnapshotDataModel>>();
+        _snapshotCacheMock = new Mock<ICache<string, SnapshotDataModel>>();
         _identityServiceMock = new Mock<IIdentityService>();
         _snapshotOfflineStorageMock = new Mock<ISnapshotOfflineStorage>();
 
@@ -35,16 +41,11 @@ public class DefaultSnapshotStoreTests
         _snapshotOfflineStorageMock.Reset();
     }
 
-    private readonly Faker _faker = new();
-    private Mock<ICache<Guid, SnapshotDataModel>> _snapshotCacheMock;
-    private Mock<IIdentityService> _identityServiceMock;
-    private Mock<ISnapshotOfflineStorage> _snapshotOfflineStorageMock;
-
     [Test]
     public void Get_WhenAggregateIdentifierIsProvided_ShouldReturnSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
@@ -60,7 +61,7 @@ public class DefaultSnapshotStoreTests
     public async Task GetAsync_WhenAggregateIdentifierIsProvided_ShouldReturnSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
@@ -76,7 +77,7 @@ public class DefaultSnapshotStoreTests
     public void Get_WhenAggregateIdentifierIsProvidedAndSnapshotDoesNotExist_ShouldReturnNull()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
@@ -91,7 +92,7 @@ public class DefaultSnapshotStoreTests
     public async Task GetAsync_WhenAggregateIdentifierIsProvidedAndSnapshotDoesNotExist_ShouldReturnNull()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
@@ -106,7 +107,7 @@ public class DefaultSnapshotStoreTests
     public void Save_WhenSnapshotIsProvided_ShouldSaveSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
@@ -121,7 +122,7 @@ public class DefaultSnapshotStoreTests
     public async Task SaveAsync_WhenSnapshotIsProvided_ShouldSaveSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
@@ -136,7 +137,7 @@ public class DefaultSnapshotStoreTests
     public void Save_WhenSnapshotIsProvidedAndSnapshotAlreadyExists_ShouldUpdateSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
@@ -152,7 +153,7 @@ public class DefaultSnapshotStoreTests
     public async Task SaveAsync_WhenSnapshotIsProvidedAndSnapshotAlreadyExists_ShouldUpdateSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
@@ -168,7 +169,7 @@ public class DefaultSnapshotStoreTests
     public void Save_WhenSnapshotIsProvidedAndSnapshotDoesNotExist_ShouldSaveSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
@@ -184,7 +185,7 @@ public class DefaultSnapshotStoreTests
     public async Task SaveAsync_WhenSnapshotIsProvidedAndSnapshotDoesNotExist_ShouldSaveSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
@@ -200,7 +201,7 @@ public class DefaultSnapshotStoreTests
     public void Box_WhenSnapshotIsProvided_ShouldBoxSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         _snapshotOfflineStorageMock.Setup(x => x.Save(snapshotDataModel));
@@ -218,7 +219,7 @@ public class DefaultSnapshotStoreTests
     public async Task BoxAsync_WhenSnapshotIsProvided_ShouldBoxSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
         _snapshotOfflineStorageMock.Setup(x => x.SaveAsync(snapshotDataModel, default));
@@ -236,7 +237,7 @@ public class DefaultSnapshotStoreTests
     public void Box_WhenSnapshotIsProvidedAndSnapshotDoesNotExist_ShouldThrowException()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
@@ -252,7 +253,7 @@ public class DefaultSnapshotStoreTests
     public async Task BoxAsync_WhenSnapshotIsProvidedAndSnapshotDoesNotExist_ShouldThrowException()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns((SnapshotDataModel)null);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
@@ -268,7 +269,7 @@ public class DefaultSnapshotStoreTests
     public void Unbox_WhenSnapshotIsProvided_ShouldUnboxSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotOfflineStorageMock.Setup(x => x.Restore(aggregateIdentifier)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
@@ -285,7 +286,7 @@ public class DefaultSnapshotStoreTests
     public async Task UnboxAsync_WhenSnapshotIsProvided_ShouldUnboxSnapshot()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, default))
             .ReturnsAsync(snapshotDataModel);
@@ -303,7 +304,7 @@ public class DefaultSnapshotStoreTests
     public void Unbox_WhenSnapshotIsProvidedAndSnapshotDoesNotExist_ShouldThrowException()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _snapshotOfflineStorageMock.Setup(x => x.Restore(aggregateIdentifier))
             .Throws(SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier));
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
@@ -320,7 +321,7 @@ public class DefaultSnapshotStoreTests
     public async Task UnboxAsync_WhenSnapshotIsProvidedAndSnapshotDoesNotExist_ShouldThrowException()
     {
         // Arrange
-        Guid aggregateIdentifier = _faker.Random.Guid();
+        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, default))
             .Throws(SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier));
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
@@ -333,9 +334,10 @@ public class DefaultSnapshotStoreTests
             $"Unable to unbox snapshot for aggregate with id: ({aggregateIdentifier}), because snapshot hasn't been found. See inner exception for more details");
     }
 
-    private SnapshotDataModel GetSnapshotDataModel(Guid aggregateIdentifier)
+    private SnapshotDataModel GetSnapshotDataModel(PostIdentifier aggregateIdentifier)
     {
         string serializedAggregateState = _faker.Random.String(_faker.Random.Int(1, 250));
+        
         SnapshotDataModel snapshotDataModel = new()
         {
             AggregateIdentifier = aggregateIdentifier,

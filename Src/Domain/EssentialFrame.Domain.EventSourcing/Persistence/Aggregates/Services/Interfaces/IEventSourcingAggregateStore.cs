@@ -5,34 +5,34 @@ namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.In
 
 public interface IEventSourcingAggregateStore
 {
-    bool Exists(Guid aggregateIdentifier);
+    bool Exists(string aggregateIdentifier);
 
-    Task<bool> ExistsAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(string aggregateIdentifier, CancellationToken cancellationToken = default);
 
-    bool Exists(Guid aggregateIdentifier, int version);
+    bool Exists(string aggregateIdentifier, int version);
 
-    Task<bool> ExistsAsync(Guid aggregateIdentifier, int version, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(string aggregateIdentifier, int version, CancellationToken cancellationToken = default);
 
-    EventSourcingAggregateDataModel Get(Guid aggregateIdentifier);
+    EventSourcingAggregateDataModel Get(string aggregateIdentifier);
 
-    Task<EventSourcingAggregateDataModel> GetAsync(Guid aggregateIdentifier,
+    Task<EventSourcingAggregateDataModel> GetAsync(string aggregateIdentifier,
         CancellationToken cancellationToken = default);
 
-    IReadOnlyCollection<DomainEventDataModel> Get(Guid aggregateIdentifier, int version);
+    IReadOnlyCollection<DomainEventDataModel> Get(string aggregateIdentifier, int version);
 
-    Task<IReadOnlyCollection<DomainEventDataModel>> GetAsync(Guid aggregateIdentifier, int version,
+    Task<IReadOnlyCollection<DomainEventDataModel>> GetAsync(string aggregateIdentifier, int version,
         CancellationToken cancellationToken = default);
 
-    IEnumerable<Guid> GetExpired();
+    IEnumerable<string> GetExpired();
 
-    Task<IEnumerable<Guid>> GetExpiredAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken = default);
 
     void Save(EventSourcingAggregateDataModel eventSourcingAggregate, IEnumerable<DomainEventDataModel> events);
 
     Task SaveAsync(EventSourcingAggregateDataModel eventSourcingAggregate, IEnumerable<DomainEventDataModel> events,
         CancellationToken cancellationToken = default);
 
-    void Box(Guid aggregateIdentifier);
+    void Box(string aggregateIdentifier);
 
-    Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default);
 }

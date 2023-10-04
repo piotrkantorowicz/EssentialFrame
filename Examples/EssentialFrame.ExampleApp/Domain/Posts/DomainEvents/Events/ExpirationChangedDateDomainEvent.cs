@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 
-public class ExpirationChangedDateDomainEvent : DomainEvent<PostIdentifier>
+public class ExpirationChangedDateDomainEvent : DomainEvent<PostIdentifier, Guid>
 {
     public ExpirationChangedDateDomainEvent(PostIdentifier aggregateIdentifier, DomainIdentity identityContext,
         Date newExpirationDate) : base(aggregateIdentifier, identityContext)

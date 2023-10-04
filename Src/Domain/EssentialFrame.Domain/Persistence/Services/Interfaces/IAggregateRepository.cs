@@ -4,8 +4,9 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Persistence.Services.Interfaces;
 
-public interface IAggregateRepository<TAggregate, in TAggregateIdentifier>
-    where TAggregate : class, IAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+public interface IAggregateRepository<TAggregate, TAggregateIdentifier, TType>
+    where TAggregate : class, IAggregateRoot<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     TAggregate Get(TAggregateIdentifier aggregateIdentifier);
 

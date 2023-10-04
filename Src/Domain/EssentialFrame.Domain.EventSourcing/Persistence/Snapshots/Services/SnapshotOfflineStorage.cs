@@ -37,7 +37,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         try
         {
             string aggregateDirectory =
-                _fileSystem.Path.Combine(_offlineStorageDirectory, snapshot.AggregateIdentifier.ToString());
+                _fileSystem.Path.Combine(_offlineStorageDirectory, snapshot.AggregateIdentifier);
 
             string aggregateState = GetSerializedState(snapshot);
 
@@ -60,7 +60,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         try
         {
             string aggregateDirectory =
-                _fileSystem.Path.Combine(_offlineStorageDirectory, snapshot.AggregateIdentifier.ToString());
+                _fileSystem.Path.Combine(_offlineStorageDirectory, snapshot.AggregateIdentifier);
 
             string aggregateState = GetSerializedState(snapshot);
 
@@ -79,12 +79,12 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public SnapshotDataModel Restore(Guid aggregateIdentifier)
+    public SnapshotDataModel Restore(string aggregateIdentifier)
     {
         try
         {
-            string aggregateState =
-                _fileStorage.Read(_fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier.ToString()),
+            string aggregateState = _fileStorage.Read(
+                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier),
                     SnapshotFilename);
 
             if (aggregateState is null)
@@ -109,13 +109,13 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public async Task<SnapshotDataModel> RestoreAsync(Guid aggregateIdentifier,
+    public async Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier,
         CancellationToken cancellationToken = default)
     {
         try
         {
             string aggregateState = await _fileStorage.ReadAsync(
-                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier.ToString()), SnapshotFilename,
+                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), SnapshotFilename,
                 cancellationToken: cancellationToken);
 
             if (aggregateState is null)

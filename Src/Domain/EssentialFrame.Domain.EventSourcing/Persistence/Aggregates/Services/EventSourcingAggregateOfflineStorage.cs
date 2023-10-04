@@ -13,23 +13,24 @@ using Microsoft.Extensions.Logging;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
 
-internal sealed class EventSourcingAggregateOfflineStorage<TAggregateIdentifier> : IEventSourcingAggregateOfflineStorage
-    where TAggregateIdentifier : TypedGuidIdentifier
+internal sealed class
+    EventSourcingAggregateOfflineStorage<TAggregateIdentifier, TType> : IEventSourcingAggregateOfflineStorage
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     private const string EventsFileName = "events.json";
     private const string MetadataFileName = "metadata.txt";
     private const string IndexFileName = "boxes.csv";
 
-    private readonly IDomainEventMapper<TAggregateIdentifier> _domainEventMapper;
+    private readonly IDomainEventMapper<TAggregateIdentifier, TType> _domainEventMapper;
     private readonly IFileStorage _fileStorage;
     private readonly IFileSystem _fileSystem;
-    private readonly ILogger<EventSourcingAggregateOfflineStorage<TAggregateIdentifier>> _logger;
+    private readonly ILogger<EventSourcingAggregateOfflineStorage<TAggregateIdentifier, TType>> _logger;
     private readonly string _offlineStorageDirectory;
     private readonly ISerializer _serializer;
 
     public EventSourcingAggregateOfflineStorage(IFileStorage fileStorage, IFileSystem fileSystem,
-        ILogger<EventSourcingAggregateOfflineStorage<TAggregateIdentifier>> logger,
-        IDomainEventMapper<TAggregateIdentifier> domainEventMapper, ISerializer serializer,
+        ILogger<EventSourcingAggregateOfflineStorage<TAggregateIdentifier, TType>> logger,
+        IDomainEventMapper<TAggregateIdentifier, TType> domainEventMapper, ISerializer serializer,
         string offlineStorageDirectory = null)
     {
         _fileStorage = fileStorage ?? throw new ArgumentNullException(nameof(fileStorage));
@@ -50,7 +51,7 @@ internal sealed class EventSourcingAggregateOfflineStorage<TAggregateIdentifier>
         try
         {
             string aggregateDirectory = _fileSystem.Path.Combine(_offlineStorageDirectory,
-                eventSourcingAggregate.AggregateIdentifier.ToString());
+                eventSourcingAggregate.AggregateIdentifier);
 
             (string eventsContent, string metaDataContent) = CreateFileContents(eventSourcingAggregate, events);
 
@@ -81,7 +82,7 @@ internal sealed class EventSourcingAggregateOfflineStorage<TAggregateIdentifier>
         try
         {
             string aggregateDirectory = _fileSystem.Path.Combine(_offlineStorageDirectory,
-                eventSourcingAggregate.AggregateIdentifier.ToString());
+                eventSourcingAggregate.AggregateIdentifier);
 
             (string eventsContent, string metaDataContent) = CreateFileContents(eventSourcingAggregate, events);
 
@@ -113,12 +114,12 @@ internal sealed class EventSourcingAggregateOfflineStorage<TAggregateIdentifier>
     private (string serializedEvents, string metadata) CreateFileContents(
         EventSourcingAggregateDataModel eventSourcingAggregate, IReadOnlyCollection<DomainEventDataModel> events)
     {
-        IReadOnlyCollection<IDomainEvent<TAggregateIdentifier>> domainEvents = _domainEventMapper.Map(events);
+        IReadOnlyCollection<IDomainEvent<TAggregateIdentifier, TType>> domainEvents = _domainEventMapper.Map(events);
         string serializedEvents = _serializer.Serialize(domainEvents);
 
         Dictionary<string, string> metaData = new()
         {
-            { "AggregateIdentifier", eventSourcingAggregate.AggregateIdentifier.ToString() },
+            { "AggregateIdentifier", eventSourcingAggregate.AggregateIdentifier },
             { "AggregateType", eventSourcingAggregate.GetType().FullName },
             { "AggregateVersion", eventSourcingAggregate.AggregateVersion.ToString() },
             { "Serialized Events", $"{events.Count:n0}" },

@@ -1,21 +1,50 @@
-﻿using EssentialFrame.Domain.Core.Events.Services.Interfaces;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
-using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
-using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
 using EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 using EssentialFrame.ExampleApp.Domain.Posts.Repositories;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Infrastructure.Repositories.Posts;
 
-internal sealed class PostRepository : EventSourcingAggregateRepository<Post, PostIdentifier>, IPostRepository
+internal sealed class PostRepository : IPostRepository
 {
-    public PostRepository(IEventSourcingAggregateStore eventSourcingAggregateStore,
-        IDomainEventMapper<PostIdentifier> domainEventMapper,
-        IEventSourcingAggregateMapper<PostIdentifier> eventSourcingAggregateMapper,
-        IDomainEventsPublisher<PostIdentifier> domainEventsPublisher) : base(eventSourcingAggregateStore,
-        domainEventMapper, eventSourcingAggregateMapper, domainEventsPublisher)
+    private readonly IEventSourcingAggregateRepository<Post, PostIdentifier, Guid> _aggregateRepository;
+
+    public PostRepository(IEventSourcingAggregateRepository<Post, PostIdentifier, Guid> aggregateRepository)
     {
+        _aggregateRepository = aggregateRepository ?? throw new ArgumentNullException(nameof(aggregateRepository));
+    }
+
+
+    public Post Get(PostIdentifier postIdentifier)
+    {
+        return _aggregateRepository.Get(postIdentifier);
+    }
+
+    public async Task<Post> GetAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken = default)
+    {
+        return await _aggregateRepository.GetAsync(postIdentifier, cancellationToken);
+    }
+
+    public void Save(Post post)
+    {
+        _aggregateRepository.Save(post);
+    }
+
+    public async Task SaveAsync(Post post, CancellationToken cancellationToken = default)
+    {
+        await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
+    }
+
+    public void Box(PostIdentifier postIdentifier)
+    {
+        _aggregateRepository.Box(postIdentifier);
+    }
+
+    public async Task BoxAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken = default)
+    {
+        await _aggregateRepository.BoxAsync(postIdentifier, cancellationToken);
     }
 }

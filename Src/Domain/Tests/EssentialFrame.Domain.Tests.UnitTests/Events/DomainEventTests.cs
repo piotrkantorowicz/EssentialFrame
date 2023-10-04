@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bogus;
 using EssentialFrame.Domain.Core.Events.Interfaces;
+using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.ExampleApp.Application.Identity;
 using EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
@@ -31,7 +32,7 @@ public sealed class DomainEventTests
         // Arrange
         AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        Guid eventIdentifier = _faker.Random.Guid();
+        DomainEventIdentifier eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Title title = Title.Default(_faker.Lorem.Sentence());
 
@@ -83,7 +84,7 @@ public sealed class DomainEventTests
         // Arrange
         AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        Guid eventIdentifier = _faker.Random.Guid();
+        DomainEventIdentifier eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Description description = Description.Create(_faker.Lorem.Sentences());
 
@@ -137,7 +138,7 @@ public sealed class DomainEventTests
         // Arrange
         AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        Guid eventIdentifier = _faker.Random.Guid();
+        DomainEventIdentifier eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Date expirationOffset = Date.Create(_faker.Date.FutureOffset());
 
@@ -191,7 +192,7 @@ public sealed class DomainEventTests
         // Arrange
         AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        Guid eventIdentifier = _faker.Random.Guid();
+        DomainEventIdentifier eventIdentifier = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         
         HashSet<Image> images = new()
@@ -250,7 +251,7 @@ public sealed class DomainEventTests
         // Arrange
         AppIdentityContext appIdentityContext = new();
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        Guid eventIdentifier = _faker.Random.Guid();
+        DomainEventIdentifier eventIdentifier = _faker.Random.Guid();
         Guid imageId = _faker.Random.Guid();
         int aggregateVersion = _faker.Random.Number();
         Name imageName = Name.Create(_faker.Address.City());
@@ -340,7 +341,7 @@ public sealed class DomainEventTests
             $"The event is not match aggregate ({aggregateIdentifier}), because was assigned to other aggregate ({@event.AggregateIdentifier})");
     }
 
-    private static void AssertIdentity(IIdentityContext provided, IDomainEvent<PostIdentifier> expected)
+    private static void AssertIdentity(IIdentityContext provided, IDomainEvent<PostIdentifier, Guid> expected)
     {
         provided.User.Identifier.Should().Be(expected.DomainEventIdentity.UserIdentifier.Value);
         provided.Service.GetFullIdentifier().Should().Be(expected.DomainEventIdentity.ServiceIdentifier.Value);

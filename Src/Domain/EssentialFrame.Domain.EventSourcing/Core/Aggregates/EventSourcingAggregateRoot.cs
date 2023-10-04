@@ -8,10 +8,10 @@ using EssentialFrame.Time;
 namespace EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 
 public abstract class
-    EventSourcingAggregateRoot<TAggregateIdentifier> : IEventSourcingAggregateRoot<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+    EventSourcingAggregateRoot<TAggregateIdentifier, TType> : IEventSourcingAggregateRoot<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    private readonly List<IDomainEvent<TAggregateIdentifier>> _changes = new();
+    private readonly List<IDomainEvent<TAggregateIdentifier, TType>> _changes = new();
 
     protected EventSourcingAggregateRoot(TAggregateIdentifier aggregateIdentifier)
     {
@@ -38,13 +38,13 @@ public abstract class
 
     public TenantIdentifier TenantIdentifier { get; }
 
-    public EventSourcingAggregateState<TAggregateIdentifier> State { get; protected set; }
+    public EventSourcingAggregateState<TAggregateIdentifier, TType> State { get; protected set; }
 
     public DateTimeOffset? DeletedDate { get; private set; }
 
     public bool IsDeleted { get; private set; }
 
-    public abstract EventSourcingAggregateState<TAggregateIdentifier> CreateState();
+    public abstract EventSourcingAggregateState<TAggregateIdentifier, TType> CreateState();
     public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
 
     public void SafeDelete()
@@ -58,8 +58,8 @@ public abstract class
         DeletedDate = null;
         IsDeleted = false;
     }
-    
-    public IDomainEvent<TAggregateIdentifier>[] GetUncommittedChanges()
+
+    public IDomainEvent<TAggregateIdentifier, TType>[] GetUncommittedChanges()
     {
         lock (_changes)
         {
@@ -67,14 +67,14 @@ public abstract class
         }
     }
 
-    public IDomainEvent<TAggregateIdentifier>[] FlushUncommittedChanges()
+    public IDomainEvent<TAggregateIdentifier, TType>[] FlushUncommittedChanges()
     {
         lock (_changes)
         {
-            IDomainEvent<TAggregateIdentifier>[] changes = _changes.ToArray();
+            IDomainEvent<TAggregateIdentifier, TType>[] changes = _changes.ToArray();
             int i = 0;
 
-            foreach (IDomainEvent<TAggregateIdentifier> change in changes)
+            foreach (IDomainEvent<TAggregateIdentifier, TType> change in changes)
             {
                 if (change.AggregateIdentifier.IsEmpty() || AggregateIdentifier.IsEmpty())
                 {
@@ -85,7 +85,7 @@ public abstract class
 
                 change.AdjustAggregateVersion(AggregateIdentifier, AggregateVersion + i);
             }
-            
+
             AggregateVersion += changes.Length;
             _changes.Clear();
 
@@ -93,11 +93,11 @@ public abstract class
         }
     }
 
-    public void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier>> history)
+    public void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> history)
     {
         lock (_changes)
         {
-            foreach (IDomainEvent<TAggregateIdentifier> change in history)
+            foreach (IDomainEvent<TAggregateIdentifier, TType> change in history)
             {
                 if (change.AggregateIdentifier != AggregateIdentifier)
                 {
@@ -117,7 +117,7 @@ public abstract class
         }
     }
 
-    protected void Apply(IDomainEvent<TAggregateIdentifier> change)
+    protected void Apply(IDomainEvent<TAggregateIdentifier, TType> change)
     {
         lock (_changes)
         {
@@ -127,7 +127,7 @@ public abstract class
         }
     }
 
-    protected virtual void ApplyEvent(IDomainEvent<TAggregateIdentifier> change)
+    protected virtual void ApplyEvent(IDomainEvent<TAggregateIdentifier, TType> change)
     {
         State ??= CreateState();
         State.Apply(change);

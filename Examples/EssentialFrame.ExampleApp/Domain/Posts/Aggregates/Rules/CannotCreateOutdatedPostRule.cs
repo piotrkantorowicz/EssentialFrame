@@ -7,7 +7,7 @@ using EssentialFrame.Time;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public class CannotCreateOutdatedPostRule : IdentifiableBusinessRule<PostIdentifier>
+public class CannotCreateOutdatedPostRule : IdentifiableBusinessRule<PostIdentifier, Guid>
 {
     private readonly Date _expiration;
 

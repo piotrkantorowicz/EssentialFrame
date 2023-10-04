@@ -2,7 +2,7 @@
 
 namespace EssentialFrame.Domain.Core.ValueObjects;
 
-public sealed class TenantIdentifier : TypedGuidIdentifier
+public sealed class TenantIdentifier : TypedIdentifierBase<Guid>
 {
     private TenantIdentifier(Guid value) : base(value)
     {
@@ -13,8 +13,18 @@ public sealed class TenantIdentifier : TypedGuidIdentifier
         return New(identifier);
     }
 
+    public static implicit operator Guid(TenantIdentifier identifier)
+    {
+        return identifier.Value;
+    }
+
     public static TenantIdentifier New(Guid value)
     {
         return new TenantIdentifier(value);
+    }
+
+    public override bool IsEmpty()
+    {
+        return Value == Guid.Empty;
     }
 }

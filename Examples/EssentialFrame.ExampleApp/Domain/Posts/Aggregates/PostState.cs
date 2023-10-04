@@ -13,7 +13,7 @@ using EssentialFrame.Time;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates;
 
-public sealed class PostState : EventSourcingAggregateState<PostIdentifier>
+public sealed class PostState : EventSourcingAggregateState<PostIdentifier, Guid>
 {
     private readonly PostIdentifier _aggregateIdentifier;
     private readonly Type _aggregateType;

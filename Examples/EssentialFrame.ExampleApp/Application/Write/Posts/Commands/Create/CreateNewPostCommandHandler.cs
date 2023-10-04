@@ -48,7 +48,7 @@ internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPos
 
     private static Post Create(CreateNewPostCommand command)
     {
-        Post post = EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(
+        Post post = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
             PostIdentifier.New(command.AggregateIdentifier));
 
         post.Create(Title.Default(command.Title), Description.Create(command.Description),

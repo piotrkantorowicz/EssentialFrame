@@ -6,10 +6,10 @@ namespace EssentialFrame.Domain.Persistence.Services;
 
 internal sealed class DefaultAggregateStore : IAggregateStore
 {
-    private readonly ICache<Guid, AggregateDataModel> _aggregateCache;
+    private readonly ICache<string, AggregateDataModel> _aggregateCache;
     private readonly IAggregateOfflineStorage _aggregateOfflineStorage;
 
-    public DefaultAggregateStore(ICache<Guid, AggregateDataModel> aggregateCache,
+    public DefaultAggregateStore(ICache<string, AggregateDataModel> aggregateCache,
         IAggregateOfflineStorage aggregateOfflineStorage)
     {
         _aggregateCache = aggregateCache ?? throw new ArgumentNullException(nameof(aggregateCache));
@@ -18,33 +18,33 @@ internal sealed class DefaultAggregateStore : IAggregateStore
             aggregateOfflineStorage ?? throw new ArgumentNullException(nameof(aggregateOfflineStorage));
     }
 
-    public bool Exists(Guid aggregateIdentifier)
+    public bool Exists(string aggregateIdentifier)
     {
         return _aggregateCache.Exists(aggregateIdentifier);
     }
 
-    public async Task<bool> ExistsAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
     {
         return await Task.FromResult(_aggregateCache.Exists(aggregateIdentifier));
     }
 
-    public AggregateDataModel Get(Guid aggregateIdentifier)
+    public AggregateDataModel Get(string aggregateIdentifier)
     {
         return _aggregateCache.Get(aggregateIdentifier);
     }
 
-    public async Task<AggregateDataModel> GetAsync(Guid aggregateIdentifier,
+    public async Task<AggregateDataModel> GetAsync(string aggregateIdentifier,
         CancellationToken cancellationToken = default)
     {
         return await Task.FromResult(Get(aggregateIdentifier));
     }
 
-    public IEnumerable<Guid> GetExpired()
+    public IEnumerable<string> GetExpired()
     {
         return _aggregateCache.GetMany((_, v) => v.IsDeleted)?.Select(v => v.AggregateIdentifier);
     }
 
-    public async Task<IEnumerable<Guid>> GetExpiredAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken = default)
     {
         return await Task.FromResult(GetExpired());
     }
@@ -61,14 +61,14 @@ internal sealed class DefaultAggregateStore : IAggregateStore
         await Task.CompletedTask;
     }
 
-    public void Box(Guid aggregateIdentifier)
+    public void Box(string aggregateIdentifier)
     {
         AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
 
         _aggregateOfflineStorage.Save(aggregate);
     }
 
-    public async Task BoxAsync(Guid aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
     {
         AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
 

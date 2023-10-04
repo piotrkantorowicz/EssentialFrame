@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Bogus;
 using EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Mappers;
@@ -37,8 +38,8 @@ public class SnapshotMapperTests
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
-        Snapshot<PostIdentifier> snapshot = new(aggregateIdentifier, aggregateVersion, serializedState);
-        SnapshotMapper<PostIdentifier> mapper = new();
+        Snapshot<PostIdentifier, Guid> snapshot = new(aggregateIdentifier, aggregateVersion, serializedState);
+        SnapshotMapper<PostIdentifier, Guid> mapper = new();
 
         // Act
         SnapshotDataModel result = mapper.Map(snapshot);
@@ -56,14 +57,14 @@ public class SnapshotMapperTests
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier.Value,
+            AggregateIdentifier = aggregateIdentifier,
             AggregateVersion = aggregateVersion,
             AggregateState = serializedState
         };
-        SnapshotMapper<PostIdentifier> mapper = new();
+        SnapshotMapper<PostIdentifier, Guid> mapper = new();
 
         // Act
-        Snapshot<PostIdentifier> result = mapper.Map(snapshotDataModel);
+        Snapshot<PostIdentifier, Guid> result = mapper.Map(snapshotDataModel);
 
         // Assert
         AssertSnapshot(result, aggregateIdentifier, aggregateVersion, serializedState);
@@ -76,9 +77,9 @@ public class SnapshotMapperTests
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         int aggregateVersion = _faker.Random.Int();
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
-        Snapshot<PostIdentifier> snapshot = new(aggregateIdentifier, aggregateVersion, serializedState);
-        Snapshot<PostIdentifier>[] snapshots = { snapshot };
-        SnapshotMapper<PostIdentifier> snapshotMapper = new();
+        Snapshot<PostIdentifier, Guid> snapshot = new(aggregateIdentifier, aggregateVersion, serializedState);
+        Snapshot<PostIdentifier, Guid>[] snapshots = { snapshot };
+        SnapshotMapper<PostIdentifier, Guid> snapshotMapper = new();
 
         // Act
         IReadOnlyCollection<SnapshotDataModel> result = snapshotMapper.Map(snapshots);
@@ -102,27 +103,27 @@ public class SnapshotMapperTests
         string serializedState = _faker.Random.String(_faker.Random.Int(100, 300));
         SnapshotDataModel snapshotDataModel = new()
         {
-            AggregateIdentifier = aggregateIdentifier.Value,
+            AggregateIdentifier = aggregateIdentifier,
             AggregateVersion = aggregateVersion,
             AggregateState = serializedState
         };
         SnapshotDataModel[] snapshotDataModels = { snapshotDataModel };
-        SnapshotMapper<PostIdentifier> mapper = new();
+        SnapshotMapper<PostIdentifier, Guid> mapper = new();
 
         // Act
-        IReadOnlyCollection<Snapshot<PostIdentifier>> result = mapper.Map(snapshotDataModels);
+        IReadOnlyCollection<Snapshot<PostIdentifier, Guid>> result = mapper.Map(snapshotDataModels);
 
         // Assert
         result.Should().NotBeEmpty();
         result.Should().HaveCount(snapshotDataModels.Length);
 
-        foreach (Snapshot<PostIdentifier> snapshot in result)
+        foreach (Snapshot<PostIdentifier, Guid> snapshot in result)
         {
             AssertSnapshot(snapshot, aggregateIdentifier, aggregateVersion, serializedState);
         }
     }
 
-    private void AssertSnapshot(Snapshot<PostIdentifier> snapshot, PostIdentifier aggregateIdentifier,
+    private void AssertSnapshot(Snapshot<PostIdentifier, Guid> snapshot, PostIdentifier aggregateIdentifier,
         int aggregateVersion, string serializedState)
     {
         snapshot.AggregateIdentifier.Value.Should().Be(aggregateIdentifier.Value);
@@ -133,7 +134,7 @@ public class SnapshotMapperTests
     private void AssertSnapshotDataModel(SnapshotDataModel snapshotDataModel, PostIdentifier aggregateIdentifier,
         int aggregateVersion, string serializedState)
     {
-        snapshotDataModel.AggregateIdentifier.Should().Be(aggregateIdentifier.Value);
+        snapshotDataModel.AggregateIdentifier.Should().Be(aggregateIdentifier);
         snapshotDataModel.AggregateVersion.Should().Be(aggregateVersion);
         snapshotDataModel.AggregateState.Should().Be(serializedState);
     }

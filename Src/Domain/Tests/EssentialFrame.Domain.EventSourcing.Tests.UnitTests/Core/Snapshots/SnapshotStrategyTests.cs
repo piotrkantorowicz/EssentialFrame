@@ -1,4 +1,5 @@
-﻿using Bogus;
+﻿using System;
+using Bogus;
 using EssentialFrame.Domain.EventSourcing.Core.Factories;
 using EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 using EssentialFrame.ExampleApp.Application.Identity;
@@ -31,8 +32,8 @@ public class SnapshotStrategyTests
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         const int aggregateVersion = 1;
 
-        _aggregate =
-            EventSourcingGenericAggregateFactory<Post, PostIdentifier>.CreateAggregate(aggregateIdentifier,
+        _aggregate = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
+            aggregateIdentifier,
                 aggregateVersion);
 
         _aggregate.Create(Title.Default(_faker.Lorem.Sentence()), Description.Create(_faker.Lorem.Sentences()),
@@ -55,7 +56,7 @@ public class SnapshotStrategyTests
             _identityServiceMock.Object.GetCurrent());
 
         // Act
-        bool result = new SnapshotStrategy<Post, PostIdentifier>(Interval).ShouldTakeSnapShot(_aggregate);
+        bool result = new SnapshotStrategy<Post, PostIdentifier, Guid>(Interval).ShouldTakeSnapShot(_aggregate);
 
         // Assert
         result.Should().BeTrue();
@@ -70,7 +71,7 @@ public class SnapshotStrategyTests
             _identityServiceMock.Object.GetCurrent());
 
         // Act
-        bool result = new SnapshotStrategy<Post, PostIdentifier>(Interval).ShouldTakeSnapShot(_aggregate);
+        bool result = new SnapshotStrategy<Post, PostIdentifier, Guid>(Interval).ShouldTakeSnapShot(_aggregate);
 
         // Assert
         result.Should().BeFalse();

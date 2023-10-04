@@ -11,15 +11,17 @@ using EssentialFrame.Serialization.Interfaces;
 namespace EssentialFrame.Domain.Persistence.Services;
 
 public class
-    AggregateRepository<TAggregate, TAggregateIdentifier> : IAggregateRepository<TAggregate, TAggregateIdentifier>
-    where TAggregate : class, IAggregateRoot<TAggregateIdentifier> where TAggregateIdentifier : TypedGuidIdentifier
+    AggregateRepository<TAggregate, TAggregateIdentifier, TType> : IAggregateRepository<TAggregate, TAggregateIdentifier
+        , TType> where TAggregate : class, IAggregateRoot<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     private readonly IAggregateStore _aggregateStore;
-    private readonly IAggregateMapper<TAggregateIdentifier> _aggregateMapper;
-    private readonly IDomainEventsPublisher<TAggregateIdentifier> _domainEventsPublisher;
+    private readonly IAggregateMapper<TAggregateIdentifier, TType> _aggregateMapper;
+    private readonly IDomainEventsPublisher<TAggregateIdentifier, TType> _domainEventsPublisher;
 
-    public AggregateRepository(IAggregateStore aggregateStore, IAggregateMapper<TAggregateIdentifier> aggregateMapper,
-        IDomainEventsPublisher<TAggregateIdentifier> domainEventsPublisher)
+    protected AggregateRepository(IAggregateStore aggregateStore,
+        IAggregateMapper<TAggregateIdentifier, TType> aggregateMapper,
+        IDomainEventsPublisher<TAggregateIdentifier, TType> domainEventsPublisher)
     {
         _aggregateStore = aggregateStore ?? throw new ArgumentNullException(nameof(aggregateStore));
         _aggregateMapper = aggregateMapper ?? throw new ArgumentNullException(nameof(aggregateMapper));
@@ -100,9 +102,9 @@ public class
 
         _aggregateStore.Save(aggregateDataModel);
 
-        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.GetUncommittedChanges();
+        IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> domainEvents = aggregate.GetUncommittedChanges();
 
-        foreach (IDomainEvent<TAggregateIdentifier> domainEvent in domainEvents)
+        foreach (IDomainEvent<TAggregateIdentifier, TType> domainEvent in domainEvents)
         {
             _domainEventsPublisher.Publish(domainEvent);
         }
@@ -116,9 +118,9 @@ public class
 
         await _aggregateStore.SaveAsync(aggregateDataModel, cancellationToken);
 
-        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.GetUncommittedChanges();
+        IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> domainEvents = aggregate.GetUncommittedChanges();
 
-        foreach (IDomainEvent<TAggregateIdentifier> domainEvent in domainEvents)
+        foreach (IDomainEvent<TAggregateIdentifier, TType> domainEvent in domainEvents)
         {
             await _domainEventsPublisher.PublishAsync(domainEvent, cancellationToken);
         }

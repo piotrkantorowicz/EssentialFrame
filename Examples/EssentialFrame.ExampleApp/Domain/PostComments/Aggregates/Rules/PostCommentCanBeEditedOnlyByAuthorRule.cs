@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.PostComments.ValueObjects.Identifiers;
 
 namespace EssentialFrame.ExampleApp.Domain.PostComments.Aggregates.Rules;
 
-public class PostCommentCanBeEditedOnlyByAuthorRule : IdentifiableBusinessRule<PostCommentIdentifier>
+public class PostCommentCanBeEditedOnlyByAuthorRule : IdentifiableBusinessRule<PostCommentIdentifier, Guid>
 {
     private readonly AuthorIdentifier _authorIdentifier;
     private readonly AuthorIdentifier _editorIdentifier;

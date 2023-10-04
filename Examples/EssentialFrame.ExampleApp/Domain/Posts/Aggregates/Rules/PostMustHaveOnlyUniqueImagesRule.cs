@@ -7,7 +7,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Names;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.Aggregates.Rules;
 
-public class PostMustHaveOnlyUniqueImagesRule : IdentifiableBusinessRule<PostIdentifier>
+public class PostMustHaveOnlyUniqueImagesRule : IdentifiableBusinessRule<PostIdentifier, Guid>
 {
     private readonly Name[] _aggregateExistingImagesNames;
     private readonly Name _imageName;

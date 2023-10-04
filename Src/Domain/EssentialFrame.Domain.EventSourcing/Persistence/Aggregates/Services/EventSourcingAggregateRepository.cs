@@ -13,19 +13,20 @@ using EssentialFrame.Domain.Persistence.Models;
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
 
 public class
-    EventSourcingAggregateRepository<TAggregate, TAggregateIdentifier> : IEventSourcingAggregateRepository<TAggregate,
-        TAggregateIdentifier> where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier>
-    where TAggregateIdentifier : TypedGuidIdentifier
+    EventSourcingAggregateRepository<TAggregate, TAggregateIdentifier, TType> : IEventSourcingAggregateRepository<
+        TAggregate, TAggregateIdentifier, TType>
+    where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    private readonly IEventSourcingAggregateMapper<TAggregateIdentifier> _eventSourcingAggregateMapper;
-    private readonly IDomainEventMapper<TAggregateIdentifier> _domainEventMapper;
+    private readonly IEventSourcingAggregateMapper<TAggregateIdentifier, TType> _eventSourcingAggregateMapper;
+    private readonly IDomainEventMapper<TAggregateIdentifier, TType> _domainEventMapper;
     private readonly IEventSourcingAggregateStore _eventSourcingAggregateStore;
-    private readonly IDomainEventsPublisher<TAggregateIdentifier> _domainEventsPublisher;
+    private readonly IDomainEventsPublisher<TAggregateIdentifier, TType> _domainEventsPublisher;
 
     public EventSourcingAggregateRepository(IEventSourcingAggregateStore eventSourcingAggregateStore,
-        IDomainEventMapper<TAggregateIdentifier> domainEventMapper,
-        IEventSourcingAggregateMapper<TAggregateIdentifier> eventSourcingAggregateMapper,
-        IDomainEventsPublisher<TAggregateIdentifier> domainEventsPublisher)
+        IDomainEventMapper<TAggregateIdentifier, TType> domainEventMapper,
+        IEventSourcingAggregateMapper<TAggregateIdentifier, TType> eventSourcingAggregateMapper,
+        IDomainEventsPublisher<TAggregateIdentifier, TType> domainEventsPublisher)
     {
         _eventSourcingAggregateStore = eventSourcingAggregateStore ??
                                        throw new ArgumentNullException(nameof(eventSourcingAggregateStore));
@@ -50,20 +51,20 @@ public class
         return RehydrateAsync(aggregateIdentifier, cancellationToken);
     }
 
-    public IDomainEvent<TAggregateIdentifier>[] Save(TAggregate aggregate, int? version = null)
+    public IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate, int? version = null)
     {
-        if (version != null && _eventSourcingAggregateStore.Exists(aggregate.AggregateIdentifier.Value, version.Value))
+        if (version != null && _eventSourcingAggregateStore.Exists(aggregate.AggregateIdentifier, version.Value))
         {
-            throw new ConcurrencyException(aggregate.AggregateIdentifier.Value);
+            throw new ConcurrencyException(aggregate.AggregateIdentifier);
         }
 
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
-        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges();
+        IDomainEvent<TAggregateIdentifier, TType>[] domainEvents = aggregate.FlushUncommittedChanges();
         IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
 
         _eventSourcingAggregateStore.Save(eventSourcingAggregateDataModel, domainEventDataModels);
 
-        foreach (IDomainEvent<TAggregateIdentifier> domainEvent in domainEvents)
+        foreach (IDomainEvent<TAggregateIdentifier, TType> domainEvent in domainEvents)
         {
             _domainEventsPublisher.Publish(domainEvent);
         }
@@ -71,23 +72,23 @@ public class
         return domainEvents;
     }
 
-    public async Task<IDomainEvent<TAggregateIdentifier>[]> SaveAsync(TAggregate aggregate, int? version = null,
+    public async Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate, int? version = null,
         CancellationToken cancellationToken = default)
     {
-        if (version != null && await _eventSourcingAggregateStore.ExistsAsync(aggregate.AggregateIdentifier.Value,
+        if (version != null && await _eventSourcingAggregateStore.ExistsAsync(aggregate.AggregateIdentifier,
                 version.Value, cancellationToken))
         {
-            throw new ConcurrencyException(aggregate.AggregateIdentifier.Value);
+            throw new ConcurrencyException(aggregate.AggregateIdentifier);
         }
 
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
-        IDomainEvent<TAggregateIdentifier>[] domainEvents = aggregate.FlushUncommittedChanges();
+        IDomainEvent<TAggregateIdentifier, TType>[] domainEvents = aggregate.FlushUncommittedChanges();
         IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
 
         await _eventSourcingAggregateStore.SaveAsync(eventSourcingAggregateDataModel, domainEventDataModels,
             cancellationToken);
 
-        foreach (IDomainEvent<TAggregateIdentifier> domainEvent in domainEvents)
+        foreach (IDomainEvent<TAggregateIdentifier, TType> domainEvent in domainEvents)
         {
             await _domainEventsPublisher.PublishAsync(domainEvent, cancellationToken);
         }
@@ -108,7 +109,7 @@ public class
     private TAggregate Rehydrate(TAggregateIdentifier aggregateIdentifier)
     {
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel =
-            _eventSourcingAggregateStore.Get(aggregateIdentifier.Value);
+            _eventSourcingAggregateStore.Get(aggregateIdentifier);
 
         if (eventSourcingAggregateDataModel is null)
         {
@@ -116,7 +117,7 @@ public class
         }
 
         IReadOnlyCollection<DomainEventDataModel> eventsData =
-            _eventSourcingAggregateStore.Get(aggregateIdentifier.Value, -1);
+            _eventSourcingAggregateStore.Get(aggregateIdentifier, -1);
 
         if (eventSourcingAggregateDataModel.IsDeleted)
         {
@@ -124,17 +125,19 @@ public class
                 typeof(TAggregate));
         }
 
-        TAggregate aggregate = EventSourcingGenericAggregateFactory<TAggregate, TAggregateIdentifier>.CreateAggregate(
-            TypedGuidIdentifier.New<TAggregateIdentifier>(eventSourcingAggregateDataModel.AggregateIdentifier) ??
+        TAggregate aggregate =
+            EventSourcingGenericAggregateFactory<TAggregate, TAggregateIdentifier, TType>.CreateAggregate(
+                TypedIdentifierBase<TType>.New<TAggregateIdentifier>(
+                    eventSourcingAggregateDataModel.AggregateIdentifier) ??
             aggregateIdentifier);
 
         if (eventsData?.Any() != true)
         {
             throw new AggregateNotFoundException(typeof(TAggregate),
-                eventSourcingAggregateDataModel.AggregateIdentifier.ToString());
+                eventSourcingAggregateDataModel.AggregateIdentifier);
         }
 
-        List<IDomainEvent<TAggregateIdentifier>> events = _domainEventMapper.Map(eventsData).ToList();
+        List<IDomainEvent<TAggregateIdentifier, TType>> events = _domainEventMapper.Map(eventsData).ToList();
 
         aggregate.Rehydrate(events);
 
@@ -145,7 +148,7 @@ public class
         CancellationToken cancellationToken = default)
     {
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel =
-            await _eventSourcingAggregateStore.GetAsync(aggregateIdentifier.Value, cancellationToken);
+            await _eventSourcingAggregateStore.GetAsync(aggregateIdentifier, cancellationToken);
 
         if (eventSourcingAggregateDataModel is null)
         {
@@ -153,7 +156,7 @@ public class
         }
 
         IReadOnlyCollection<DomainEventDataModel> eventsData =
-            await _eventSourcingAggregateStore.GetAsync(aggregateIdentifier.Value, -1, cancellationToken);
+            await _eventSourcingAggregateStore.GetAsync(aggregateIdentifier, -1, cancellationToken);
 
         if (eventSourcingAggregateDataModel.IsDeleted)
         {
@@ -161,17 +164,19 @@ public class
                 typeof(TAggregate));
         }
 
-        TAggregate aggregate = EventSourcingGenericAggregateFactory<TAggregate, TAggregateIdentifier>.CreateAggregate(
-            TypedGuidIdentifier.New<TAggregateIdentifier>(eventSourcingAggregateDataModel.AggregateIdentifier) ??
+        TAggregate aggregate =
+            EventSourcingGenericAggregateFactory<TAggregate, TAggregateIdentifier, TType>.CreateAggregate(
+                TypedIdentifierBase<TType>.New<TAggregateIdentifier>(
+                    eventSourcingAggregateDataModel.AggregateIdentifier) ??
             aggregateIdentifier);
 
         if (eventsData?.Any() != true)
         {
             throw new AggregateNotFoundException(typeof(TAggregate),
-                eventSourcingAggregateDataModel.AggregateIdentifier.ToString());
+                eventSourcingAggregateDataModel.AggregateIdentifier);
         }
 
-        List<IDomainEvent<TAggregateIdentifier>> events = _domainEventMapper.Map(eventsData).ToList();
+        List<IDomainEvent<TAggregateIdentifier, TType>> events = _domainEventMapper.Map(eventsData).ToList();
 
         aggregate.Rehydrate(events);
 

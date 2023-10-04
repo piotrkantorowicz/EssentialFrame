@@ -5,7 +5,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 
 namespace EssentialFrame.ExampleApp.Domain.Posts.DomainEvents.Events;
 
-public class TitleChangedDomainEvent : DomainEvent<PostIdentifier>
+public class TitleChangedDomainEvent : DomainEvent<PostIdentifier, Guid>
 {
     public TitleChangedDomainEvent(PostIdentifier aggregateIdentifier, DomainIdentity identityContext,
         Title newTitle) : base(
