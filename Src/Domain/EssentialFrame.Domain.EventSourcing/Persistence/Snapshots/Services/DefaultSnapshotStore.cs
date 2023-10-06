@@ -1,3 +1,4 @@
+using System.Text;
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Exceptions;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
@@ -42,36 +43,69 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
 
     public void Box(string aggregateIdentifier)
     {
-        SnapshotDataModel snapshot = _snapshotCache.Get(aggregateIdentifier);
+        BoxInternal(aggregateIdentifier, null);
+    }
 
-        if (snapshot is null)
-        {
-            throw SnapshotBoxingFailedException.SnapshotNotFound(aggregateIdentifier);
-        }
-
-        _snapshotOfflineStorage.Save(snapshot);
+    public void Box(string aggregateIdentifier, Encoding encoding)
+    {
+        BoxInternal(aggregateIdentifier, encoding);
     }
 
     public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
     {
-        SnapshotDataModel snapshot = _snapshotCache.Get(aggregateIdentifier);
+        await BoxInternalAsync(aggregateIdentifier, null, cancellationToken);
+    }
 
-        if (snapshot is null)
-        {
-            throw SnapshotBoxingFailedException.SnapshotNotFound(aggregateIdentifier);
-        }
-
-        await _snapshotOfflineStorage.SaveAsync(snapshot, cancellationToken);
+    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken = default)
+    {
+        await BoxInternalAsync(aggregateIdentifier, encoding, cancellationToken);
     }
 
     public SnapshotDataModel Unbox(string aggregateIdentifier)
     {
-        return _snapshotOfflineStorage.Restore(aggregateIdentifier);
+        return _snapshotOfflineStorage.Restore(aggregateIdentifier, null);
+    }
+
+    public SnapshotDataModel Unbox(string aggregateIdentifier, Encoding encoding)
+    {
+        return _snapshotOfflineStorage.Restore(aggregateIdentifier, encoding);
     }
 
     public async Task<SnapshotDataModel> UnboxAsync(string aggregateIdentifier,
         CancellationToken cancellationToken = default)
     {
-        return await _snapshotOfflineStorage.RestoreAsync(aggregateIdentifier, cancellationToken);
+        return await _snapshotOfflineStorage.RestoreAsync(aggregateIdentifier, null, cancellationToken);
+    }
+
+    public async Task<SnapshotDataModel> UnboxAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken = default)
+    {
+        return await _snapshotOfflineStorage.RestoreAsync(aggregateIdentifier, encoding, cancellationToken);
+    }
+
+    private void BoxInternal(string aggregateIdentifier, Encoding encoding)
+    {
+        SnapshotDataModel snapshot = _snapshotCache.Get(aggregateIdentifier);
+
+        if (snapshot is null)
+        {
+            throw SnapshotBoxingFailedException.SnapshotNotFound(aggregateIdentifier);
+        }
+
+        _snapshotOfflineStorage.Save(snapshot, encoding);
+    }
+
+    private async Task BoxInternalAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken = default)
+    {
+        SnapshotDataModel snapshot = _snapshotCache.Get(aggregateIdentifier);
+
+        if (snapshot is null)
+        {
+            throw SnapshotBoxingFailedException.SnapshotNotFound(aggregateIdentifier);
+        }
+
+        await _snapshotOfflineStorage.SaveAsync(snapshot, encoding, cancellationToken);
     }
 }

@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
+﻿using System.Text;
+using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.Persistence.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
@@ -34,5 +35,9 @@ public interface IEventSourcingAggregateStore
 
     void Box(string aggregateIdentifier);
 
+    void Box(string aggregateIdentifier, Encoding encoding);
+
     Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default);
+
+    Task BoxAsync(string aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken = default);
 }

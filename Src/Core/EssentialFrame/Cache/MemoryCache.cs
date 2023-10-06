@@ -4,17 +4,17 @@ using System.Linq;
 using System.Threading;
 using EssentialFrame.Cache.Interfaces;
 
-namespace EssentialFrame.Cache.Base;
+namespace EssentialFrame.Cache;
 
-public abstract class CacheBase<TK, T> : ICache<TK, T> where TK : notnull
+public class MemoryCache<TK, T> : ICache<TK, T> where TK : notnull
 {
     private readonly Dictionary<TK, T> _cache = new();
     private readonly ReaderWriterLockSlim _locker = new();
-    private readonly int _timerInterval;
     private readonly Dictionary<TK, Timer> _timers = new();
+    private readonly int _timerInterval;
     private bool _disposed;
 
-    protected CacheBase(int timerInterval)
+    public MemoryCache(int timerInterval)
     {
         _timerInterval = timerInterval;
     }

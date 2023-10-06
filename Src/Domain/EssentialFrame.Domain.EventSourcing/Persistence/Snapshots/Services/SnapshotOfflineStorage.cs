@@ -1,8 +1,9 @@
 ﻿using System.IO.Abstractions;
+using System.Text;
 using EssentialFrame.Domain.EventSourcing.Exceptions;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services.Interfaces;
-using EssentialFrame.Files;
+using EssentialFrame.Files.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +33,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         _offlineStorageDirectory = offlineStorageDirectory;
     }
 
-    public void Save(SnapshotDataModel snapshot)
+    public void Save(SnapshotDataModel snapshot, Encoding encoding)
     {
         try
         {
@@ -41,7 +42,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
 
             string aggregateState = GetSerializedState(snapshot);
 
-            _fileStorage.Create(aggregateDirectory, SnapshotFilename, aggregateState);
+            _fileStorage.Create(aggregateDirectory, SnapshotFilename, aggregateState, encoding);
         }
         catch (Exception exception)
         {
@@ -55,7 +56,8 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public async Task SaveAsync(SnapshotDataModel snapshot, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(SnapshotDataModel snapshot, Encoding encoding,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -64,8 +66,8 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
 
             string aggregateState = GetSerializedState(snapshot);
 
-            await _fileStorage.CreateAsync(aggregateDirectory, SnapshotFilename, aggregateState,
-                cancellationToken: cancellationToken);
+            await _fileStorage.CreateAsync(aggregateDirectory, SnapshotFilename, aggregateState, encoding,
+                cancellationToken);
         }
         catch (Exception exception)
         {
@@ -79,13 +81,12 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public SnapshotDataModel Restore(string aggregateIdentifier)
+    public SnapshotDataModel Restore(string aggregateIdentifier, Encoding encoding)
     {
         try
         {
             string aggregateState = _fileStorage.Read(
-                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier),
-                    SnapshotFilename);
+                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), SnapshotFilename, encoding);
 
             if (aggregateState is null)
             {
@@ -109,13 +110,13 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public async Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier,
+    public async Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier, Encoding encoding,
         CancellationToken cancellationToken = default)
     {
         try
         {
             string aggregateState = await _fileStorage.ReadAsync(
-                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), SnapshotFilename,
+                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), SnapshotFilename, encoding,
                 cancellationToken: cancellationToken);
 
             if (aggregateState is null)

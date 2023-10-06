@@ -1,3 +1,4 @@
+using System.Text;
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
@@ -96,21 +97,44 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
 
     public void Box(string aggregateIdentifier)
     {
-        EventSourcingAggregateDataModel eventSourcingAggregate = _aggregateCache.Get(aggregateIdentifier);
+        BoxInternal(aggregateIdentifier, null);
+    }
 
-        IReadOnlyCollection<DomainEventDataModel> events =
-            _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier);
-
-        _eventSourcingAggregateOfflineStorage.Save(eventSourcingAggregate, events);
+    public void Box(string aggregateIdentifier, Encoding encoding)
+    {
+        BoxInternal(aggregateIdentifier, encoding);
     }
 
     public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
+    {
+        await BoxInternalAsync(aggregateIdentifier, null, cancellationToken);
+    }
+
+    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken = default)
+    {
+        await BoxInternalAsync(aggregateIdentifier, encoding, cancellationToken);
+    }
+
+    private void BoxInternal(string aggregateIdentifier, Encoding encoding)
     {
         EventSourcingAggregateDataModel eventSourcingAggregate = _aggregateCache.Get(aggregateIdentifier);
 
         IReadOnlyCollection<DomainEventDataModel> events =
             _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier);
 
-        await _eventSourcingAggregateOfflineStorage.SaveAsync(eventSourcingAggregate, events, cancellationToken);
+        _eventSourcingAggregateOfflineStorage.Save(eventSourcingAggregate, events, encoding ?? Encoding.Unicode);
+    }
+
+    private async Task BoxInternalAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken = default)
+    {
+        EventSourcingAggregateDataModel eventSourcingAggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        IReadOnlyCollection<DomainEventDataModel> events =
+            _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier);
+
+        await _eventSourcingAggregateOfflineStorage.SaveAsync(eventSourcingAggregate, events,
+            encoding ?? Encoding.Unicode, cancellationToken);
     }
 }

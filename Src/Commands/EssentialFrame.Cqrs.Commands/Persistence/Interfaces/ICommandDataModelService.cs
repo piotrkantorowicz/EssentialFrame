@@ -4,7 +4,7 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 
-public interface ICommandDataModelService
+internal interface ICommandDataModelService
 {
     CommandDataModel Create(ICommand command);
 

@@ -4,7 +4,7 @@ using EssentialFrame.Domain.EventSourcing.Core.Snapshots.Interfaces;
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Snapshots;
 
-public class
+internal sealed class
     SnapshotStrategy<TAggregate, TAggregateIdentifier, TType> : ISnapshotStrategy<TAggregate, TAggregateIdentifier,
         TType> where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier, TType>
     where TAggregateIdentifier : TypedIdentifierBase<TType>

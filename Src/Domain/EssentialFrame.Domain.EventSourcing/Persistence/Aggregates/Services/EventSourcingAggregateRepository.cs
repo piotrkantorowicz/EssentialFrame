@@ -12,7 +12,7 @@ using EssentialFrame.Domain.Persistence.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
 
-public class
+internal sealed class
     EventSourcingAggregateRepository<TAggregate, TAggregateIdentifier, TType> : IEventSourcingAggregateRepository<
         TAggregate, TAggregateIdentifier, TType>
     where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier, TType>

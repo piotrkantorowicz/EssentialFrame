@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Cache.Interfaces;
@@ -36,12 +37,15 @@ public class DefaultEventSourcingAggregateStoreTests
     [SetUp]
     public void SetUp()
     {
+        _encoding = _faker.Random.ListItem(_encodings);
         _identityServiceMock.Setup(x => x.GetCurrent()).Returns(new AppIdentityContext());
     }
 
     [TearDown]
     public void TearDown()
     {
+        _encoding = null;
+        
         _aggregateCacheMock.Reset();
         _eventsCacheMock.Reset();
         _identityServiceMock.Reset();
@@ -58,13 +62,24 @@ public class DefaultEventSourcingAggregateStoreTests
     private readonly Mock<IDomainEventMapper<PostIdentifier, Guid>> _domainEventMapper = new();
     private readonly Mock<IEventSourcingAggregateMapper<PostIdentifier, Guid>> _aggregateMapperMock = new();
 
+    private readonly IList<Encoding> _encodings = new List<Encoding>
+    {
+        Encoding.Default,
+        Encoding.Unicode,
+        Encoding.UTF8,
+        Encoding.UTF32,
+        Encoding.ASCII
+    };
+
+    private Encoding _encoding;
+
     [Test]
     public void Exists_WhenAggregateIdentifierIsProvided_ShouldReturnTrue()
     {
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier)).Returns(true);
-        
+
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
@@ -81,7 +96,7 @@ public class DefaultEventSourcingAggregateStoreTests
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier)).Returns(true);
-        
+
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
@@ -98,7 +113,7 @@ public class DefaultEventSourcingAggregateStoreTests
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier)).Returns(false);
-        
+
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
@@ -115,7 +130,7 @@ public class DefaultEventSourcingAggregateStoreTests
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         _aggregateCacheMock.Setup(x => x.Exists(aggregateIdentifier)).Returns(false);
-        
+
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
@@ -135,7 +150,7 @@ public class DefaultEventSourcingAggregateStoreTests
 
         _aggregateCacheMock.Setup(x => x.Exists(It.IsAny<Func<string, EventSourcingAggregateDataModel, bool>>()))
             .Returns(true);
-        
+
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
@@ -155,7 +170,7 @@ public class DefaultEventSourcingAggregateStoreTests
 
         _aggregateCacheMock.Setup(x => x.Exists(It.IsAny<Func<string, EventSourcingAggregateDataModel, bool>>()))
             .Returns(true);
-        
+
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
@@ -175,7 +190,7 @@ public class DefaultEventSourcingAggregateStoreTests
 
         _aggregateCacheMock.Setup(x => x.Exists(It.IsAny<Func<string, EventSourcingAggregateDataModel, bool>>()))
             .Returns(false);
-        
+
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
@@ -194,7 +209,7 @@ public class DefaultEventSourcingAggregateStoreTests
 
         _aggregateCacheMock.Setup(x => x.Exists(It.IsAny<Func<string, EventSourcingAggregateDataModel, bool>>()))
             .Returns(false);
-        
+
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
@@ -437,17 +452,18 @@ public class DefaultEventSourcingAggregateStoreTests
         _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(eventSourcingAggregateDataModel);
         _eventsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()))
             .Returns(domainEventsDms);
-        _aggregateOfflineStorageMock.Setup(x => x.Save(eventSourcingAggregateDataModel, domainEventsDms));
+        _aggregateOfflineStorageMock.Setup(x => x.Save(eventSourcingAggregateDataModel, domainEventsDms, _encoding));
 
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        aggregateStore.Box(aggregateIdentifier);
+        aggregateStore.Box(aggregateIdentifier, _encoding);
 
         // Assert
         _aggregateCacheMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
-        _aggregateOfflineStorageMock.Verify(x => x.Save(eventSourcingAggregateDataModel, domainEventsDms), Times.Once);
+        _aggregateOfflineStorageMock.Verify(x => x.Save(eventSourcingAggregateDataModel, domainEventsDms, _encoding),
+            Times.Once);
         _eventsCacheMock.Verify(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()), Times.Once);
     }
 
@@ -476,18 +492,20 @@ public class DefaultEventSourcingAggregateStoreTests
         _aggregateCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(eventSourcingAggregateDataModel);
         _eventsCacheMock.Setup(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()))
             .Returns(domainEventsDms);
-        _aggregateOfflineStorageMock.Setup(x => x.SaveAsync(eventSourcingAggregateDataModel, domainEventsDms, default));
+
+        _aggregateOfflineStorageMock.Setup(x =>
+            x.SaveAsync(eventSourcingAggregateDataModel, domainEventsDms, _encoding, default));
 
         DefaultEventSourcingAggregateStore aggregateStore = new(_eventsCacheMock.Object, _aggregateCacheMock.Object,
             _aggregateOfflineStorageMock.Object);
 
         // Act
-        await aggregateStore.BoxAsync(aggregateIdentifier);
+        await aggregateStore.BoxAsync(aggregateIdentifier, _encoding);
 
         // Assert
         _aggregateCacheMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
-        _aggregateOfflineStorageMock.Verify(x => x.SaveAsync(eventSourcingAggregateDataModel, domainEventsDms, default),
-            Times.Once);
+        _aggregateOfflineStorageMock.Verify(
+            x => x.SaveAsync(eventSourcingAggregateDataModel, domainEventsDms, _encoding, default), Times.Once);
         _eventsCacheMock.Verify(x => x.GetMany(It.IsAny<Func<Guid, DomainEventDataModel, bool>>()), Times.Once);
     }
 

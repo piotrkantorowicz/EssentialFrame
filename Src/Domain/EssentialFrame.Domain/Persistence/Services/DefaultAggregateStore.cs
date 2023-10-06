@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Cache.Interfaces;
+﻿using System.Text;
+using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.Persistence.Models;
 using EssentialFrame.Domain.Persistence.Services.Interfaces;
 
@@ -65,13 +66,44 @@ internal sealed class DefaultAggregateStore : IAggregateStore
     {
         AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
 
-        _aggregateOfflineStorage.Save(aggregate);
+        _aggregateOfflineStorage.Save(aggregate, Encoding.Unicode);
+    }
+
+    public void Box(string aggregateIdentifier, Encoding encoding)
+    {
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        _aggregateOfflineStorage.Save(aggregate, encoding);
     }
 
     public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
     {
         AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
 
-        await _aggregateOfflineStorage.SaveAsync(aggregate, cancellationToken);
+        await _aggregateOfflineStorage.SaveAsync(aggregate, Encoding.Unicode, cancellationToken);
+    }
+
+    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken = default)
+    {
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        await _aggregateOfflineStorage.SaveAsync(aggregate, encoding, cancellationToken);
+    }
+
+    private void BoxInternal(string aggregateIdentifier, Encoding encoding)
+    {
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        _aggregateOfflineStorage.Save(aggregate, encoding ?? Encoding.Unicode);
+    }
+
+    private async Task BoxInternalAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken = default)
+    {
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        await _aggregateOfflineStorage.SaveAsync(aggregate, encoding ?? Encoding.Unicode, cancellationToken);
     }
 }
+    

@@ -4,7 +4,7 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Serialization;
 
-public class DefaultJsonSerializer : ISerializer
+internal sealed class DefaultJsonSerializer : ISerializer
 {
     private readonly JsonSerializerOptions _serializerOptions;
 

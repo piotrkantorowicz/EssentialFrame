@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Domain.Persistence.Models;
+﻿using System.Text;
+using EssentialFrame.Domain.Persistence.Models;
 
 namespace EssentialFrame.Domain.Persistence.Services.Interfaces;
 
@@ -22,5 +23,9 @@ public interface IAggregateStore
 
     void Box(string aggregateIdentifier);
 
+    void Box(string aggregateIdentifier, Encoding encoding);
+
     Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default);
+
+    Task BoxAsync(string aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken = default);
 }

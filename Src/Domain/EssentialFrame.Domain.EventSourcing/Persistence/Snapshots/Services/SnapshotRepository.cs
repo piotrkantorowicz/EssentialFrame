@@ -15,7 +15,7 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services;
 
-public class
+internal sealed class
     SnapshotRepository<TAggregate, TAggregateIdentifier, TType> : ISnapshotRepository<TAggregate, TAggregateIdentifier,
         TType> where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier, TType>
     where TAggregateIdentifier : TypedIdentifierBase<TType>

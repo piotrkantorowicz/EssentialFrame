@@ -4,7 +4,7 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Cqrs.Commands.Persistence.Interfaces;
 
-public interface ICommandMapper
+internal interface ICommandMapper
 {
     CommandDataModel Map(ICommand command);
 

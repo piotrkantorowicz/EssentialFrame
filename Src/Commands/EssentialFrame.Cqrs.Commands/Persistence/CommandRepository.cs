@@ -7,7 +7,7 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Cqrs.Commands.Persistence;
 
-public sealed class CommandRepository : ICommandRepository
+internal sealed class CommandRepository : ICommandRepository
 {
     private readonly ICommandDataModelService _commandDataModelService;
     private readonly ICommandMapper _commandMapper;
@@ -31,7 +31,7 @@ public sealed class CommandRepository : ICommandRepository
         _commandStore.Save(commandDataModel, true);
     }
 
-    public async Task StartExecutionAsync(ICommand command, CancellationToken cancellationToken = default)
+    public async Task StartExecutionAsync(ICommand command, CancellationToken cancellationToken)
     {
         CommandDataModel commandDataModel = _commandMapper.Map(command);
         _commandDataModelService.Start(commandDataModel);
@@ -47,8 +47,7 @@ public sealed class CommandRepository : ICommandRepository
         _commandStore.Save(commandDataModel, true);
     }
 
-    public async Task StartExecutionAsync(ICommand command, ISerializer serializer,
-        CancellationToken cancellationToken = default)
+    public async Task StartExecutionAsync(ICommand command, ISerializer serializer, CancellationToken cancellationToken)
     {
         CommandDataModel commandDataModel = _commandMapper.Map(command, serializer);
         _commandDataModelService.Start(commandDataModel);
@@ -69,7 +68,7 @@ public sealed class CommandRepository : ICommandRepository
         _commandStore.Save(commandDataModel, false);
     }
 
-    public async Task CancelExecutionAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
+    public async Task CancelExecutionAsync(Guid commandIdentifier, CancellationToken cancellationToken)
     {
         CommandDataModel commandDataModel = await _commandStore.GetAsync(commandIdentifier, cancellationToken);
 
@@ -91,8 +90,7 @@ public sealed class CommandRepository : ICommandRepository
         _commandStore.Save(commandDataModel, true);
     }
 
-    public async Task ScheduleExecutionAsync(ICommand command, DateTimeOffset at,
-        CancellationToken cancellationToken = default)
+    public async Task ScheduleExecutionAsync(ICommand command, DateTimeOffset at, CancellationToken cancellationToken)
     {
         CommandDataModel commandDataModel = _commandMapper.Map(command);
         _commandDataModelService.Schedule(commandDataModel, at);
@@ -114,7 +112,7 @@ public sealed class CommandRepository : ICommandRepository
     }
 
     public async Task CompleteExecutionAsync(Guid commandIdentifier, bool isSuccess,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         CommandDataModel commandDataModel = await _commandStore.GetAsync(commandIdentifier, cancellationToken);
 
@@ -134,7 +132,7 @@ public sealed class CommandRepository : ICommandRepository
     }
 
     public async Task<IReadOnlyCollection<ICommand>> GetPossibleToSendAsync(DateTimeOffset at,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         IReadOnlyCollection<CommandDataModel> possibleCommandsDataToSend =
             await _commandStore.GetPossibleToSendAsync(at, cancellationToken);

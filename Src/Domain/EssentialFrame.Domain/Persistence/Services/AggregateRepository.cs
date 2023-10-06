@@ -10,7 +10,7 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Persistence.Services;
 
-public class
+internal sealed class
     AggregateRepository<TAggregate, TAggregateIdentifier, TType> : IAggregateRepository<TAggregate, TAggregateIdentifier
         , TType> where TAggregate : class, IAggregateRoot<TAggregateIdentifier, TType>
     where TAggregateIdentifier : TypedIdentifierBase<TType>
@@ -19,7 +19,7 @@ public class
     private readonly IAggregateMapper<TAggregateIdentifier, TType> _aggregateMapper;
     private readonly IDomainEventsPublisher<TAggregateIdentifier, TType> _domainEventsPublisher;
 
-    protected AggregateRepository(IAggregateStore aggregateStore,
+    public AggregateRepository(IAggregateStore aggregateStore,
         IAggregateMapper<TAggregateIdentifier, TType> aggregateMapper,
         IDomainEventsPublisher<TAggregateIdentifier, TType> domainEventsPublisher)
     {

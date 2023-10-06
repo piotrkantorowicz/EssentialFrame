@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Security;
+using System.Text;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Domain.Core.Events.Interfaces;
@@ -21,7 +22,7 @@ using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Descriptions;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Identifiers;
 using EssentialFrame.ExampleApp.Domain.Posts.ValueObjects.Titles;
 using EssentialFrame.Extensions;
-using EssentialFrame.Files;
+using EssentialFrame.Files.Interfaces;
 using EssentialFrame.Identity.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using FluentAssertions;
@@ -42,11 +43,21 @@ public class EventSourcingAggregateOfflineStorageTests
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IDomainEventMapper<PostIdentifier, Guid>> _domainEventMapperMock = new();
 
+    private readonly IList<Encoding> _encodings = new List<Encoding>
+    {
+        Encoding.Default,
+        Encoding.Unicode,
+        Encoding.UTF8,
+        Encoding.UTF32,
+        Encoding.ASCII
+    };
+    
     private EventSourcingAggregateDataModel _eventSourcingAggregateDataModel;
     private ILogger<EventSourcingAggregateOfflineStorage<PostIdentifier, Guid>> _logger;
     private IReadOnlyCollection<DomainEventDataModel> _domainEventDataModels;
     private IReadOnlyCollection<IDomainEvent<PostIdentifier, Guid>> _domainEvents;
-
+    private Encoding _encoding;
+    
     private static readonly object[] PossibleExceptions =
     {
         new object[] { typeof(OutOfMemoryException) }, new object[] { typeof(ArgumentException) },
@@ -60,6 +71,7 @@ public class EventSourcingAggregateOfflineStorageTests
     [SetUp]
     public void SetUp()
     {
+        _encoding = _faker.Random.ListItem(_encodings);
         _identityServiceMock.Setup(ism => ism.GetCurrent()).Returns(new AppIdentityContext());
         _logger = NullLoggerFactory.Instance.CreateLogger<EventSourcingAggregateOfflineStorage<PostIdentifier, Guid>>();
 
@@ -108,6 +120,7 @@ public class EventSourcingAggregateOfflineStorageTests
         _identityServiceMock.Reset();
         _domainEventMapperMock.Reset();
         _logger = null;
+        _encoding = null;
     }
 
     [Test]
@@ -128,19 +141,19 @@ public class EventSourcingAggregateOfflineStorageTests
                 x.Path.Combine(It.IsAny<string>(), _eventSourcingAggregateDataModel.AggregateIdentifier))
             .Returns(directoryPath);
 
-        _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null))
+        _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), _encoding))
             .Returns(fileInfoMock.Object);
 
         _domainEventMapperMock.Setup(s => s.Map(_domainEventDataModels)).Returns(_domainEvents);
         _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        eventSourcingAggregateOfflineStorage.Save(_eventSourcingAggregateDataModel, _domainEventDataModels);
+        eventSourcingAggregateOfflineStorage.Save(_eventSourcingAggregateDataModel, _domainEventDataModels, _encoding);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-        _fileStorageMock.Verify(fs => fs.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null),
+        _fileStorageMock.Verify(fs => fs.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), _encoding),
             Times.Exactly(3));
 
         _domainEventMapperMock.Verify(s => s.Map(_domainEventDataModels), Times.Once);
@@ -165,21 +178,22 @@ public class EventSourcingAggregateOfflineStorageTests
                 x.Path.Combine(It.IsAny<string>(), _eventSourcingAggregateDataModel.AggregateIdentifier))
             .Returns(directoryPath);
 
-        _fileStorageMock
-            .Setup(fs => fs.CreateAsync(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null, default))
+        _fileStorageMock.Setup(fs =>
+                fs.CreateAsync(directoryPath, It.IsAny<string>(), It.IsAny<string>(), _encoding, default))
             .ReturnsAsync(fileInfoMock.Object);
 
         _domainEventMapperMock.Setup(s => s.Map(_domainEventDataModels)).Returns(_domainEvents);
         _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        await eventSourcingAggregateOfflineStorage.SaveAsync(_eventSourcingAggregateDataModel, _domainEventDataModels);
+        await eventSourcingAggregateOfflineStorage.SaveAsync(_eventSourcingAggregateDataModel, _domainEventDataModels,
+            _encoding);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
         _fileStorageMock.Verify(
-            fs => fs.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null, default),
+            fs => fs.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), _encoding, default),
             Times.Exactly(3));
 
         _domainEventMapperMock.Verify(s => s.Map(_domainEventDataModels), Times.Once);
@@ -207,19 +221,19 @@ public class EventSourcingAggregateOfflineStorageTests
             .Setup(x => x.Path.Combine(offlineDirectory, _eventSourcingAggregateDataModel.AggregateIdentifier))
             .Returns(directoryPath);
 
-        _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null))
+        _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), _encoding))
             .Returns(fileInfoMock.Object);
 
         _domainEventMapperMock.Setup(s => s.Map(_domainEventDataModels)).Returns(_domainEvents);
         _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        eventSourcingAggregateOfflineStorage.Save(_eventSourcingAggregateDataModel, _domainEventDataModels);
+        eventSourcingAggregateOfflineStorage.Save(_eventSourcingAggregateDataModel, _domainEventDataModels, _encoding);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-        _fileStorageMock.Verify(fs => fs.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null),
+        _fileStorageMock.Verify(fs => fs.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), _encoding),
             Times.Exactly(3));
 
         _domainEventMapperMock.Verify(s => s.Map(_domainEventDataModels), Times.Once);
@@ -247,21 +261,22 @@ public class EventSourcingAggregateOfflineStorageTests
             .Setup(x => x.Path.Combine(offlineDirectory, _eventSourcingAggregateDataModel.AggregateIdentifier))
             .Returns(directoryPath);
 
-        _fileStorageMock
-            .Setup(fs => fs.CreateAsync(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null, default))
+        _fileStorageMock.Setup(fs =>
+                fs.CreateAsync(directoryPath, It.IsAny<string>(), It.IsAny<string>(), _encoding, default))
             .ReturnsAsync(fileInfoMock.Object);
 
         _domainEventMapperMock.Setup(s => s.Map(_domainEventDataModels)).Returns(_domainEvents);
         _serializerMock.Setup(s => s.Serialize(_domainEvents)).Returns(_faker.Lorem.Sentences());
 
         // Act
-        await eventSourcingAggregateOfflineStorage.SaveAsync(_eventSourcingAggregateDataModel, _domainEventDataModels);
+        await eventSourcingAggregateOfflineStorage.SaveAsync(_eventSourcingAggregateDataModel, _domainEventDataModels,
+            _encoding);
 
         // Assert
         _fileSystemMock.Verify(x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
         _fileStorageMock.Verify(
-            fs => fs.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null, default),
+            fs => fs.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), _encoding, default),
             Times.Exactly(3));
 
         _domainEventMapperMock.Verify(s => s.Map(_domainEventDataModels), Times.Once);
@@ -284,12 +299,13 @@ public class EventSourcingAggregateOfflineStorageTests
                 x.Path.Combine(It.IsAny<string>(), _eventSourcingAggregateDataModel.AggregateIdentifier))
             .Returns(directoryPath);
 
-        _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null))
+        _fileStorageMock.Setup(fs => fs.Create(directoryPath, It.IsAny<string>(), It.IsAny<string>(), _encoding))
             .Throws((Activator.CreateInstance(exception) as Exception)!);
 
         // Act
         Action action = () =>
-            eventSourcingAggregateOfflineStorage.Save(_eventSourcingAggregateDataModel, _domainEventDataModels);
+            eventSourcingAggregateOfflineStorage.Save(_eventSourcingAggregateDataModel, _domainEventDataModels,
+                _encoding);
 
         // Assert
         action.Should().ThrowExactly<AggregateBoxingFailedException>().WithMessage(
@@ -313,14 +329,14 @@ public class EventSourcingAggregateOfflineStorageTests
                 x.Path.Combine(It.IsAny<string>(), _eventSourcingAggregateDataModel.AggregateIdentifier))
             .Returns(directoryPath);
 
-        _fileStorageMock
-            .Setup(fs => fs.CreateAsync(directoryPath, It.IsAny<string>(), It.IsAny<string>(), null, default))
+        _fileStorageMock.Setup(fs =>
+                fs.CreateAsync(directoryPath, It.IsAny<string>(), It.IsAny<string>(), _encoding, default))
             .ThrowsAsync((Activator.CreateInstance(exception) as Exception)!);
 
         // Act
         Func<Task> action = async () =>
             await eventSourcingAggregateOfflineStorage.SaveAsync(_eventSourcingAggregateDataModel,
-                _domainEventDataModels);
+                _domainEventDataModels, _encoding);
 
         // Assert
         await action.Should().ThrowExactlyAsync<AggregateBoxingFailedException>().WithMessage(
