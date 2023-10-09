@@ -7,10 +7,10 @@ internal interface ISnapshotOfflineStorage
 {
     void Save(SnapshotDataModel snapshot, Encoding encoding);
 
-    Task SaveAsync(SnapshotDataModel snapshot, Encoding encoding, CancellationToken cancellationToken = default);
+    Task SaveAsync(SnapshotDataModel snapshot, Encoding encoding, CancellationToken cancellationToken);
 
     SnapshotDataModel Restore(string aggregateIdentifier, Encoding encoding);
 
     Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier, Encoding encoding,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken);
 }

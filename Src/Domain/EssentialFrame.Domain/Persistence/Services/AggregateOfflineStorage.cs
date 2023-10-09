@@ -23,7 +23,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
     private readonly ISerializer _serializer;
 
     public AggregateOfflineStorage(IFileStorage fileStorage, IFileSystem fileSystem,
-        ILogger<AggregateOfflineStorage> logger, ISerializer serializer, string offlineStorageDirectory = null)
+        ILogger<AggregateOfflineStorage> logger, ISerializer serializer, string offlineStorageDirectory)
     {
         _fileStorage = fileStorage ?? throw new ArgumentNullException(nameof(fileStorage));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -67,8 +67,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         }
     }
 
-    public async Task SaveAsync(AggregateDataModel aggregate, Encoding encoding,
-        CancellationToken cancellationToken = default)
+    public async Task SaveAsync(AggregateDataModel aggregate, Encoding encoding, CancellationToken cancellationToken)
     {
         try
         {

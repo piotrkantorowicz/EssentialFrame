@@ -8,22 +8,33 @@ public interface ISnapshotRepository<TAggregate, TAggregateIdentifier, TType>
     where TAggregate : class, IEventSourcingAggregateRoot<TAggregateIdentifier, TType>
     where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    TAggregate Get(TAggregateIdentifier aggregateIdentifier);
+    TAggregate Get(TAggregateIdentifier aggregateIdentifier, bool useSerializer);
 
-    Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, bool useSerializer,
+        CancellationToken cancellationToken);
 
-    IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate, int? version = null, int? timeout = null);
+    IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate);
 
-    Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate, int? version = null,
-        int? timeout = null,
-        CancellationToken cancellationToken = default);
+    IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate, int version);
 
-    void Box(TAggregate aggregate, bool useSerializer = false);
+    IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate, int version, int timeout);
 
-    Task BoxAsync(TAggregate aggregate, bool useSerializer = false, CancellationToken cancellationToken = default);
+    Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate,
+        CancellationToken cancellationToken);
 
-    TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, bool useSerializer = false);
+    Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate, int version,
+        CancellationToken cancellationToken);
 
-    Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, bool useSerializer = false,
-        CancellationToken cancellationToken = default);
+    Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate, int version, int timeout,
+        CancellationToken cancellationToken);
+
+    void Box(TAggregate aggregate, bool useSerializer);
+
+    Task BoxAsync(TAggregate aggregate, bool useSerializer, CancellationToken cancellationToken);
+
+    TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, bool useSerializer);
+
+    Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, bool useSerializer,
+        CancellationToken cancellationToken);
+    
 }

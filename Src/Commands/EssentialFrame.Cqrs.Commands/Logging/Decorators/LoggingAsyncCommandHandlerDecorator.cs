@@ -21,7 +21,7 @@ internal sealed class LoggingAsyncCommandHandlerDecorator<TCommand> : IAsyncComm
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
     }
 
-    public async Task<ICommandResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(TCommand command, CancellationToken cancellationToken)
     {
         ICommandResult commandResponse;
         EventId executing = LoggingUtils.CommandExecuting;

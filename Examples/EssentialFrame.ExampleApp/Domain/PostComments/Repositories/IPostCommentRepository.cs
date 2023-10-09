@@ -9,10 +9,9 @@ public interface IPostCommentRepository
 {
     PostComment Get(PostCommentIdentifier postCommentIdentifier);
 
-    Task<PostComment> GetAsync(PostCommentIdentifier postCommentIdentifier,
-        CancellationToken cancellationToken = default);
+    Task<PostComment> GetAsync(PostCommentIdentifier postCommentIdentifier, CancellationToken cancellationToken);
 
     void Save(PostComment postComment);
 
-    Task SaveAsync(PostComment postComment, CancellationToken cancellationToken = default);
+    Task SaveAsync(PostComment postComment, CancellationToken cancellationToken);
 }

@@ -20,7 +20,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
     private readonly ISerializer _serializer;
 
     public SnapshotOfflineStorage(IFileStorage fileStorage, ISerializer serializer, IFileSystem fileSystem,
-        ILogger<SnapshotOfflineStorage> logger, string offlineStorageDirectory = null)
+        ILogger<SnapshotOfflineStorage> logger, string offlineStorageDirectory)
     {
         _fileStorage = fileStorage ?? throw new ArgumentNullException(nameof(fileStorage));
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
@@ -56,8 +56,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public async Task SaveAsync(SnapshotDataModel snapshot, Encoding encoding,
-        CancellationToken cancellationToken = default)
+    public async Task SaveAsync(SnapshotDataModel snapshot, Encoding encoding, CancellationToken cancellationToken)
     {
         try
         {
@@ -111,7 +110,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
     }
 
     public async Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier, Encoding encoding,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         try
         {

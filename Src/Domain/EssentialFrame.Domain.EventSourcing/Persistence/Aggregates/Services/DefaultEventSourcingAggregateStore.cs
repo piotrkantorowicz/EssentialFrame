@@ -28,7 +28,7 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
         return _aggregateCache.Exists(aggregateIdentifier);
     }
 
-    public async Task<bool> ExistsAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(string aggregateIdentifier, CancellationToken cancellationToken)
     {
         return await Task.FromResult(_aggregateCache.Exists(aggregateIdentifier));
     }
@@ -39,8 +39,7 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
             v.AggregateIdentifier == aggregateIdentifier && v.AggregateVersion == version);
     }
 
-    public async Task<bool> ExistsAsync(string aggregateIdentifier, int version,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(string aggregateIdentifier, int version, CancellationToken cancellationToken)
     {
         return await Task.FromResult(Exists(aggregateIdentifier, version));
     }
@@ -51,7 +50,7 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
     }
 
     public async Task<EventSourcingAggregateDataModel> GetAsync(string aggregateIdentifier,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return await Task.FromResult(Get(aggregateIdentifier));
     }
@@ -63,7 +62,7 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
     }
 
     public async Task<IReadOnlyCollection<DomainEventDataModel>> GetAsync(string aggregateIdentifier, int version,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return await Task.FromResult(Get(aggregateIdentifier, version));
     }
@@ -73,7 +72,7 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
         return _aggregateCache.GetMany((_, v) => v.IsDeleted)?.Select(v => v.AggregateIdentifier);
     }
 
-    public async Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken)
     {
         return await Task.FromResult(GetExpired());
     }
@@ -88,7 +87,7 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
     }
 
     public async Task SaveAsync(EventSourcingAggregateDataModel eventSourcingAggregate,
-        IEnumerable<DomainEventDataModel> events, CancellationToken cancellationToken = default)
+        IEnumerable<DomainEventDataModel> events, CancellationToken cancellationToken)
     {
         Save(eventSourcingAggregate, events);
 
@@ -105,13 +104,12 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
         BoxInternal(aggregateIdentifier, encoding);
     }
 
-    public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken)
     {
         await BoxInternalAsync(aggregateIdentifier, null, cancellationToken);
     }
 
-    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding,
-        CancellationToken cancellationToken = default)
+    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken)
     {
         await BoxInternalAsync(aggregateIdentifier, encoding, cancellationToken);
     }
@@ -127,7 +125,7 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
     }
 
     private async Task BoxInternalAsync(string aggregateIdentifier, Encoding encoding,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         EventSourcingAggregateDataModel eventSourcingAggregate = _aggregateCache.Get(aggregateIdentifier);
 

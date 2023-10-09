@@ -30,8 +30,7 @@ internal sealed class ChangeTitleCommandHandler : ICommandHandler<ChangeTitleCom
         return CommandResult.Success(post.State);
     }
 
-    public async Task<ICommandResult> HandleAsync(ChangeTitleCommand command,
-        CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(ChangeTitleCommand command, CancellationToken cancellationToken)
     {
         Post post = await _postRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
             cancellationToken);

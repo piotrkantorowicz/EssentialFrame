@@ -31,8 +31,7 @@ internal sealed class AddPostCommentCommandHandler : ICommandHandler<AddPostComm
         return CommandResult.Success(postComment);
     }
 
-    public async Task<ICommandResult> HandleAsync(AddPostCommentCommand command,
-        CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(AddPostCommentCommand command, CancellationToken cancellationToken)
     {
         PostComment postComment = await _postCommentDomainService.CreateNewAsync(
             PostCommentIdentifier.New(command.AggregateIdentifier), PostIdentifier.New(command.PostIdentifier),

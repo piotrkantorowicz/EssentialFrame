@@ -23,5 +23,7 @@ public interface IEventSourcingAggregateRoot<TAggregateIdentifier, TType> : IDel
 
     void Rehydrate(IEnumerable<IDomainEvent<TAggregateIdentifier, TType>> history);
 
-    void RestoreState(object aggregateState, ISerializer serializer = null);
+    void RestoreState(object aggregateState, int version);
+
+    void RestoreState(string aggregateStateString, int version, ISerializer serializer);
 }

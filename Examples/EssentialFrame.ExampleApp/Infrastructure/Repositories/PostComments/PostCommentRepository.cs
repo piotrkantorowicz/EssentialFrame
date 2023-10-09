@@ -23,7 +23,7 @@ internal sealed class PostCommentRepository : IPostCommentRepository
     }
 
     public async Task<PostComment> GetAsync(PostCommentIdentifier postCommentIdentifier,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return await _aggregateRepository.GetAsync(postCommentIdentifier, cancellationToken);
     }
@@ -33,7 +33,7 @@ internal sealed class PostCommentRepository : IPostCommentRepository
         _aggregateRepository.Save(postComment);
     }
 
-    public async Task SaveAsync(PostComment postComment, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(PostComment postComment, CancellationToken cancellationToken)
     {
         await _aggregateRepository.SaveAsync(postComment, cancellationToken);
     }

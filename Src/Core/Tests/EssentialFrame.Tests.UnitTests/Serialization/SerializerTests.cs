@@ -14,7 +14,7 @@ namespace EssentialFrame.Tests.UnitTests.Serialization;
 public class SerializerTests
 {
     private static readonly Faker Faker = new();
-    private readonly ISerializer _serializer = new DefaultJsonSerializer();
+    private readonly ISerializer _serializer = new DefaultJsonSerializer(null);
 
     private readonly ISerializer _customSetupSerializer = new DefaultJsonSerializer(new JsonSerializerOptions
     {

@@ -35,19 +35,10 @@ public sealed class Post : EventSourcingAggregateRoot<PostIdentifier, Guid>
         return PostState.Create(AggregateIdentifier, GetType());
     }
 
-    public override void RestoreState(object aggregateState, ISerializer serializer = null)
+    public override void RestoreState(string aggregateStateString, int version, ISerializer serializer)
     {
-        switch (aggregateState)
-        {
-            case null:
-                return;
-            case string serializedState:
-                State = serializer?.Deserialize<PostState>(serializedState, typeof(PostState));
-                return;
-            default:
-                State = (PostState)aggregateState;
-                break;
-        }
+        State = serializer.Deserialize<PostState>(aggregateStateString, typeof(PostState));
+        AggregateVersion = version;
     }
 
     public void Create(Title title, Description description, Date expirationDate, HashSet<Image> images,

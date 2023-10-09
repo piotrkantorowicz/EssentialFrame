@@ -10,6 +10,5 @@ internal interface IEventSourcingAggregateOfflineStorage
         Encoding encoding);
 
     Task SaveAsync(EventSourcingAggregateDataModel eventSourcingAggregate,
-        IReadOnlyCollection<DomainEventDataModel> events, Encoding encoding,
-        CancellationToken cancellationToken = default);
+        IReadOnlyCollection<DomainEventDataModel> events, Encoding encoding, CancellationToken cancellationToken);
 }

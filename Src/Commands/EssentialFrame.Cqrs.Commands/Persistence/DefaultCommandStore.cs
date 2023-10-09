@@ -19,7 +19,7 @@ internal sealed class DefaultCommandStore : ICommandStore
         return _commandsCache.Exists(commandIdentifier);
     }
 
-    public async Task<bool> ExistsAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(Guid commandIdentifier, CancellationToken cancellationToken)
     {
         return await Task.FromResult(Exists(commandIdentifier));
     }
@@ -29,7 +29,7 @@ internal sealed class DefaultCommandStore : ICommandStore
         return _commandsCache[commandIdentifier];
     }
 
-    public async Task<CommandDataModel> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken = default)
+    public async Task<CommandDataModel> GetAsync(Guid commandIdentifier, CancellationToken cancellationToken)
     {
         return await Task.FromResult(Get(commandIdentifier));
     }
@@ -41,7 +41,7 @@ internal sealed class DefaultCommandStore : ICommandStore
     }
 
     public async Task<IReadOnlyCollection<CommandDataModel>> GetPossibleToSendAsync(DateTimeOffset at,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return await Task.FromResult(GetPossibleToSend(at));
     }
@@ -51,8 +51,7 @@ internal sealed class DefaultCommandStore : ICommandStore
         _commandsCache.Add(commandDataModel.CommandIdentifier, commandDataModel);
     }
 
-    public async Task SaveAsync(CommandDataModel commandDataModel, bool isNew,
-        CancellationToken cancellationToken = default)
+    public async Task SaveAsync(CommandDataModel commandDataModel, bool isNew, CancellationToken cancellationToken)
     {
         Save(commandDataModel, isNew);
 

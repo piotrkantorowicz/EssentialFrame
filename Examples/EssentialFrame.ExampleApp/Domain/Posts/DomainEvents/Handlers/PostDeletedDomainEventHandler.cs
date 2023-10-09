@@ -37,7 +37,7 @@ internal sealed class PostDeletedDomainEventHandler : IEventHandler<PostDeletedD
         }
     }
 
-    public async Task HandleAsync(PostDeletedDomainEvent @event, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(PostDeletedDomainEvent @event, CancellationToken cancellationToken)
     {
         foreach (PostCommentIdentifier postCommentIdentifier in @event.PostCommentIdentifiers)
         {

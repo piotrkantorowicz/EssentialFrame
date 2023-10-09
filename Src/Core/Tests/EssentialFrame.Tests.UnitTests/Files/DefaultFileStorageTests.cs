@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Abstractions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Files;
@@ -14,6 +15,11 @@ namespace EssentialFrame.Tests.UnitTests.Files;
 [TestFixture]
 public class DefaultFileStorageTests
 {
+    private readonly Faker _faker = new();
+    private readonly CancellationToken _cancellationToken = default;
+
+    private Mock<IFileSystem> _fileSystemMock;
+    
     [SetUp]
     public void SetUp()
     {
@@ -25,10 +31,7 @@ public class DefaultFileStorageTests
     {
         _fileSystemMock.Reset();
     }
-
-    private readonly Faker _faker = new();
-    private Mock<IFileSystem> _fileSystemMock;
-
+    
     [Test]
     public void Read_WhenDirectoryExists_ShouldReadFile()
     {
@@ -64,13 +67,13 @@ public class DefaultFileStorageTests
         _fileSystemMock.Setup(x => x.Directory.Exists(directory)).Returns(true);
         _fileSystemMock.Setup(x => x.Path.Combine(directory, fileName)).Returns(filePath);
         _fileSystemMock.Setup(x => x.File.Exists(filePath)).Returns(true);
-        _fileSystemMock.Setup(x => x.File.ReadAllTextAsync(filePath, encoding, default));
+        _fileSystemMock.Setup(x => x.File.ReadAllTextAsync(filePath, encoding, _cancellationToken));
 
         // Act
-        await fileStorage.ReadAsync(directory, fileName, encoding);
+        await fileStorage.ReadAsync(directory, fileName, encoding, _cancellationToken);
 
         // Assert
-        _fileSystemMock.Verify(x => x.File.ReadAllTextAsync(filePath, encoding, default), Times.Once);
+        _fileSystemMock.Verify(x => x.File.ReadAllTextAsync(filePath, encoding, _cancellationToken), Times.Once);
     }
 
     [Test]
@@ -108,10 +111,10 @@ public class DefaultFileStorageTests
         _fileSystemMock.Setup(x => x.Directory.Exists(directory)).Returns(true);
         _fileSystemMock.Setup(x => x.Path.Combine(directory, fileName)).Returns(filePath);
         _fileSystemMock.Setup(x => x.File.Exists(filePath)).Returns(false);
-        _fileSystemMock.Setup(x => x.File.ReadAllTextAsync(filePath, encoding, default));
+        _fileSystemMock.Setup(x => x.File.ReadAllTextAsync(filePath, encoding, _cancellationToken));
 
         // Act
-        Func<Task> action = async () => await fileStorage.ReadAsync(directory, fileName, encoding);
+        Func<Task> action = async () => await fileStorage.ReadAsync(directory, fileName, encoding, _cancellationToken);
 
         // Assert
         await action.Should().ThrowExactlyAsync<FileNotFoundException>().WithMessage($"File not found: {filePath}");
@@ -194,10 +197,11 @@ public class DefaultFileStorageTests
         _fileSystemMock.Setup(x => x.FileInfo.New(filePath)).Returns(fileInfoMock.Object);
 
         // Act
-        IFileInfo fileInfo = await fileStorage.CreateAsync(directory, fileName, contents, encoding);
+        IFileInfo fileInfo = await fileStorage.CreateAsync(directory, fileName, contents, encoding, _cancellationToken);
 
         // Assert
-        _fileSystemMock.Verify(x => x.File.WriteAllTextAsync(filePath, contents, encoding, default), Times.Once);
+        _fileSystemMock.Verify(x => x.File.WriteAllTextAsync(filePath, contents, encoding, _cancellationToken),
+            Times.Once);
 
         fileInfo.Length.Should().Be(contents.Length);
     }
@@ -218,17 +222,18 @@ public class DefaultFileStorageTests
         _fileSystemMock.Setup(x => x.Directory.Exists(directory)).Returns(false);
         _fileSystemMock.Setup(x => x.Path.Combine(directory, fileName)).Returns(filePath);
         _fileSystemMock.Setup(x => x.Directory.CreateDirectory(directory));
-        _fileSystemMock.Setup(x => x.File.WriteAllTextAsync(filePath, contents, encoding, default));
+        _fileSystemMock.Setup(x => x.File.WriteAllTextAsync(filePath, contents, encoding, _cancellationToken));
         _fileSystemMock.Setup(x => x.FileInfo.New(filePath)).Returns(fileInfoMock.Object);
 
         // Act
-        IFileInfo fileInfo = await fileStorage.CreateAsync(directory, fileName, contents, encoding);
+        IFileInfo fileInfo = await fileStorage.CreateAsync(directory, fileName, contents, encoding, _cancellationToken);
 
         // Assert
         _fileSystemMock.Verify(x => x.Directory.Exists(directory), Times.Once);
         _fileSystemMock.Verify(x => x.Path.Combine(directory, fileName), Times.Once);
         _fileSystemMock.Verify(x => x.Directory.CreateDirectory(directory), Times.Once);
-        _fileSystemMock.Verify(x => x.File.WriteAllTextAsync(filePath, contents, encoding, default), Times.Once);
+        _fileSystemMock.Verify(x => x.File.WriteAllTextAsync(filePath, contents, encoding, _cancellationToken),
+            Times.Once);
 
         fileInfo.Length.Should().Be(contents.Length);
     }
@@ -261,7 +266,7 @@ public class DefaultFileStorageTests
         _fileSystemMock.Setup(x => x.File.Delete(filePath));
 
         // Act
-        await fileStorage.DeleteAsync(filePath);
+        await fileStorage.DeleteAsync(filePath, _cancellationToken);
 
         // Assert
         _fileSystemMock.Verify(x => x.File.Delete(filePath), Times.Once);
@@ -295,7 +300,7 @@ public class DefaultFileStorageTests
         _fileSystemMock.Setup(x => x.File.Delete(filePath));
 
         // Act
-        Func<Task> action = async () => await fileStorage.DeleteAsync(filePath);
+        Func<Task> action = async () => await fileStorage.DeleteAsync(filePath, _cancellationToken);
 
         // Assert
         await action.Should().ThrowExactlyAsync<FileNotFoundException>().WithMessage($"File not found: {filePath}");

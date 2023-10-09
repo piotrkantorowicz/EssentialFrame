@@ -42,58 +42,34 @@ internal sealed class
 
     public TAggregate Get(TAggregateIdentifier aggregateIdentifier)
     {
-        return Rehydrate(aggregateIdentifier);
+        return RehydrateInternal(aggregateIdentifier);
     }
 
-    public Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier,
-        CancellationToken cancellationToken = default)
+    public Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken)
     {
-        return RehydrateAsync(aggregateIdentifier, cancellationToken);
+        return RehydrateInternalAsync(aggregateIdentifier, cancellationToken);
     }
 
-    public IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate, int? version = null)
+    public IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate)
     {
-        if (version != null && _eventSourcingAggregateStore.Exists(aggregate.AggregateIdentifier, version.Value))
-        {
-            throw new ConcurrencyException(aggregate.AggregateIdentifier);
-        }
-
-        EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
-        IDomainEvent<TAggregateIdentifier, TType>[] domainEvents = aggregate.FlushUncommittedChanges();
-        IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
-
-        _eventSourcingAggregateStore.Save(eventSourcingAggregateDataModel, domainEventDataModels);
-
-        foreach (IDomainEvent<TAggregateIdentifier, TType> domainEvent in domainEvents)
-        {
-            _domainEventsPublisher.Publish(domainEvent);
-        }
-        
-        return domainEvents;
+        return SaveInternal(aggregate, null);
     }
 
-    public async Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate, int? version = null,
-        CancellationToken cancellationToken = default)
+    public IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate, int version)
     {
-        if (version != null && await _eventSourcingAggregateStore.ExistsAsync(aggregate.AggregateIdentifier,
-                version.Value, cancellationToken))
-        {
-            throw new ConcurrencyException(aggregate.AggregateIdentifier);
-        }
+        return SaveInternal(aggregate, version);
+    }
 
-        EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
-        IDomainEvent<TAggregateIdentifier, TType>[] domainEvents = aggregate.FlushUncommittedChanges();
-        IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
+    public async Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate,
+        CancellationToken cancellationToken)
+    {
+        return await SaveInternalAsync(aggregate, null, cancellationToken);
+    }
 
-        await _eventSourcingAggregateStore.SaveAsync(eventSourcingAggregateDataModel, domainEventDataModels,
-            cancellationToken);
-
-        foreach (IDomainEvent<TAggregateIdentifier, TType> domainEvent in domainEvents)
-        {
-            await _domainEventsPublisher.PublishAsync(domainEvent, cancellationToken);
-        }
-
-        return domainEvents;
+    public async Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate, int version,
+        CancellationToken cancellationToken)
+    {
+        return await SaveInternalAsync(aggregate, version, cancellationToken);
     }
 
     public void Box(TAggregateIdentifier aggregateIdentifier)
@@ -101,12 +77,12 @@ internal sealed class
         _eventSourcingAggregateStore.Box(aggregateIdentifier);
     }
 
-    public async Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken)
     {
         await _eventSourcingAggregateStore.BoxAsync(aggregateIdentifier, cancellationToken);
     }
 
-    private TAggregate Rehydrate(TAggregateIdentifier aggregateIdentifier)
+    private TAggregate RehydrateInternal(TAggregateIdentifier aggregateIdentifier)
     {
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel =
             _eventSourcingAggregateStore.Get(aggregateIdentifier);
@@ -144,8 +120,8 @@ internal sealed class
         return aggregate;
     }
 
-    private async Task<TAggregate> RehydrateAsync(TAggregateIdentifier aggregateIdentifier,
-        CancellationToken cancellationToken = default)
+    private async Task<TAggregate> RehydrateInternalAsync(TAggregateIdentifier aggregateIdentifier,
+        CancellationToken cancellationToken)
     {
         EventSourcingAggregateDataModel eventSourcingAggregateDataModel =
             await _eventSourcingAggregateStore.GetAsync(aggregateIdentifier, cancellationToken);
@@ -181,5 +157,50 @@ internal sealed class
         aggregate.Rehydrate(events);
 
         return aggregate;
+    }
+
+    private IDomainEvent<TAggregateIdentifier, TType>[] SaveInternal(TAggregate aggregate, int? version)
+    {
+        if (version.HasValue && _eventSourcingAggregateStore.Exists(aggregate.AggregateIdentifier, version.Value))
+        {
+            throw new ConcurrencyException(aggregate.AggregateIdentifier);
+        }
+
+        EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
+        IDomainEvent<TAggregateIdentifier, TType>[] domainEvents = aggregate.FlushUncommittedChanges();
+        IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
+
+        _eventSourcingAggregateStore.Save(eventSourcingAggregateDataModel, domainEventDataModels);
+
+        foreach (IDomainEvent<TAggregateIdentifier, TType> domainEvent in domainEvents)
+        {
+            _domainEventsPublisher.Publish(domainEvent);
+        }
+
+        return domainEvents;
+    }
+
+    public async Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveInternalAsync(TAggregate aggregate, int? version,
+        CancellationToken cancellationToken)
+    {
+        if (version.HasValue && await _eventSourcingAggregateStore.ExistsAsync(aggregate.AggregateIdentifier,
+                version.Value, cancellationToken))
+        {
+            throw new ConcurrencyException(aggregate.AggregateIdentifier);
+        }
+
+        EventSourcingAggregateDataModel eventSourcingAggregateDataModel = _eventSourcingAggregateMapper.Map(aggregate);
+        IDomainEvent<TAggregateIdentifier, TType>[] domainEvents = aggregate.FlushUncommittedChanges();
+        IEnumerable<DomainEventDataModel> domainEventDataModels = _domainEventMapper.Map(domainEvents);
+
+        await _eventSourcingAggregateStore.SaveAsync(eventSourcingAggregateDataModel, domainEventDataModels,
+            cancellationToken);
+
+        foreach (IDomainEvent<TAggregateIdentifier, TType> domainEvent in domainEvents)
+        {
+            await _domainEventsPublisher.PublishAsync(domainEvent, cancellationToken);
+        }
+
+        return domainEvents;
     }
 }

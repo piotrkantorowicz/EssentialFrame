@@ -12,16 +12,16 @@ public interface IAggregateRepository<TAggregate, TAggregateIdentifier, TType>
 
     TAggregate Get(TAggregateIdentifier aggregateIdentifier, ISerializer serializer);
 
-    Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken);
 
     Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, ISerializer serializer,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken);
 
     void Save(TAggregate aggregate);
 
-    Task SaveAsync(TAggregate aggregate, CancellationToken cancellationToken = default);
+    Task SaveAsync(TAggregate aggregate, CancellationToken cancellationToken);
 
     void Box(TAggregateIdentifier aggregateIdentifier);
 
-    Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken);
 }

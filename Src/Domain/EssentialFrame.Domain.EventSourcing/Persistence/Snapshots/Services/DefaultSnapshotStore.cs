@@ -24,7 +24,7 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
         return _snapshotCache.Get(aggregateIdentifier);
     }
 
-    public Task<SnapshotDataModel> GetAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
+    public Task<SnapshotDataModel> GetAsync(string aggregateIdentifier, CancellationToken cancellationToken)
     {
         return Task.FromResult(Get(aggregateIdentifier));
     }
@@ -34,7 +34,7 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
         _snapshotCache.Add(snapshot.AggregateIdentifier, snapshot);
     }
 
-    public Task SaveAsync(SnapshotDataModel snapshot, CancellationToken cancellationToken = default)
+    public Task SaveAsync(SnapshotDataModel snapshot, CancellationToken cancellationToken)
     {
         Save(snapshot);
 
@@ -51,13 +51,12 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
         BoxInternal(aggregateIdentifier, encoding);
     }
 
-    public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken)
     {
         await BoxInternalAsync(aggregateIdentifier, null, cancellationToken);
     }
 
-    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding,
-        CancellationToken cancellationToken = default)
+    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken)
     {
         await BoxInternalAsync(aggregateIdentifier, encoding, cancellationToken);
     }
@@ -72,14 +71,13 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
         return _snapshotOfflineStorage.Restore(aggregateIdentifier, encoding);
     }
 
-    public async Task<SnapshotDataModel> UnboxAsync(string aggregateIdentifier,
-        CancellationToken cancellationToken = default)
+    public async Task<SnapshotDataModel> UnboxAsync(string aggregateIdentifier, CancellationToken cancellationToken)
     {
         return await _snapshotOfflineStorage.RestoreAsync(aggregateIdentifier, null, cancellationToken);
     }
 
     public async Task<SnapshotDataModel> UnboxAsync(string aggregateIdentifier, Encoding encoding,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return await _snapshotOfflineStorage.RestoreAsync(aggregateIdentifier, encoding, cancellationToken);
     }
@@ -97,7 +95,7 @@ internal sealed class DefaultSnapshotStore : ISnapshotStore
     }
 
     private async Task BoxInternalAsync(string aggregateIdentifier, Encoding encoding,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         SnapshotDataModel snapshot = _snapshotCache.Get(aggregateIdentifier);
 

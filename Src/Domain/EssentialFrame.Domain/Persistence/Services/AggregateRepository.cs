@@ -63,7 +63,7 @@ internal sealed class
     }
 
     public async Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         AggregateDataModel aggregateDataModel = await _aggregateStore.GetAsync(aggregateIdentifier, cancellationToken);
 
@@ -82,7 +82,7 @@ internal sealed class
     }
 
     public async Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, ISerializer serializer,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         AggregateDataModel aggregateDataModel = await _aggregateStore.GetAsync(aggregateIdentifier, cancellationToken);
 
@@ -112,7 +112,7 @@ internal sealed class
         aggregate.ClearDomainEvents();
     }
 
-    public async Task SaveAsync(TAggregate aggregate, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(TAggregate aggregate, CancellationToken cancellationToken)
     {
         AggregateDataModel aggregateDataModel = _aggregateMapper.Map(aggregate);
 
@@ -133,7 +133,7 @@ internal sealed class
         _aggregateStore.Box(aggregateIdentifier);
     }
 
-    public async Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken)
     {
         await _aggregateStore.BoxAsync(aggregateIdentifier, cancellationToken);
     }

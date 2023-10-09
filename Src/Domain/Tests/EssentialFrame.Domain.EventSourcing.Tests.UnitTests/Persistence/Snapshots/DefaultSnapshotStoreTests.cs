@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Cache.Interfaces;
@@ -21,7 +22,8 @@ namespace EssentialFrame.Domain.EventSourcing.Tests.UnitTests.Persistence.Snapsh
 public class DefaultSnapshotStoreTests
 {
     private readonly Faker _faker = new();
-
+    private readonly CancellationToken _cancellationToken = default;
+    
     private readonly IList<Encoding> _encodings = new List<Encoding>
     {
         Encoding.Default,
@@ -83,7 +85,7 @@ public class DefaultSnapshotStoreTests
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        SnapshotDataModel result = await snapshotStore.GetAsync(aggregateIdentifier);
+        SnapshotDataModel result = await snapshotStore.GetAsync(aggregateIdentifier, _cancellationToken);
 
         // Assert
         result.Should().Be(snapshotDataModel);
@@ -113,7 +115,7 @@ public class DefaultSnapshotStoreTests
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        SnapshotDataModel result = await snapshotStore.GetAsync(aggregateIdentifier);
+        SnapshotDataModel result = await snapshotStore.GetAsync(aggregateIdentifier, _cancellationToken);
 
         // Assert
         result.Should().BeNull();
@@ -143,7 +145,7 @@ public class DefaultSnapshotStoreTests
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        await snapshotStore.SaveAsync(snapshotDataModel);
+        await snapshotStore.SaveAsync(snapshotDataModel, _cancellationToken);
 
         // Assert
         _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshotDataModel), Times.Once);
@@ -175,7 +177,7 @@ public class DefaultSnapshotStoreTests
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        await snapshotStore.SaveAsync(snapshotDataModel);
+        await snapshotStore.SaveAsync(snapshotDataModel, _cancellationToken);
 
         // Assert
         _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshotDataModel), Times.Once);
@@ -207,7 +209,7 @@ public class DefaultSnapshotStoreTests
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        await snapshotStore.SaveAsync(snapshotDataModel);
+        await snapshotStore.SaveAsync(snapshotDataModel, _cancellationToken);
 
         // Assert
         _snapshotCacheMock.Verify(x => x.Add(aggregateIdentifier, snapshotDataModel), Times.Once);
@@ -238,15 +240,16 @@ public class DefaultSnapshotStoreTests
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
         _snapshotCacheMock.Setup(x => x.Get(aggregateIdentifier)).Returns(snapshotDataModel);
-        _snapshotOfflineStorageMock.Setup(x => x.SaveAsync(snapshotDataModel, _encoding, default));
+        _snapshotOfflineStorageMock.Setup(x => x.SaveAsync(snapshotDataModel, _encoding, _cancellationToken));
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        await snapshotStore.BoxAsync(aggregateIdentifier, _encoding);
+        await snapshotStore.BoxAsync(aggregateIdentifier, _encoding, _cancellationToken);
 
         // Assert
         _snapshotCacheMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
-        _snapshotOfflineStorageMock.Verify(x => x.SaveAsync(snapshotDataModel, _encoding, default), Times.Once);
+        _snapshotOfflineStorageMock.Verify(x => x.SaveAsync(snapshotDataModel, _encoding, _cancellationToken),
+            Times.Once);
     }
 
     [Test]
@@ -274,7 +277,7 @@ public class DefaultSnapshotStoreTests
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        Func<Task> act = async () => await snapshotStore.BoxAsync(aggregateIdentifier, _encoding);
+        Func<Task> act = async () => await snapshotStore.BoxAsync(aggregateIdentifier, _encoding, _cancellationToken);
 
         // Assert
         await act.Should().ThrowExactlyAsync<SnapshotBoxingFailedException>().WithMessage(
@@ -304,16 +307,17 @@ public class DefaultSnapshotStoreTests
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
-        _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, _encoding, default))
+        _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, _encoding, _cancellationToken))
             .ReturnsAsync(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        SnapshotDataModel result = await snapshotStore.UnboxAsync(aggregateIdentifier, _encoding);
+        SnapshotDataModel result = await snapshotStore.UnboxAsync(aggregateIdentifier, _encoding, _cancellationToken);
 
         // Assert
         result.Should().BeEquivalentTo(snapshotDataModel);
-        _snapshotOfflineStorageMock.Verify(x => x.RestoreAsync(aggregateIdentifier, _encoding, default), Times.Once);
+        _snapshotOfflineStorageMock.Verify(x => x.RestoreAsync(aggregateIdentifier, _encoding, _cancellationToken),
+            Times.Once);
     }
 
     [Test]
@@ -338,12 +342,12 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, _encoding, default))
+        _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, _encoding, _cancellationToken))
             .Throws(SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier));
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
-        Func<Task> act = async () => await snapshotStore.UnboxAsync(aggregateIdentifier, _encoding);
+        Func<Task> act = async () => await snapshotStore.UnboxAsync(aggregateIdentifier, _encoding, _cancellationToken);
 
         // Assert
         await act.Should().ThrowExactlyAsync<SnapshotUnboxingFailedException>().WithMessage(

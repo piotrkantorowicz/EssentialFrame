@@ -27,6 +27,5 @@ internal interface ICommandRepository
 
     IReadOnlyCollection<ICommand> GetPossibleToSend(DateTimeOffset at);
 
-    Task<IReadOnlyCollection<ICommand>> GetPossibleToSendAsync(DateTimeOffset at,
-        CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<ICommand>> GetPossibleToSendAsync(DateTimeOffset at, CancellationToken cancellationToken);
 }

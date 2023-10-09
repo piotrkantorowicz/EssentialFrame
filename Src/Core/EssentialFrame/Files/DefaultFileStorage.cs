@@ -30,7 +30,7 @@ internal sealed class DefaultFileStorage : IFileStorage
     }
 
     public async Task<string> ReadAsync(string directory, string fileName, Encoding encoding,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         string filePath = CreateFilePath(directory, fileName);
 
@@ -51,7 +51,7 @@ internal sealed class DefaultFileStorage : IFileStorage
     }
 
     public async Task<IFileInfo> CreateAsync(string directory, string fileName, string content, Encoding encoding,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         string filePath = CreateFilePath(directory, fileName);
 
@@ -69,7 +69,7 @@ internal sealed class DefaultFileStorage : IFileStorage
         _fileSystem.File.Delete(filePath);
     }
 
-    public async Task DeleteAsync(string filePath, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(string filePath, CancellationToken cancellationToken)
     {
         Delete(filePath);
 

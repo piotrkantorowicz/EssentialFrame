@@ -32,7 +32,7 @@ internal sealed class
     public EventSourcingAggregateOfflineStorage(IFileStorage fileStorage, IFileSystem fileSystem,
         ILogger<EventSourcingAggregateOfflineStorage<TAggregateIdentifier, TType>> logger,
         IDomainEventMapper<TAggregateIdentifier, TType> domainEventMapper, ISerializer serializer,
-        string offlineStorageDirectory = null)
+        string offlineStorageDirectory)
     {
         _fileStorage = fileStorage ?? throw new ArgumentNullException(nameof(fileStorage));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -78,8 +78,7 @@ internal sealed class
     }
 
     public async Task SaveAsync(EventSourcingAggregateDataModel eventSourcingAggregate,
-        IReadOnlyCollection<DomainEventDataModel> events, Encoding encoding,
-        CancellationToken cancellationToken = default)
+        IReadOnlyCollection<DomainEventDataModel> events, Encoding encoding, CancellationToken cancellationToken)
     {
         try
         {

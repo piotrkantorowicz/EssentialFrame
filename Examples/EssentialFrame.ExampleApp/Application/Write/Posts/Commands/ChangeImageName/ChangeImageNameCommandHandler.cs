@@ -30,8 +30,7 @@ internal sealed class ChangeImageNameCommandHandler : ICommandHandler<ChangeImag
         return CommandResult.Success(post.State);
     }
 
-    public async Task<ICommandResult> HandleAsync(ChangeImageNameCommand command,
-        CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(ChangeImageNameCommand command, CancellationToken cancellationToken)
     {
         Post post = await _postRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
             cancellationToken);
