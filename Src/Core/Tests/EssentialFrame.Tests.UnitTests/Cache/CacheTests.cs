@@ -20,7 +20,7 @@ public class CacheTests
 
     public CacheTests()
     {
-        _cache = new GuidCache<string>(TimerInterval);
+        _cache = new MemoryCache<Guid, string>(TimerInterval);
     }
 
     [Test]

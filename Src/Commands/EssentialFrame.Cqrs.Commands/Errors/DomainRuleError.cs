@@ -4,7 +4,7 @@ namespace EssentialFrame.Cqrs.Commands.Errors;
 
 public class DomainRuleError : ICommandError
 {
-    public DomainRuleError(string message, string brokenRule, IDictionary<string, string> parameters = null)
+    public DomainRuleError(string message, string brokenRule, IDictionary<string, string> parameters)
     {
         Message = message;
         BrokenRule = brokenRule;

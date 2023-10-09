@@ -18,6 +18,8 @@ public static class CommandsRegistration
         ContainerBuilder containerBuilder = essentialFrameBuilder.Builder;
 
         containerBuilder.RegisterType<CommandRepository>().As<ICommandRepository>().InstancePerLifetimeScope();
+        containerBuilder.RegisterType<CommandDataModelService>().As<ICommandDataModelService>().SingleInstance();
+        containerBuilder.RegisterType<CommandMapper>().As<ICommandMapper>().SingleInstance();
 
         return essentialFrameBuilder;
     }
@@ -36,7 +38,7 @@ public static class CommandsRegistration
         return essentialFrameBuilder;
     }
 
-    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddCommandsExecutor(
+    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddDefaultCommandsExecutor(
         this IEssentialFrameBuilder<ContainerBuilder, IContainer> essentialFrameBuilder)
     {
         ContainerBuilder containerBuilder = essentialFrameBuilder.Builder;
@@ -46,7 +48,7 @@ public static class CommandsRegistration
         return essentialFrameBuilder;
     }
 
-    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddCommandsScheduler(
+    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddDefaultCommandsScheduler(
         this IEssentialFrameBuilder<ContainerBuilder, IContainer> essentialFrameBuilder)
     {
         ContainerBuilder containerBuilder = essentialFrameBuilder.Builder;
@@ -56,7 +58,7 @@ public static class CommandsRegistration
         return essentialFrameBuilder;
     }
 
-    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddCommandsBackgroundProcessor(
+    public static IEssentialFrameBuilder<ContainerBuilder, IContainer> AddDefaultCommandsBackgroundProcessor(
         this IEssentialFrameBuilder<ContainerBuilder, IContainer> essentialFrameBuilder, int interval)
     {
         ContainerBuilder containerBuilder = essentialFrameBuilder.Builder;

@@ -30,8 +30,7 @@ internal sealed class RemovePostCommandHandler : ICommandHandler<RemovePostComma
         return CommandResult.Success(postComment);
     }
 
-    public async Task<ICommandResult> HandleAsync(RemovePostCommand command,
-        CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(RemovePostCommand command, CancellationToken cancellationToken)
     {
         PostComment postComment = await _postCommentDomainService.RemoveAsync(
             PostCommentIdentifier.New(command.AggregateIdentifier), DeletedReason.Create(command.Reason),

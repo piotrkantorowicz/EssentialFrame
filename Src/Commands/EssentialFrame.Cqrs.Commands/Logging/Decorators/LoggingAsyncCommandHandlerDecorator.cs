@@ -6,14 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace EssentialFrame.Cqrs.Commands.Logging.Decorators;
 
-public class LoggingAsyncCommandHandlerDecorator<TCommand> : IAsyncCommandHandler<TCommand>
+internal sealed class LoggingAsyncCommandHandlerDecorator<TCommand> : IAsyncCommandHandler<TCommand>
     where TCommand : class, ICommand
 {
     private readonly IAsyncCommandHandler<TCommand> _decorated;
     private readonly ILogger<LoggingAsyncCommandHandlerDecorator<TCommand>> _logger;
     private readonly ISerializer _serializer;
 
-    internal LoggingAsyncCommandHandlerDecorator(ILogger<LoggingAsyncCommandHandlerDecorator<TCommand>> logger,
+    public LoggingAsyncCommandHandlerDecorator(ILogger<LoggingAsyncCommandHandlerDecorator<TCommand>> logger,
         IAsyncCommandHandler<TCommand> decorated, ISerializer serializer)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -21,7 +21,7 @@ public class LoggingAsyncCommandHandlerDecorator<TCommand> : IAsyncCommandHandle
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
     }
 
-    public async Task<ICommandResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(TCommand command, CancellationToken cancellationToken)
     {
         ICommandResult commandResponse;
         EventId executing = LoggingUtils.CommandExecuting;

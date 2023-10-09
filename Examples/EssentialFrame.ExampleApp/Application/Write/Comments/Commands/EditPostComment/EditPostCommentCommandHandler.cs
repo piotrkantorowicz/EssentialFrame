@@ -30,8 +30,7 @@ internal sealed class EditPostCommentCommandHandler : ICommandHandler<EditPostCo
         return CommandResult.Success(postComment);
     }
 
-    public async Task<ICommandResult> HandleAsync(EditPostCommentCommand command,
-        CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(EditPostCommentCommand command, CancellationToken cancellationToken)
     {
         PostComment postComment = await _postCommentDomainService.EditAsync(
             PostCommentIdentifier.New(command.AggregateIdentifier), PostCommentText.Create(command.Comment),

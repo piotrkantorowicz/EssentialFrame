@@ -32,7 +32,7 @@ internal sealed class ExtendedExpirationDateCommandHandler : ICommandHandler<Ext
     }
 
     public async Task<ICommandResult> HandleAsync(ExtendedExpirationDateCommand command,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         Post post = await _postRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
             cancellationToken);

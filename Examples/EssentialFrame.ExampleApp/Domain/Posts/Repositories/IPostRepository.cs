@@ -9,13 +9,13 @@ public interface IPostRepository
 {
     Post Get(PostIdentifier postIdentifier);
 
-    Task<Post> GetAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken = default);
+    Task<Post> GetAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken);
 
     void Save(Post post);
 
-    Task SaveAsync(Post post, CancellationToken cancellationToken = default);
+    Task SaveAsync(Post post, CancellationToken cancellationToken);
 
     void Box(PostIdentifier postIdentifier);
 
-    Task BoxAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken = default);
+    Task BoxAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken);
 }

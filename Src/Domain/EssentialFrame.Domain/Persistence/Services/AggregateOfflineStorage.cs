@@ -1,8 +1,9 @@
 ﻿using System.IO.Abstractions;
+using System.Text;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Persistence.Models;
 using EssentialFrame.Domain.Persistence.Services.Interfaces;
-using EssentialFrame.Files;
+using EssentialFrame.Files.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
     private readonly ISerializer _serializer;
 
     public AggregateOfflineStorage(IFileStorage fileStorage, IFileSystem fileSystem,
-        ILogger<AggregateOfflineStorage> logger, ISerializer serializer, string offlineStorageDirectory = null)
+        ILogger<AggregateOfflineStorage> logger, ISerializer serializer, string offlineStorageDirectory)
     {
         _fileStorage = fileStorage ?? throw new ArgumentNullException(nameof(fileStorage));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -35,7 +36,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         _offlineStorageDirectory = offlineStorageDirectory;
     }
 
-    public void Save(AggregateDataModel aggregate)
+    public void Save(AggregateDataModel aggregate, Encoding encoding)
     {
         try
         {
@@ -44,14 +45,14 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
 
             (string stateContent, string metaDataContent) = CreateFileContents(aggregate);
 
-            IFileInfo stateFileInfo = _fileStorage.Create(aggregateDirectory, StateFileName, stateContent);
+            IFileInfo stateFileInfo = _fileStorage.Create(aggregateDirectory, StateFileName, stateContent, encoding);
 
-            _fileStorage.Create(aggregateDirectory, MetadataFileName, metaDataContent);
+            _fileStorage.Create(aggregateDirectory, MetadataFileName, metaDataContent, encoding);
 
             string indexFileContents =
                 $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{stateFileInfo.Length / 1024} KB,{aggregate.TenantIdentifier}\n";
 
-            _fileStorage.Create(aggregateDirectory, IndexFileName, indexFileContents);
+            _fileStorage.Create(aggregateDirectory, IndexFileName, indexFileContents, encoding);
         }
         catch (Exception exception)
         {
@@ -66,7 +67,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
         }
     }
 
-    public async Task SaveAsync(AggregateDataModel aggregate, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(AggregateDataModel aggregate, Encoding encoding, CancellationToken cancellationToken)
     {
         try
         {
@@ -76,15 +77,16 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
             (string stateContent, string metaDataContent) = CreateFileContents(aggregate);
 
             IFileInfo stateFileInfo = await _fileStorage.CreateAsync(aggregateDirectory, StateFileName, stateContent,
+                encoding,
                 cancellationToken: cancellationToken);
 
-            await _fileStorage.CreateAsync(aggregateDirectory, MetadataFileName, metaDataContent,
+            await _fileStorage.CreateAsync(aggregateDirectory, MetadataFileName, metaDataContent, encoding,
                 cancellationToken: cancellationToken);
 
             string indexFileContents =
                 $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{aggregate},{aggregate.GetType().FullName},{stateFileInfo.Length / 1024} KB,{aggregate.TenantIdentifier}\n";
 
-            await _fileStorage.CreateAsync(aggregateDirectory, IndexFileName, indexFileContents,
+            await _fileStorage.CreateAsync(aggregateDirectory, IndexFileName, indexFileContents, encoding,
                 cancellationToken: cancellationToken);
         }
         catch (Exception exception)

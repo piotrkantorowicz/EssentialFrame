@@ -2,7 +2,7 @@ namespace EssentialFrame.Cqrs.Commands.Core.Interfaces;
 
 public interface IAsyncCommandHandler<in TCommand> : ICommandHandler where TCommand : class, ICommand
 {
-    Task<ICommandResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
+    Task<ICommandResult> HandleAsync(TCommand command, CancellationToken cancellationToken);
 }
 
 public interface ICommandHandler<in TCommand> : ICommandHandler where TCommand : class, ICommand

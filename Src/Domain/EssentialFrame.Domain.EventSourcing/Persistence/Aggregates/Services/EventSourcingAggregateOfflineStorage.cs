@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using System.Text;
 using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
@@ -6,7 +7,7 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interf
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
 using EssentialFrame.Domain.Persistence.Models;
-using EssentialFrame.Files;
+using EssentialFrame.Files.Interfaces;
 using EssentialFrame.Serialization.Interfaces;
 using EssentialFrame.Time;
 using Microsoft.Extensions.Logging;
@@ -31,7 +32,7 @@ internal sealed class
     public EventSourcingAggregateOfflineStorage(IFileStorage fileStorage, IFileSystem fileSystem,
         ILogger<EventSourcingAggregateOfflineStorage<TAggregateIdentifier, TType>> logger,
         IDomainEventMapper<TAggregateIdentifier, TType> domainEventMapper, ISerializer serializer,
-        string offlineStorageDirectory = null)
+        string offlineStorageDirectory)
     {
         _fileStorage = fileStorage ?? throw new ArgumentNullException(nameof(fileStorage));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -46,7 +47,7 @@ internal sealed class
     }
 
     public void Save(EventSourcingAggregateDataModel eventSourcingAggregate,
-        IReadOnlyCollection<DomainEventDataModel> events)
+        IReadOnlyCollection<DomainEventDataModel> events, Encoding encoding)
     {
         try
         {
@@ -55,13 +56,13 @@ internal sealed class
 
             (string eventsContent, string metaDataContent) = CreateFileContents(eventSourcingAggregate, events);
 
-            IFileInfo eventsFileInfo = _fileStorage.Create(aggregateDirectory, EventsFileName, eventsContent);
-            _fileStorage.Create(aggregateDirectory, MetadataFileName, metaDataContent);
+            IFileInfo eventsFileInfo = _fileStorage.Create(aggregateDirectory, EventsFileName, eventsContent, encoding);
+            _fileStorage.Create(aggregateDirectory, MetadataFileName, metaDataContent, encoding);
 
             string indexFileContent =
                 $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{eventSourcingAggregate},{eventSourcingAggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{eventSourcingAggregate.TenantIdentifier}\n";
 
-            _fileStorage.Create(aggregateDirectory, IndexFileName, indexFileContent);
+            _fileStorage.Create(aggregateDirectory, IndexFileName, indexFileContent, encoding);
         }
         catch (Exception exception)
         {
@@ -77,7 +78,7 @@ internal sealed class
     }
 
     public async Task SaveAsync(EventSourcingAggregateDataModel eventSourcingAggregate,
-        IReadOnlyCollection<DomainEventDataModel> events, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<DomainEventDataModel> events, Encoding encoding, CancellationToken cancellationToken)
     {
         try
         {
@@ -87,16 +88,17 @@ internal sealed class
             (string eventsContent, string metaDataContent) = CreateFileContents(eventSourcingAggregate, events);
 
             IFileInfo eventsFileInfo = await _fileStorage.CreateAsync(aggregateDirectory, EventsFileName, eventsContent,
+                encoding,
                 cancellationToken: cancellationToken);
 
-            await _fileStorage.CreateAsync(aggregateDirectory, MetadataFileName, metaDataContent,
-                cancellationToken: cancellationToken);
+            await _fileStorage.CreateAsync(aggregateDirectory, MetadataFileName, metaDataContent, encoding,
+                cancellationToken);
 
             string indexFileContents =
                 $"{SystemClock.Now:yyyy/MM/dd-HH:mm},{eventSourcingAggregate},{eventSourcingAggregate.GetType().FullName},{eventsFileInfo.Length / 1024} KB,{eventSourcingAggregate.TenantIdentifier}\n";
 
-            await _fileStorage.CreateAsync(aggregateDirectory, IndexFileName, indexFileContents,
-                cancellationToken: cancellationToken);
+            await _fileStorage.CreateAsync(aggregateDirectory, IndexFileName, indexFileContents, encoding,
+                cancellationToken);
         }
         catch (Exception exception)
         {

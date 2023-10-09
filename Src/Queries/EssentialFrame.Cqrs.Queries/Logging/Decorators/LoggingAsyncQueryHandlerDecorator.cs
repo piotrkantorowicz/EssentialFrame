@@ -6,14 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace EssentialFrame.Cqrs.Queries.Logging.Decorators;
 
-public class LoggingAsyncQueryHandlerDecorator<TQuery, TResult> : IAsyncQueryHandler<TQuery, TResult>
+internal class LoggingAsyncQueryHandlerDecorator<TQuery, TResult> : IAsyncQueryHandler<TQuery, TResult>
     where TQuery : class, IQuery<TResult> where TResult : IQueryResult<TResult>
 {
     private readonly IAsyncQueryHandler<TQuery, TResult> _decorated;
     private readonly ILogger<LoggingAsyncQueryHandlerDecorator<TQuery, TResult>> _logger;
     private readonly ISerializer _serializer;
 
-    internal LoggingAsyncQueryHandlerDecorator(ILogger<LoggingAsyncQueryHandlerDecorator<TQuery, TResult>> logger,
+    public LoggingAsyncQueryHandlerDecorator(ILogger<LoggingAsyncQueryHandlerDecorator<TQuery, TResult>> logger,
         IAsyncQueryHandler<TQuery, TResult> decorated, ISerializer serializer)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -21,7 +21,7 @@ public class LoggingAsyncQueryHandlerDecorator<TQuery, TResult> : IAsyncQueryHan
         _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
     }
 
-    public async Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken = default)
+    public async Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken)
     {
         TResult queryResponse;
         EventId executing = LoggingUtils.QueryExecuting;

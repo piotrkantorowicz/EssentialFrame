@@ -6,7 +6,7 @@ public interface IAsyncEventHandler<in TDomainEvent, TAggregateIdentifier, TType
     where TDomainEvent : class, IDomainEvent<TAggregateIdentifier, TType>
     where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    Task HandleAsync(TDomainEvent @event, CancellationToken cancellationToken = default);
+    Task HandleAsync(TDomainEvent @event, CancellationToken cancellationToken);
 }
 
 public interface IEventHandler<in TDomainEvent, TAggregateIdentifier, TType> : IEventHandler

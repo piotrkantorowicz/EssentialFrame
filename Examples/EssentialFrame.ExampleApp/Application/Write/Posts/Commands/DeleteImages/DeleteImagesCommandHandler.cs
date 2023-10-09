@@ -29,8 +29,7 @@ internal sealed class DeleteImagesCommandHandler : ICommandHandler<DeleteImagesC
         return CommandResult.Success(post.State);
     }
 
-    public async Task<ICommandResult> HandleAsync(DeleteImagesCommand command,
-        CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(DeleteImagesCommand command, CancellationToken cancellationToken)
     {
         Post post = await _postRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier),
             cancellationToken);

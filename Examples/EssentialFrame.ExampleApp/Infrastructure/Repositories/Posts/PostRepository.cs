@@ -23,7 +23,7 @@ internal sealed class PostRepository : IPostRepository
         return _aggregateRepository.Get(postIdentifier);
     }
 
-    public async Task<Post> GetAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken = default)
+    public async Task<Post> GetAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken)
     {
         return await _aggregateRepository.GetAsync(postIdentifier, cancellationToken);
     }
@@ -33,7 +33,7 @@ internal sealed class PostRepository : IPostRepository
         _aggregateRepository.Save(post);
     }
 
-    public async Task SaveAsync(Post post, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(Post post, CancellationToken cancellationToken)
     {
         await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
     }
@@ -43,7 +43,7 @@ internal sealed class PostRepository : IPostRepository
         _aggregateRepository.Box(postIdentifier);
     }
 
-    public async Task BoxAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken = default)
+    public async Task BoxAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken)
     {
         await _aggregateRepository.BoxAsync(postIdentifier, cancellationToken);
     }

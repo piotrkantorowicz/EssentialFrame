@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
 using EssentialFrame.Domain.Core.Events.Interfaces;
@@ -41,6 +42,7 @@ public class EventSourcingAggregateRepositoryTests
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IEventSourcingAggregateStore> _aggregateStoreMock = new();
     private readonly Mock<IDomainEventsPublisher<PostIdentifier, Guid>> _domainEventsPublisherMock = new();
+    private readonly CancellationToken _cancellationToken = default;
 
     [SetUp]
     public void SetUp()
@@ -213,9 +215,9 @@ public class EventSourcingAggregateRepositoryTests
 
         aggregate.Rehydrate(GenerateDomainEventsCollection(aggregateIdentifier));
 
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, -1, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, -1, _cancellationToken))
             .ReturnsAsync(eventDataModels);
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, _cancellationToken))
             .ReturnsAsync(eventSourcingAggregateDataModel);
         _domainEventMapperMock.Setup(x => x.Map(eventDataModels))
             .Returns(GenerateDomainEventsCollection(aggregateIdentifier));
@@ -225,14 +227,14 @@ public class EventSourcingAggregateRepositoryTests
                 _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
-        Post result = await eventSourcingAggregateRepository.GetAsync(aggregateIdentifier);
+        Post result = await eventSourcingAggregateRepository.GetAsync(aggregateIdentifier, _cancellationToken);
 
         // Assert
         result.Should().BeEquivalentTo(aggregate);
 
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, _cancellationToken), Times.Once);
         _domainEventMapperMock.Verify(x => x.Map(eventDataModels), Times.Once);
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, _cancellationToken), Times.Once);
     }
 
     [Test]
@@ -260,9 +262,9 @@ public class EventSourcingAggregateRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, -1, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, -1, _cancellationToken))
             .ReturnsAsync(eventDataModels);
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, _cancellationToken))
             .ReturnsAsync(eventSourcingAggregateDataModel);
 
         IEventSourcingAggregateRepository<Post, PostIdentifier, Guid> eventSourcingAggregateRepository =
@@ -270,15 +272,15 @@ public class EventSourcingAggregateRepositoryTests
                 _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
-        Func<Task> getAggregateAction =
-            async () => await eventSourcingAggregateRepository.GetAsync(aggregateIdentifier);
+        Func<Task> getAggregateAction = async () =>
+            await eventSourcingAggregateRepository.GetAsync(aggregateIdentifier, _cancellationToken);
 
         // Assert
         await getAggregateAction.Should().ThrowAsync<AggregateDeletedException>().WithMessage(
             $"Unable to get aggregate ({aggregate.GetTypeFullName()}) with id: ({aggregateIdentifier}), because it has been deleted");
 
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, default), Times.Once);
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, _cancellationToken), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, _cancellationToken), Times.Once);
     }
 
     [Test]
@@ -305,9 +307,9 @@ public class EventSourcingAggregateRepositoryTests
 
         aggregate.Rehydrate(events);
 
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, -1, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, -1, _cancellationToken))
             .ReturnsAsync((IReadOnlyCollection<DomainEventDataModel>)null);
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, default))
+        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, _cancellationToken))
             .ReturnsAsync(eventSourcingAggregateDataModel);
 
         IEventSourcingAggregateRepository<Post, PostIdentifier, Guid> eventSourcingAggregateRepository =
@@ -315,15 +317,15 @@ public class EventSourcingAggregateRepositoryTests
                 _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
-        Func<Task> getAggregateAction =
-            async () => await eventSourcingAggregateRepository.GetAsync(aggregateIdentifier);
+        Func<Task> getAggregateAction = async () =>
+            await eventSourcingAggregateRepository.GetAsync(aggregateIdentifier, _cancellationToken);
 
         // Assert
         await getAggregateAction.Should().ThrowAsync<AggregateNotFoundException>().WithMessage(
             $"This aggregate does not exist ({aggregate.GetTypeFullName()} {aggregateIdentifier}) because there are no events for it");
 
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, default), Times.Once);
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, default), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, _cancellationToken), Times.Once);
+        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, _cancellationToken), Times.Once);
     }
 
     [Test]
@@ -449,20 +451,23 @@ public class EventSourcingAggregateRepositoryTests
 
         _aggregateMapperMock.Setup(x => x.Map(aggregate)).Returns(eventSourcingAggregateDataModel);
         _domainEventMapperMock.Setup(x => x.Map(events)).Returns(eventDataModels);
-        _aggregateStoreMock.Setup(x => x.SaveAsync(eventSourcingAggregateDataModel, eventDataModels, default));
+        _aggregateStoreMock.Setup(
+            x => x.SaveAsync(eventSourcingAggregateDataModel, eventDataModels, _cancellationToken));
 
         IEventSourcingAggregateRepository<Post, PostIdentifier, Guid> eventSourcingAggregateRepository =
             new EventSourcingAggregateRepository<Post, PostIdentifier, Guid>(_aggregateStoreMock.Object,
                 _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
 
         // Act
-        IDomainEvent<PostIdentifier, Guid>[] domainEvents = await eventSourcingAggregateRepository.SaveAsync(aggregate);
+        IDomainEvent<PostIdentifier, Guid>[] domainEvents =
+            await eventSourcingAggregateRepository.SaveAsync(aggregate, _cancellationToken);
 
         // Assert
         domainEvents.Should().BeEquivalentTo(events);
         _aggregateMapperMock.Verify(x => x.Map(aggregate), Times.Once());
         _domainEventMapperMock.Verify(x => x.Map(events), Times.Once());
-        _aggregateStoreMock.Verify(x => x.SaveAsync(eventSourcingAggregateDataModel, eventDataModels, default),
+        _aggregateStoreMock.Verify(
+            x => x.SaveAsync(eventSourcingAggregateDataModel, eventDataModels, _cancellationToken),
             Times.Once());
     }
 
@@ -487,7 +492,7 @@ public class EventSourcingAggregateRepositoryTests
         aggregate.ExtendExpirationDate(Date.Create(_faker.Date.FutureOffset()),
             _identityServiceMock.Object.GetCurrent());
 
-        _aggregateStoreMock.Setup(x => x.ExistsAsync(aggregateIdentifier, expectedAggregateVersion, default))
+        _aggregateStoreMock.Setup(x => x.ExistsAsync(aggregateIdentifier, expectedAggregateVersion, _cancellationToken))
             .ReturnsAsync(true);
 
         IEventSourcingAggregateRepository<Post, PostIdentifier, Guid> eventSourcingAggregateRepository =
@@ -496,13 +501,14 @@ public class EventSourcingAggregateRepositoryTests
 
         // Act
         Func<Task> saveAction = async () =>
-            await eventSourcingAggregateRepository.SaveAsync(aggregate, expectedAggregateVersion);
+            await eventSourcingAggregateRepository.SaveAsync(aggregate, expectedAggregateVersion, _cancellationToken);
 
         // Assert
         await saveAction.Should().ThrowAsync<ConcurrencyException>().WithMessage(
             $"A concurrency violation occurred on this aggregate ({aggregateIdentifier}). At least one event failed to save");
 
-        _aggregateStoreMock.Verify(x => x.ExistsAsync(aggregateIdentifier, expectedAggregateVersion, default),
+        _aggregateStoreMock.Verify(
+            x => x.ExistsAsync(aggregateIdentifier, expectedAggregateVersion, _cancellationToken),
             Times.Once);
     }
 

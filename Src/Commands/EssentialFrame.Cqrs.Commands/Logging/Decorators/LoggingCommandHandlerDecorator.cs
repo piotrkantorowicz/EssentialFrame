@@ -6,14 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace EssentialFrame.Cqrs.Commands.Logging.Decorators;
 
-public sealed class LoggingCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand>
+internal sealed class LoggingCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand>
     where TCommand : class, ICommand
 {
     private readonly ICommandHandler<TCommand> _decorated;
     private readonly ILogger<LoggingCommandHandlerDecorator<TCommand>> _logger;
     private readonly ISerializer _serializer;
 
-    internal LoggingCommandHandlerDecorator(ILogger<LoggingCommandHandlerDecorator<TCommand>> logger,
+    public LoggingCommandHandlerDecorator(ILogger<LoggingCommandHandlerDecorator<TCommand>> logger,
         ICommandHandler<TCommand> decorated, ISerializer serializer)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

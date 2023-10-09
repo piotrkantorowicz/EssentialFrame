@@ -15,22 +15,22 @@ public interface IPostCommentDomainService
         PostCommentText text, DomainIdentity domainIdentity);
 
     Task<PostComment> CreateNewAsync(PostCommentIdentifier replyToPostCommentIdentifier, PostIdentifier postIdentifier,
-        PostCommentText text, DomainIdentity domainIdentity, CancellationToken cancellationToken = default);
+        PostCommentText text, DomainIdentity domainIdentity, CancellationToken cancellationToken);
 
     PostComment InReplyTo(PostCommentIdentifier replyToPostCommentIdentifier, PostCommentText text,
         DomainIdentity domainIdentity);
 
     Task<PostComment> InReplyToAsync(PostCommentIdentifier replyToIdentifier, PostCommentText text,
-        DomainIdentity domainIdentity, CancellationToken cancellationToken = default);
+        DomainIdentity domainIdentity, CancellationToken cancellationToken);
 
     PostComment Edit(PostCommentIdentifier postCommentIdentifier, PostCommentText text, DomainIdentity domainIdentity);
 
     Task<PostComment> EditAsync(PostCommentIdentifier postCommentIdentifier, PostCommentText text,
-        DomainIdentity domainIdentity, CancellationToken cancellationToken = default);
+        DomainIdentity domainIdentity, CancellationToken cancellationToken);
 
     PostComment Remove(PostCommentIdentifier postCommentIdentifier, DeletedReason reason,
         DomainIdentity domainIdentity);
 
     Task<PostComment> RemoveAsync(PostCommentIdentifier postCommentIdentifier, DeletedReason reason,
-        DomainIdentity domainIdentity, CancellationToken cancellationToken = default);
+        DomainIdentity domainIdentity, CancellationToken cancellationToken);
 }

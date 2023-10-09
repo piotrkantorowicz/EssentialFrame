@@ -10,14 +10,19 @@ public interface IEventSourcingAggregateRepository<TAggregate, TAggregateIdentif
 {
     TAggregate Get(TAggregateIdentifier aggregateIdentifier);
 
-    Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<TAggregate> GetAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken);
 
-    IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate, int? version = null);
+    IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate);
 
-    Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate, int? version = null,
-        CancellationToken cancellationToken = default);
+    Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate,
+        CancellationToken cancellationToken);
+
+    IDomainEvent<TAggregateIdentifier, TType>[] Save(TAggregate aggregate, int version);
+
+    Task<IDomainEvent<TAggregateIdentifier, TType>[]> SaveAsync(TAggregate aggregate, int version,
+        CancellationToken cancellationToken);
 
     void Box(TAggregateIdentifier aggregateIdentifier);
 
-    Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken);
 }

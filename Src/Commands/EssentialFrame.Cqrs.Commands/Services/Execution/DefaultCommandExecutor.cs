@@ -11,10 +11,12 @@ namespace EssentialFrame.Cqrs.Commands.Services.Execution;
 internal sealed class DefaultCommandExecutor : ICommandExecutor, ICommandScheduler
 {
     private readonly ILifetimeScope _lifetimeScope;
+    private readonly ICommandRepository _commandsRepository;
 
-    public DefaultCommandExecutor(ILifetimeScope lifetimeScope)
+    public DefaultCommandExecutor(ILifetimeScope lifetimeScope, ICommandRepository commandRepository)
     {
         _lifetimeScope = lifetimeScope ?? throw new ArgumentNullException(nameof(lifetimeScope));
+        _commandsRepository = commandRepository ?? throw new ArgumentNullException(nameof(commandRepository));
     }
 
     public ICommandResult Send<TCommand>(TCommand command) where TCommand : class, ICommand
@@ -37,14 +39,13 @@ internal sealed class DefaultCommandExecutor : ICommandExecutor, ICommandSchedul
     public ICommandResult SendAndStore<TCommand>(TCommand command) where TCommand : class, ICommand
     {
         using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
-        ICommandRepository commandStore = GetCommandsRepository(scope);
 
-        commandStore.StartExecution(command);
+        _commandsRepository.StartExecution(command);
 
         ICommandHandler<TCommand> handler = FindHandler<TCommand, ICommandHandler<TCommand>>(command, scope);
         ICommandResult commandResult = handler.Handle(command);
 
-        commandStore.CompleteExecution(command.CommandIdentifier, commandResult.IsSuccess);
+        _commandsRepository.CompleteExecution(command.CommandIdentifier, commandResult.IsSuccess);
 
         return commandResult;
     }
@@ -53,14 +54,13 @@ internal sealed class DefaultCommandExecutor : ICommandExecutor, ICommandSchedul
         CancellationToken cancellationToken = default) where TCommand : class, ICommand
     {
         await using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
-        ICommandRepository commandStore = GetCommandsRepository(scope);
 
-        await commandStore.StartExecutionAsync(command, cancellationToken);
+        await _commandsRepository.StartExecutionAsync(command, cancellationToken);
 
         IAsyncCommandHandler<TCommand> handler = FindHandler<TCommand, IAsyncCommandHandler<TCommand>>(command, scope);
         ICommandResult commandResult = await handler.HandleAsync(command, cancellationToken);
 
-        await commandStore.CompleteExecutionAsync(command.CommandIdentifier, commandResult.IsSuccess,
+        await _commandsRepository.CompleteExecutionAsync(command.CommandIdentifier, commandResult.IsSuccess,
             cancellationToken);
 
         return commandResult;
@@ -69,49 +69,44 @@ internal sealed class DefaultCommandExecutor : ICommandExecutor, ICommandSchedul
     public void Schedule<TCommand>(TCommand command, DateTimeOffset at) where TCommand : class, ICommand
     {
         using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
-        ICommandRepository commandStore = GetCommandsRepository(scope);
 
-        commandStore.ScheduleExecution(command, at);
+        _commandsRepository.ScheduleExecution(command, at);
     }
 
     public void CancelFromSchedule<TCommand>(TCommand command) where TCommand : class, ICommand
     {
         using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
-        ICommandRepository commandStore = GetCommandsRepository(scope);
 
-        commandStore.CancelExecution(command.CommandIdentifier);
+        _commandsRepository.CancelExecution(command.CommandIdentifier);
     }
 
     public async Task ScheduleAsync<TCommand>(TCommand command, DateTimeOffset at,
         CancellationToken cancellationToken = default) where TCommand : class, ICommand
     {
         await using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
-        ICommandRepository commandStore = GetCommandsRepository(scope);
 
-        await commandStore.ScheduleExecutionAsync(command, at, cancellationToken);
+        await _commandsRepository.ScheduleExecutionAsync(command, at, cancellationToken);
     }
 
     public async Task CancelFromScheduleAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
         where TCommand : class, ICommand
     {
         await using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
-        ICommandRepository commandStore = GetCommandsRepository(scope);
 
-        await commandStore.CancelExecutionAsync(command.CommandIdentifier, cancellationToken);
+        await _commandsRepository.CancelExecutionAsync(command.CommandIdentifier, cancellationToken);
     }
 
     public ICommandResult SendAndStore<TCommand>(TCommand command, ISerializer serializer)
         where TCommand : class, ICommand
     {
         using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
-        ICommandRepository commandStore = GetCommandsRepository(scope);
 
-        commandStore.StartExecution(command, serializer);
+        _commandsRepository.StartExecution(command, serializer);
 
         ICommandHandler<TCommand> handler = FindHandler<TCommand, ICommandHandler<TCommand>>(command, scope);
         ICommandResult commandResult = handler.Handle(command);
 
-        commandStore.CompleteExecution(command.CommandIdentifier, commandResult.IsSuccess);
+        _commandsRepository.CompleteExecution(command.CommandIdentifier, commandResult.IsSuccess);
 
         return commandResult;
     }
@@ -120,30 +115,16 @@ internal sealed class DefaultCommandExecutor : ICommandExecutor, ICommandSchedul
         CancellationToken cancellationToken = default) where TCommand : class, ICommand
     {
         await using ILifetimeScope scope = _lifetimeScope.BeginLifetimeScope();
-        ICommandRepository commandStore = GetCommandsRepository(scope);
 
-        await commandStore.StartExecutionAsync(command, serializer, cancellationToken);
+        await _commandsRepository.StartExecutionAsync(command, serializer, cancellationToken);
 
         IAsyncCommandHandler<TCommand> handler = FindHandler<TCommand, IAsyncCommandHandler<TCommand>>(command, scope);
         ICommandResult commandResult = await handler.HandleAsync(command, cancellationToken);
 
-        await commandStore.CompleteExecutionAsync(command.CommandIdentifier, commandResult.IsSuccess,
+        await _commandsRepository.CompleteExecutionAsync(command.CommandIdentifier, commandResult.IsSuccess,
             cancellationToken);
 
         return commandResult;
-    }
-
-    private static ICommandRepository GetCommandsRepository(IComponentContext lifetimeScope)
-    {
-        bool isCommandsRepositoryResolved = lifetimeScope.TryResolve(out ICommandRepository commandsRepository);
-
-        if (!isCommandsRepositoryResolved)
-        {
-            throw new DependencyResolutionException($"Unable to resolve {commandsRepository.GetTypeFullName()}. " +
-                                                    "Most likely it is not properly registered in container");
-        }
-
-        return commandsRepository;
     }
 
     private static THandler FindHandler<TCommand, THandler>(TCommand command, IComponentContext lifetimeScope)

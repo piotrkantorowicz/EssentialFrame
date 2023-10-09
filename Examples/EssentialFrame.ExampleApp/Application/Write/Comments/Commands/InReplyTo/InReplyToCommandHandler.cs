@@ -31,8 +31,7 @@ internal sealed class InReplyToCommandHandler : ICommandHandler<InReplyToCommand
         return CommandResult.Success(postComment);
     }
 
-    public async Task<ICommandResult> HandleAsync(InReplyToCommand command,
-        CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(InReplyToCommand command, CancellationToken cancellationToken)
     {
         PostComment postComment = await _postCommentDomainService.InReplyToAsync(
             PostCommentIdentifier.New(command.AggregateIdentifier), PostCommentText.Create(command.Comment),

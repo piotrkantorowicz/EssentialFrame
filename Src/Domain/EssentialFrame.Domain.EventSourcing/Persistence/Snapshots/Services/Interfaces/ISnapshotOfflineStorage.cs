@@ -1,14 +1,16 @@
-﻿using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
+﻿using System.Text;
+using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services.Interfaces;
 
-public interface ISnapshotOfflineStorage
+internal interface ISnapshotOfflineStorage
 {
-    void Save(SnapshotDataModel snapshot);
+    void Save(SnapshotDataModel snapshot, Encoding encoding);
 
-    Task SaveAsync(SnapshotDataModel snapshot, CancellationToken cancellationToken = default);
+    Task SaveAsync(SnapshotDataModel snapshot, Encoding encoding, CancellationToken cancellationToken);
 
-    SnapshotDataModel Restore(string aggregateIdentifier);
+    SnapshotDataModel Restore(string aggregateIdentifier, Encoding encoding);
 
-    Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier, CancellationToken cancellationToken = default);
+    Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken);
 }

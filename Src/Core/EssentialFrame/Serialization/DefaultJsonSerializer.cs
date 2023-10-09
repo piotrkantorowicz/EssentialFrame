@@ -4,13 +4,13 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Serialization;
 
-public class DefaultJsonSerializer : ISerializer
+public sealed class DefaultJsonSerializer : ISerializer
 {
     private readonly JsonSerializerOptions _serializerOptions;
 
-    public DefaultJsonSerializer(JsonSerializerOptions serializerOptions = null)
+    public DefaultJsonSerializer(JsonSerializerOptions serializerOptions)
     {
-        _serializerOptions = serializerOptions;
+        _serializerOptions = serializerOptions ?? new JsonSerializerOptions();
     }
 
     public T Deserialize<T>(string value)

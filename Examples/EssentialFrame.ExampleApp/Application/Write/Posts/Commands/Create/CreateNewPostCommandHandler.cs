@@ -36,8 +36,7 @@ internal sealed class CreateNewPostCommandHandler : ICommandHandler<CreateNewPos
         return CommandResult.Success(post.State);
     }
 
-    public async Task<ICommandResult> HandleAsync(CreateNewPostCommand command,
-        CancellationToken cancellationToken = default)
+    public async Task<ICommandResult> HandleAsync(CreateNewPostCommand command, CancellationToken cancellationToken)
     {
         Post post = Create(command);
 

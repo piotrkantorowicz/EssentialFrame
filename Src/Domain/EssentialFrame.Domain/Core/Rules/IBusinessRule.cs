@@ -7,6 +7,8 @@ public interface IBusinessRule
     IDictionary<string, object> Parameters { get; }
 
     bool IsBroken();
+    
     void AddExtraParameters();
+    
     string GetDetails();
 }

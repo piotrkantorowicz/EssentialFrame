@@ -90,29 +90,29 @@ public sealed class EventSourcingAggregateRootTests
 
         PostState expectedAggregateState = expectedAggregate.State as PostState;
 
+        _serializerMock.Setup(s => s.Deserialize<PostState>(serializedState, typeof(PostState)))
+            .Returns(expectedAggregateState);
+        
         Post aggregate = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
             aggregateIdentifier,
                 aggregateVersion);
 
-        aggregate.RestoreState(expectedAggregateState);
-
-        _serializerMock.Setup(s => s.Deserialize<PostState>(serializedState, typeof(PostState)))
-            .Returns(expectedAggregateState);
-
         // Act
-        aggregate.RestoreState(serializedState, _serializerMock.Object);
+        aggregate.RestoreState(expectedAggregateState, expectedAggregate.AggregateVersion);
+
+        // Assert
+        PostState aggregateState = (PostState)aggregate.State;
+        AssertState(aggregateState, expectedAggregateState);
+        
+        // Act
+        aggregate.RestoreState(serializedState, expectedAggregate.AggregateVersion, _serializerMock.Object);
 
         // Assert
         aggregate.State.Should().BeOfType(typeof(PostState));
 
-        PostState aggregateState = (PostState)aggregate.State;
-        AssertState(aggregateState, expectedAggregateState);
+        PostState serializedAggregateState = (PostState)aggregate.State;
+        AssertState(serializedAggregateState, expectedAggregateState);
 
-        // Act
-        aggregate.RestoreState(expectedAggregateState);
-
-        // Assert
-        AssertState(aggregateState, expectedAggregateState);
     }
 
     [Test]
@@ -389,7 +389,7 @@ public sealed class EventSourcingAggregateRootTests
             aggregateIdentifier,
                 aggregateVersion);
 
-        aggregate.RestoreState(expectedAggregateState);
+        aggregate.RestoreState(expectedAggregateState, expectedAggregate.AggregateVersion);
 
         await Task.Delay(Defaults.DefaultWaitTime + Defaults.DefaultWaitTimeOffset);
 
@@ -493,7 +493,7 @@ public sealed class EventSourcingAggregateRootTests
             aggregateIdentifier,
                 aggregateVersion);
 
-        aggregate.RestoreState(expectedAggregateState);
+        aggregate.RestoreState(expectedAggregateState, expectedAggregate.AggregateVersion);
 
         Action addImagesAction = () =>
             aggregate.AddImages(
@@ -538,7 +538,7 @@ public sealed class EventSourcingAggregateRootTests
             aggregateIdentifier,
                 aggregateVersion);
 
-        aggregate.RestoreState(expectedAggregateState);
+        aggregate.RestoreState(expectedAggregateState, expectedAggregate.AggregateVersion);
 
         Action addImagesAction = () =>
             aggregate.ChangeImageName(imageId, duplicateImageName, _identityServiceMock.Object.GetCurrent());

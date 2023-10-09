@@ -4,6 +4,7 @@ using System.IO.Abstractions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using EssentialFrame.Files.Interfaces;
 
 namespace EssentialFrame.Files;
 
@@ -16,7 +17,7 @@ internal sealed class DefaultFileStorage : IFileStorage
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 
-    public string Read(string directory, string fileName, Encoding encoding = null)
+    public string Read(string directory, string fileName, Encoding encoding)
     {
         string filePath = CreateFilePath(directory, fileName);
 
@@ -25,11 +26,11 @@ internal sealed class DefaultFileStorage : IFileStorage
             throw new FileNotFoundException($"File not found: {filePath}");
         }
 
-        return _fileSystem.File.ReadAllText(filePath, encoding ?? Encoding.Unicode);
+        return _fileSystem.File.ReadAllText(filePath, encoding);
     }
 
-    public async Task<string> ReadAsync(string directory, string fileName, Encoding encoding = null,
-        CancellationToken cancellationToken = default)
+    public async Task<string> ReadAsync(string directory, string fileName, Encoding encoding,
+        CancellationToken cancellationToken)
     {
         string filePath = CreateFilePath(directory, fileName);
 
@@ -38,23 +39,23 @@ internal sealed class DefaultFileStorage : IFileStorage
             throw new FileNotFoundException($"File not found: {filePath}");
         }
 
-        return await _fileSystem.File.ReadAllTextAsync(filePath, encoding ?? Encoding.Unicode, cancellationToken);
+        return await _fileSystem.File.ReadAllTextAsync(filePath, encoding, cancellationToken);
     }
 
-    public IFileInfo Create(string directory, string fileName, string content, Encoding encoding = null)
+    public IFileInfo Create(string directory, string fileName, string content, Encoding encoding)
     {
         string filePath = CreateFilePath(directory, fileName);
 
-        _fileSystem.File.WriteAllText(filePath, content, encoding ?? Encoding.Unicode);
+        _fileSystem.File.WriteAllText(filePath, content, encoding);
         return _fileSystem.FileInfo.New(filePath);
     }
 
-    public async Task<IFileInfo> CreateAsync(string directory, string fileName, string content,
-        Encoding encoding = null, CancellationToken cancellationToken = default)
+    public async Task<IFileInfo> CreateAsync(string directory, string fileName, string content, Encoding encoding,
+        CancellationToken cancellationToken)
     {
         string filePath = CreateFilePath(directory, fileName);
 
-        await _fileSystem.File.WriteAllTextAsync(filePath, content, encoding ?? Encoding.Unicode, cancellationToken);
+        await _fileSystem.File.WriteAllTextAsync(filePath, content, encoding, cancellationToken);
         return _fileSystem.FileInfo.New(filePath);
     }
 
@@ -68,7 +69,7 @@ internal sealed class DefaultFileStorage : IFileStorage
         _fileSystem.File.Delete(filePath);
     }
 
-    public async Task DeleteAsync(string filePath, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(string filePath, CancellationToken cancellationToken)
     {
         Delete(filePath);
 

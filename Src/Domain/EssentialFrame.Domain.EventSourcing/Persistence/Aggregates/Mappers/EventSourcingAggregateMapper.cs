@@ -5,7 +5,7 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers;
 
-public class
+internal sealed class
     EventSourcingAggregateMapper<TAggregateIdentifier, TType> : IEventSourcingAggregateMapper<TAggregateIdentifier,
         TType> where TAggregateIdentifier : TypedIdentifierBase<TType>
 {

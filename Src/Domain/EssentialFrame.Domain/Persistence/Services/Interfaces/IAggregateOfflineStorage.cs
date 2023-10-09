@@ -1,10 +1,11 @@
-﻿using EssentialFrame.Domain.Persistence.Models;
+﻿using System.Text;
+using EssentialFrame.Domain.Persistence.Models;
 
 namespace EssentialFrame.Domain.Persistence.Services.Interfaces;
 
-public interface IAggregateOfflineStorage
+internal interface IAggregateOfflineStorage
 {
-    void Save(AggregateDataModel aggregate);
+    void Save(AggregateDataModel aggregate, Encoding encoding);
 
-    Task SaveAsync(AggregateDataModel eventSourcingAggregate, CancellationToken cancellationToken = default);
+    Task SaveAsync(AggregateDataModel eventSourcingAggregate, Encoding encoding, CancellationToken cancellationToken);
 }

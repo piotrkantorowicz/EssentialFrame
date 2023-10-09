@@ -5,7 +5,7 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Mappers;
 
-public class SnapshotMapper<TAggregateIdentifier, TType> : ISnapshotMapper<TAggregateIdentifier, TType>
+internal sealed class SnapshotMapper<TAggregateIdentifier, TType> : ISnapshotMapper<TAggregateIdentifier, TType>
     where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     public SnapshotDataModel Map(Snapshot<TAggregateIdentifier, TType> snapshot)

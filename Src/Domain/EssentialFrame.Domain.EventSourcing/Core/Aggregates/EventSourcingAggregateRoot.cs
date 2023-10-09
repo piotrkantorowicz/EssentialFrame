@@ -34,7 +34,7 @@ public abstract class
 
     public TAggregateIdentifier AggregateIdentifier { get; }
 
-    public int AggregateVersion { get; private set; }
+    public int AggregateVersion { get; protected set; }
 
     public TenantIdentifier TenantIdentifier { get; }
 
@@ -45,7 +45,14 @@ public abstract class
     public bool IsDeleted { get; private set; }
 
     public abstract EventSourcingAggregateState<TAggregateIdentifier, TType> CreateState();
-    public abstract void RestoreState(object aggregateState, ISerializer serializer = null);
+
+    public virtual void RestoreState(object aggregateState, int version)
+    {
+        State = (EventSourcingAggregateState<TAggregateIdentifier, TType>)aggregateState;
+        AggregateVersion = version;
+    }
+
+    public abstract void RestoreState(string aggregateStateString, int version, ISerializer serializer);
 
     public void SafeDelete()
     {

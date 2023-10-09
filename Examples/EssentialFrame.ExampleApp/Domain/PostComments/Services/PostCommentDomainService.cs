@@ -40,7 +40,7 @@ public class PostCommentDomainService : DomainService, IPostCommentDomainService
 
     public async Task<PostComment> CreateNewAsync(PostCommentIdentifier replyToPostCommentIdentifier,
         PostIdentifier postIdentifier, PostCommentText text, DomainIdentity domainIdentity,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         PostComment postComment = CreateNewInternal(replyToPostCommentIdentifier, postIdentifier, text, domainIdentity);
 
@@ -65,7 +65,7 @@ public class PostCommentDomainService : DomainService, IPostCommentDomainService
     }
 
     public async Task<PostComment> InReplyToAsync(PostCommentIdentifier replyToIdentifier, PostCommentText text,
-        DomainIdentity domainIdentity, CancellationToken cancellationToken = default)
+        DomainIdentity domainIdentity, CancellationToken cancellationToken)
     {
         PostComment postComment = await _postCommentRepository.GetAsync(replyToIdentifier, cancellationToken);
         PostComment replyPostComment = ReplyInternal(postComment, text, domainIdentity);
@@ -88,7 +88,7 @@ public class PostCommentDomainService : DomainService, IPostCommentDomainService
     }
 
     public async Task<PostComment> EditAsync(PostCommentIdentifier postCommentIdentifier, PostCommentText text,
-        DomainIdentity domainIdentity, CancellationToken cancellationToken = default)
+        DomainIdentity domainIdentity, CancellationToken cancellationToken)
     {
         PostComment postComment = await _postCommentRepository.GetAsync(postCommentIdentifier, cancellationToken);
 
@@ -112,7 +112,7 @@ public class PostCommentDomainService : DomainService, IPostCommentDomainService
     }
 
     public async Task<PostComment> RemoveAsync(PostCommentIdentifier postCommentIdentifier, DeletedReason reason,
-        DomainIdentity domainIdentity, CancellationToken cancellationToken = default)
+        DomainIdentity domainIdentity, CancellationToken cancellationToken)
     {
         PostComment postComment = await _postCommentRepository.GetAsync(postCommentIdentifier, cancellationToken);
 

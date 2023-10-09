@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Cache.Interfaces;
+﻿using System.Text;
+using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.Persistence.Models;
 using EssentialFrame.Domain.Persistence.Services.Interfaces;
 
@@ -23,7 +24,7 @@ internal sealed class DefaultAggregateStore : IAggregateStore
         return _aggregateCache.Exists(aggregateIdentifier);
     }
 
-    public async Task<bool> ExistsAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(string aggregateIdentifier, CancellationToken cancellationToken)
     {
         return await Task.FromResult(_aggregateCache.Exists(aggregateIdentifier));
     }
@@ -33,8 +34,7 @@ internal sealed class DefaultAggregateStore : IAggregateStore
         return _aggregateCache.Get(aggregateIdentifier);
     }
 
-    public async Task<AggregateDataModel> GetAsync(string aggregateIdentifier,
-        CancellationToken cancellationToken = default)
+    public async Task<AggregateDataModel> GetAsync(string aggregateIdentifier, CancellationToken cancellationToken)
     {
         return await Task.FromResult(Get(aggregateIdentifier));
     }
@@ -44,7 +44,7 @@ internal sealed class DefaultAggregateStore : IAggregateStore
         return _aggregateCache.GetMany((_, v) => v.IsDeleted)?.Select(v => v.AggregateIdentifier);
     }
 
-    public async Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken)
     {
         return await Task.FromResult(GetExpired());
     }
@@ -54,7 +54,7 @@ internal sealed class DefaultAggregateStore : IAggregateStore
         _aggregateCache.Add(aggregate.AggregateIdentifier, aggregate);
     }
 
-    public async Task SaveAsync(AggregateDataModel aggregate, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(AggregateDataModel aggregate, CancellationToken cancellationToken)
     {
         Save(aggregate);
 
@@ -65,13 +65,43 @@ internal sealed class DefaultAggregateStore : IAggregateStore
     {
         AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
 
-        _aggregateOfflineStorage.Save(aggregate);
+        _aggregateOfflineStorage.Save(aggregate, Encoding.Unicode);
     }
 
-    public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken = default)
+    public void Box(string aggregateIdentifier, Encoding encoding)
     {
         AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
 
-        await _aggregateOfflineStorage.SaveAsync(aggregate, cancellationToken);
+        _aggregateOfflineStorage.Save(aggregate, encoding);
+    }
+
+    public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken)
+    {
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        await _aggregateOfflineStorage.SaveAsync(aggregate, Encoding.Unicode, cancellationToken);
+    }
+
+    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken)
+    {
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        await _aggregateOfflineStorage.SaveAsync(aggregate, encoding, cancellationToken);
+    }
+
+    private void BoxInternal(string aggregateIdentifier, Encoding encoding)
+    {
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        _aggregateOfflineStorage.Save(aggregate, encoding ?? Encoding.Unicode);
+    }
+
+    private async Task BoxInternalAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken)
+    {
+        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        await _aggregateOfflineStorage.SaveAsync(aggregate, encoding ?? Encoding.Unicode, cancellationToken);
     }
 }
+    
