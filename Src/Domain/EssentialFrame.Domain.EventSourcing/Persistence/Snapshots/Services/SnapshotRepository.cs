@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Cache.Interfaces;
+﻿using System.Text;
+using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
@@ -153,47 +154,45 @@ internal sealed class
 
     public void Box(TAggregate aggregate, bool useSerializer)
     {
-        SnapshotDataModel snapshotDataModel = TakeSnapshot(aggregate, useSerializer, true);
+        BoxInternal(aggregate, Encoding.Unicode, useSerializer);
+    }
 
-        _snapshotStore.Save(snapshotDataModel);
-        _snapshotStore.Box(aggregate.AggregateIdentifier);
-        _eventSourcingAggregateStore.Box(aggregate.AggregateIdentifier);
-        _snapshotsCache.Remove(aggregate.AggregateIdentifier);
+    public void Box(TAggregate aggregate, Encoding encoding, bool useSerializer)
+    {
+        BoxInternal(aggregate, encoding, useSerializer);
     }
 
     public async Task BoxAsync(TAggregate aggregate, bool useSerializer, CancellationToken cancellationToken)
     {
-        SnapshotDataModel snapshotDataModel = TakeSnapshot(aggregate, useSerializer, true);
+        await BoxInternalAsync(aggregate, Encoding.Unicode, useSerializer, cancellationToken);
+    }
 
-        await _snapshotStore.SaveAsync(snapshotDataModel, cancellationToken);
-        await _snapshotStore.BoxAsync(aggregate.AggregateIdentifier, cancellationToken);
-        await _eventSourcingAggregateStore.BoxAsync(aggregate.AggregateIdentifier, cancellationToken);
-        _snapshotsCache.Remove(aggregate.AggregateIdentifier);
+    public async Task BoxAsync(TAggregate aggregate, Encoding encoding, bool useSerializer,
+        CancellationToken cancellationToken)
+    {
+        await BoxInternalAsync(aggregate, encoding, useSerializer, cancellationToken);
     }
 
     public TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, bool useSerializer)
     {
-        SnapshotDataModel snapshotDataModel = _snapshotStore.Unbox(aggregateIdentifier);
-        Snapshot<TAggregateIdentifier, TType> snapshot = _snapshotMapper.Map(snapshotDataModel);
+        return UnboxInternal(aggregateIdentifier, Encoding.Unicode, useSerializer);
+    }
 
-        TAggregate aggregate =
-            EventSourcingGenericAggregateFactory<TAggregate, TAggregateIdentifier, TType>.CreateAggregate(
-                aggregateIdentifier, snapshot.AggregateVersion);
-
-        return RestoreAggregateStateInternal(aggregate, snapshot, useSerializer);
+    public TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, Encoding encoding, bool useSerializer)
+    {
+        return UnboxInternal(aggregateIdentifier, encoding, useSerializer);
     }
 
     public async Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, bool useSerializer,
         CancellationToken cancellationToken)
     {
-        SnapshotDataModel snapshotDataModel = await _snapshotStore.UnboxAsync(aggregateIdentifier, cancellationToken);
-        Snapshot<TAggregateIdentifier, TType> snapshot = _snapshotMapper.Map(snapshotDataModel);
+        return await UnboxInternalAsync(aggregateIdentifier, Encoding.Unicode, useSerializer, cancellationToken);
+    }
 
-        TAggregate aggregate =
-            EventSourcingGenericAggregateFactory<TAggregate, TAggregateIdentifier, TType>.CreateAggregate(
-                aggregateIdentifier, snapshot.AggregateVersion);
-
-        return RestoreAggregateStateInternal(aggregate, snapshot, useSerializer);
+    public async Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, Encoding encoding,
+        bool useSerializer, CancellationToken cancellationToken)
+    {
+        return await UnboxInternalAsync(aggregateIdentifier, encoding, useSerializer, cancellationToken);
     }
 
     private IDomainEvent<TAggregateIdentifier, TType>[] SaveInternal(TAggregate aggregate, int? version, int? timeout)
@@ -225,6 +224,53 @@ internal sealed class
             : await _eventSourcingAggregateRepository.SaveAsync(aggregate, cancellationToken);
     }
 
+    private void BoxInternal(TAggregate aggregate, Encoding encoding, bool useSerializer)
+    {
+        SnapshotDataModel snapshotDataModel = TakeSnapshot(aggregate, useSerializer, true);
+
+        _snapshotStore.Save(snapshotDataModel);
+        _snapshotStore.Box(aggregate.AggregateIdentifier, encoding);
+        _eventSourcingAggregateStore.Box(aggregate.AggregateIdentifier, encoding);
+        _snapshotsCache.Remove(aggregate.AggregateIdentifier);
+    }
+
+    private async Task BoxInternalAsync(TAggregate aggregate, Encoding encoding, bool useSerializer,
+        CancellationToken cancellationToken)
+    {
+        SnapshotDataModel snapshotDataModel = TakeSnapshot(aggregate, useSerializer, true);
+
+        await _snapshotStore.SaveAsync(snapshotDataModel, cancellationToken);
+        await _snapshotStore.BoxAsync(aggregate.AggregateIdentifier, encoding, cancellationToken);
+        await _eventSourcingAggregateStore.BoxAsync(aggregate.AggregateIdentifier, encoding, cancellationToken);
+        _snapshotsCache.Remove(aggregate.AggregateIdentifier);
+    }
+
+    private TAggregate UnboxInternal(TAggregateIdentifier aggregateIdentifier, Encoding encoding, bool useSerializer)
+    {
+        SnapshotDataModel snapshotDataModel = _snapshotStore.Unbox(aggregateIdentifier, encoding);
+        Snapshot<TAggregateIdentifier, TType> snapshot = _snapshotMapper.Map(snapshotDataModel);
+
+        TAggregate aggregate =
+            EventSourcingGenericAggregateFactory<TAggregate, TAggregateIdentifier, TType>.CreateAggregate(
+                aggregateIdentifier, snapshot.AggregateVersion);
+
+        return RestoreAggregateStateInternal(aggregate, snapshot, useSerializer);
+    }
+
+    private async Task<TAggregate> UnboxInternalAsync(TAggregateIdentifier aggregateIdentifier, Encoding encoding,
+        bool useSerializer, CancellationToken cancellationToken)
+    {
+        SnapshotDataModel snapshotDataModel =
+            await _snapshotStore.UnboxAsync(aggregateIdentifier, encoding, cancellationToken);
+        Snapshot<TAggregateIdentifier, TType> snapshot = _snapshotMapper.Map(snapshotDataModel);
+
+        TAggregate aggregate =
+            EventSourcingGenericAggregateFactory<TAggregate, TAggregateIdentifier, TType>.CreateAggregate(
+                aggregateIdentifier, snapshot.AggregateVersion);
+
+        return RestoreAggregateStateInternal(aggregate, snapshot, useSerializer);
+    }
+    
     private int RestoreAggregateFromSnapshot(TAggregateIdentifier aggregateIdentifier, TAggregate aggregate,
         bool useSerializer)
     {

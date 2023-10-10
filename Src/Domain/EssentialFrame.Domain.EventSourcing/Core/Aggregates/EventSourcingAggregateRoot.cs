@@ -3,7 +3,6 @@ using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Serialization.Interfaces;
-using EssentialFrame.Time;
 
 namespace EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 
@@ -40,10 +39,6 @@ public abstract class
 
     public EventSourcingAggregateState<TAggregateIdentifier, TType> State { get; protected set; }
 
-    public DateTimeOffset? DeletedDate { get; private set; }
-
-    public bool IsDeleted { get; private set; }
-
     public abstract EventSourcingAggregateState<TAggregateIdentifier, TType> CreateState();
 
     public virtual void RestoreState(object aggregateState, int version)
@@ -53,18 +48,6 @@ public abstract class
     }
 
     public abstract void RestoreState(string aggregateStateString, int version, ISerializer serializer);
-
-    public void SafeDelete()
-    {
-        DeletedDate = SystemClock.UtcNow;
-        IsDeleted = true;
-    }
-
-    public void UnDelete()
-    {
-        DeletedDate = null;
-        IsDeleted = false;
-    }
 
     public IDomainEvent<TAggregateIdentifier, TType>[] GetUncommittedChanges()
     {

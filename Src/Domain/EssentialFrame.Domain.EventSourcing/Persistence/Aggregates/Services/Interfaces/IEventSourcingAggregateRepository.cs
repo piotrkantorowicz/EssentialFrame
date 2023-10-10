@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Domain.Core.Events.Interfaces;
+﻿using System.Text;
+using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
 
@@ -24,5 +25,18 @@ public interface IEventSourcingAggregateRepository<TAggregate, TAggregateIdentif
 
     void Box(TAggregateIdentifier aggregateIdentifier);
 
+    void Box(TAggregateIdentifier aggregateIdentifier, Encoding encoding);
+
     Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken);
+
+    Task BoxAsync(TAggregateIdentifier aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken);
+
+    TAggregate Unbox(TAggregateIdentifier aggregateIdentifier);
+
+    TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, Encoding encoding);
+
+    Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken);
+
+    Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken);
 }

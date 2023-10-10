@@ -12,6 +12,7 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfa
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Persistence.Mappers;
 using EssentialFrame.Domain.Persistence.Mappers.Interfaces;
 using EssentialFrame.Domain.Persistence.Models;
@@ -37,7 +38,7 @@ namespace EssentialFrame.Domain.EventSourcing.Tests.UnitTests.Persistence.Aggreg
 public class EventSourcingAggregateRepositoryTests
 {
     private readonly Faker _faker = new();
-    private readonly Mock<IEventSourcingAggregateMapper<PostIdentifier, Guid>> _aggregateMapperMock = new();
+    private readonly Mock<IEventSourcingAggregateMapper<Post, PostIdentifier, Guid>> _aggregateMapperMock = new();
     private readonly Mock<IDomainEventMapper<PostIdentifier, Guid>> _domainEventMapperMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
     private readonly Mock<IEventSourcingAggregateStore> _aggregateStoreMock = new();
@@ -75,8 +76,6 @@ public class EventSourcingAggregateRepositoryTests
         {
             AggregateIdentifier = aggregate.AggregateIdentifier,
             AggregateVersion = aggregate.AggregateVersion,
-            DeletedDate = null,
-            IsDeleted = false,
             TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
@@ -105,49 +104,6 @@ public class EventSourcingAggregateRepositoryTests
     }
 
     [Test]
-    public void Get_WhenAggregateHasBeenDeleted_ShouldThrowAggregateDeletedException()
-    {
-        // Arrange
-        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        const int aggregateVersion = 0;
-
-        Post aggregate = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
-            aggregateIdentifier,
-                aggregateVersion);
-
-        EventSourcingAggregateDataModel eventSourcingAggregateDataModel = new()
-        {
-            AggregateIdentifier = aggregate.AggregateIdentifier,
-            AggregateVersion = aggregate.AggregateVersion,
-            DeletedDate = _faker.Date.PastOffset(),
-            IsDeleted = true,
-            TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
-        };
-
-        List<IDomainEvent<PostIdentifier, Guid>> events = GenerateDomainEventsCollection(aggregateIdentifier);
-        List<DomainEventDataModel> eventDataModels = GenerateDomainEventDataModelsCollection(aggregateIdentifier);
-
-        aggregate.Rehydrate(events);
-
-        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier, -1)).Returns(eventDataModels);
-        _aggregateStoreMock.Setup(x => x.Get(aggregateIdentifier)).Returns(eventSourcingAggregateDataModel);
-
-        IEventSourcingAggregateRepository<Post, PostIdentifier, Guid> eventSourcingAggregateRepository =
-            new EventSourcingAggregateRepository<Post, PostIdentifier, Guid>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
-
-        // Act
-        Action getAggregateAction = () => eventSourcingAggregateRepository.Get(aggregateIdentifier);
-
-        // Assert
-        getAggregateAction.Should().Throw<AggregateDeletedException>().WithMessage(
-            $"Unable to get aggregate ({aggregate.GetTypeFullName()}) with id: ({aggregateIdentifier}), because it has been deleted");
-
-        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier, -1), Times.Once);
-        _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
-    }
-
-    [Test]
     public void Get_WhenAggregateEventsNotFound_ShouldThrowAggregateNotFoundException()
     {
         // Arrange
@@ -162,8 +118,6 @@ public class EventSourcingAggregateRepositoryTests
         {
             AggregateIdentifier = aggregate.AggregateIdentifier,
             AggregateVersion = aggregate.AggregateVersion,
-            DeletedDate = null,
-            IsDeleted = false,
             TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
@@ -185,7 +139,7 @@ public class EventSourcingAggregateRepositoryTests
 
         // Assert
         getAggregateAction.Should().Throw<AggregateNotFoundException>().WithMessage(
-            $"This aggregate does not exist ({aggregate.GetTypeFullName()} {aggregateIdentifier}) because there are no events for it");
+            $"Aggregate ({aggregate.GetTypeFullName()}) with identifier: ({aggregateIdentifier}) hasn't been found");
 
         _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier, -1), Times.Once);
         _aggregateStoreMock.Verify(x => x.Get(aggregateIdentifier), Times.Once);
@@ -206,8 +160,6 @@ public class EventSourcingAggregateRepositoryTests
         {
             AggregateIdentifier = aggregate.AggregateIdentifier,
             AggregateVersion = aggregate.AggregateVersion,
-            DeletedDate = null,
-            IsDeleted = false,
             TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
@@ -238,52 +190,6 @@ public class EventSourcingAggregateRepositoryTests
     }
 
     [Test]
-    public async Task GetAsync_WhenAggregateHasBeenDeleted_ShouldThrowAggregateDeletedException()
-    {
-        // Arrange
-        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        const int aggregateVersion = 0;
-
-        Post aggregate = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
-            aggregateIdentifier,
-                aggregateVersion);
-
-        EventSourcingAggregateDataModel eventSourcingAggregateDataModel = new()
-        {
-            AggregateIdentifier = aggregate.AggregateIdentifier,
-            AggregateVersion = aggregate.AggregateVersion,
-            DeletedDate = _faker.Date.PastOffset(),
-            IsDeleted = true,
-            TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
-        };
-
-        List<IDomainEvent<PostIdentifier, Guid>> events = GenerateDomainEventsCollection(aggregateIdentifier);
-        List<DomainEventDataModel> eventDataModels = GenerateDomainEventDataModelsCollection(aggregateIdentifier);
-
-        aggregate.Rehydrate(events);
-
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, -1, _cancellationToken))
-            .ReturnsAsync(eventDataModels);
-        _aggregateStoreMock.Setup(x => x.GetAsync(aggregateIdentifier, _cancellationToken))
-            .ReturnsAsync(eventSourcingAggregateDataModel);
-
-        IEventSourcingAggregateRepository<Post, PostIdentifier, Guid> eventSourcingAggregateRepository =
-            new EventSourcingAggregateRepository<Post, PostIdentifier, Guid>(_aggregateStoreMock.Object,
-                _domainEventMapperMock.Object, _aggregateMapperMock.Object, _domainEventsPublisherMock.Object);
-
-        // Act
-        Func<Task> getAggregateAction = async () =>
-            await eventSourcingAggregateRepository.GetAsync(aggregateIdentifier, _cancellationToken);
-
-        // Assert
-        await getAggregateAction.Should().ThrowAsync<AggregateDeletedException>().WithMessage(
-            $"Unable to get aggregate ({aggregate.GetTypeFullName()}) with id: ({aggregateIdentifier}), because it has been deleted");
-
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, _cancellationToken), Times.Once);
-        _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, _cancellationToken), Times.Once);
-    }
-
-    [Test]
     public async Task GetAsync_WhenAggregateEventsNotFound_ShouldThrowAggregateNotFoundException()
     {
         // Arrange
@@ -298,8 +204,6 @@ public class EventSourcingAggregateRepositoryTests
         {
             AggregateIdentifier = aggregate.AggregateIdentifier,
             AggregateVersion = aggregate.AggregateVersion,
-            DeletedDate = null,
-            IsDeleted = false,
             TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
@@ -322,7 +226,7 @@ public class EventSourcingAggregateRepositoryTests
 
         // Assert
         await getAggregateAction.Should().ThrowAsync<AggregateNotFoundException>().WithMessage(
-            $"This aggregate does not exist ({aggregate.GetTypeFullName()} {aggregateIdentifier}) because there are no events for it");
+            $"Aggregate ({aggregate.GetTypeFullName()}) with identifier: ({aggregateIdentifier}) hasn't been found");
 
         _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, -1, _cancellationToken), Times.Once);
         _aggregateStoreMock.Verify(x => x.GetAsync(aggregateIdentifier, _cancellationToken), Times.Once);
@@ -352,8 +256,6 @@ public class EventSourcingAggregateRepositoryTests
         {
             AggregateIdentifier = aggregate.AggregateIdentifier,
             AggregateVersion = aggregate.AggregateVersion,
-            DeletedDate = null,
-            IsDeleted = false,
             TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 
@@ -440,8 +342,6 @@ public class EventSourcingAggregateRepositoryTests
         {
             AggregateIdentifier = aggregate.AggregateIdentifier,
             AggregateVersion = aggregate.AggregateVersion,
-            DeletedDate = null,
-            IsDeleted = false,
             TenantIdentifier = _identityServiceMock.Object.GetCurrent().Tenant.Identifier
         };
 

@@ -4,9 +4,9 @@ using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Mappers.Interfaces;
 
-public interface IEventSourcingAggregateMapper<TAggregateIdentifier, TType>
+public interface IEventSourcingAggregateMapper<TEventSourcingAggregateRoot, TAggregateIdentifier, TType>
+    where TEventSourcingAggregateRoot : class, IEventSourcingAggregateRoot<TAggregateIdentifier, TType>
     where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    EventSourcingAggregateDataModel Map(
-        IEventSourcingAggregateRoot<TAggregateIdentifier, TType> eventSourcingAggregateRoot);
+    EventSourcingAggregateDataModel Map(TEventSourcingAggregateRoot eventSourcingAggregateRoot);
 }

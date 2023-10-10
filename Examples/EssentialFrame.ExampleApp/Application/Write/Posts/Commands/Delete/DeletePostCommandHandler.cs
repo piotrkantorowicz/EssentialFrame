@@ -23,7 +23,6 @@ internal sealed class DeletePostCommandHandler : ICommandHandler<DeleteCommand>,
         Post post = _postRepository.Get(PostIdentifier.New(command.AggregateIdentifier));
 
         post.Delete(command.PostCommentIdentifiers, command.IdentityContext);
-        post.SafeDelete();
 
         _postRepository.Save(post);
         _postRepository.Box(post.AggregateIdentifier);
@@ -36,7 +35,6 @@ internal sealed class DeletePostCommandHandler : ICommandHandler<DeleteCommand>,
         Post post = await _postRepository.GetAsync(PostIdentifier.New(command.AggregateIdentifier), cancellationToken);
 
         post.Delete(command.PostCommentIdentifiers, command.IdentityContext);
-        post.SafeDelete();
 
         await _postRepository.SaveAsync(post, cancellationToken: cancellationToken);
         await _postRepository.BoxAsync(post.AggregateIdentifier, cancellationToken);

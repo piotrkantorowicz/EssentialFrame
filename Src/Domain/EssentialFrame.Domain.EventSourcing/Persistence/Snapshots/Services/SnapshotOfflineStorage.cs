@@ -33,6 +33,66 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         _offlineStorageDirectory = offlineStorageDirectory;
     }
 
+    public SnapshotDataModel Get(string aggregateIdentifier, Encoding encoding)
+    {
+        try
+        {
+            string aggregateState = _fileStorage.Read(
+                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), SnapshotFilename, encoding);
+
+            if (aggregateState is null)
+            {
+                throw SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier);
+            }
+
+            return new SnapshotDataModel
+            {
+                AggregateIdentifier = aggregateIdentifier, AggregateVersion = 1, AggregateState = aggregateState
+            };
+        }
+        catch (Exception exception)
+        {
+            SnapshotUnboxingFailedException aggregateBoxingException =
+                SnapshotUnboxingFailedException.Unexpected(aggregateIdentifier, exception);
+
+            _logger.LogError(aggregateBoxingException,
+                "Failed to save aggregate {AggregateIdentifier} to offline storage", aggregateIdentifier);
+
+            throw aggregateBoxingException;
+        }
+    }
+
+    public async Task<SnapshotDataModel> GetAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            string aggregateState = await _fileStorage.ReadAsync(
+                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), SnapshotFilename, encoding,
+                cancellationToken: cancellationToken);
+
+            if (aggregateState is null)
+            {
+                throw SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier);
+            }
+
+            return new SnapshotDataModel
+            {
+                AggregateIdentifier = aggregateIdentifier, AggregateVersion = 1, AggregateState = aggregateState
+            };
+        }
+        catch (Exception exception)
+        {
+            SnapshotUnboxingFailedException aggregateBoxingException =
+                SnapshotUnboxingFailedException.Unexpected(aggregateIdentifier, exception);
+
+            _logger.LogError(aggregateBoxingException,
+                "Failed to save aggregate {AggregateIdentifier} to offline storage", aggregateIdentifier);
+
+            throw aggregateBoxingException;
+        }
+    }
+
     public void Save(SnapshotDataModel snapshot, Encoding encoding)
     {
         try
@@ -80,65 +140,7 @@ internal sealed class SnapshotOfflineStorage : ISnapshotOfflineStorage
         }
     }
 
-    public SnapshotDataModel Restore(string aggregateIdentifier, Encoding encoding)
-    {
-        try
-        {
-            string aggregateState = _fileStorage.Read(
-                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), SnapshotFilename, encoding);
 
-            if (aggregateState is null)
-            {
-                throw SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier);
-            }
-
-            return new SnapshotDataModel
-            {
-                AggregateIdentifier = aggregateIdentifier, AggregateVersion = 1, AggregateState = aggregateState
-            };
-        }
-        catch (Exception exception)
-        {
-            SnapshotUnboxingFailedException aggregateBoxingException =
-                SnapshotUnboxingFailedException.Unexpected(aggregateIdentifier, exception);
-
-            _logger.LogError(aggregateBoxingException,
-                "Failed to save aggregate {AggregateIdentifier} to offline storage", aggregateIdentifier);
-
-            throw aggregateBoxingException;
-        }
-    }
-
-    public async Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier, Encoding encoding,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            string aggregateState = await _fileStorage.ReadAsync(
-                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), SnapshotFilename, encoding,
-                cancellationToken: cancellationToken);
-
-            if (aggregateState is null)
-            {
-                throw SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier);
-            }
-
-            return new SnapshotDataModel
-            {
-                AggregateIdentifier = aggregateIdentifier, AggregateVersion = 1, AggregateState = aggregateState
-            };
-        }
-        catch (Exception exception)
-        {
-            SnapshotUnboxingFailedException aggregateBoxingException =
-                SnapshotUnboxingFailedException.Unexpected(aggregateIdentifier, exception);
-
-            _logger.LogError(aggregateBoxingException,
-                "Failed to save aggregate {AggregateIdentifier} to offline storage", aggregateIdentifier);
-
-            throw aggregateBoxingException;
-        }
-    }
 
     private string GetSerializedState(SnapshotDataModel snapshot)
     {

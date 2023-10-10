@@ -2,6 +2,7 @@ using System.Text;
 using EssentialFrame.Cache.Interfaces;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Models;
 using EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services.Interfaces;
+using EssentialFrame.Domain.Exceptions;
 using EssentialFrame.Domain.Persistence.Models;
 
 namespace EssentialFrame.Domain.EventSourcing.Persistence.Aggregates.Services;
@@ -18,6 +19,7 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
     {
         _eventsCache = eventsCache ?? throw new ArgumentNullException(nameof(eventsCache));
         _aggregateCache = aggregateCache ?? throw new ArgumentNullException(nameof(aggregateCache));
+        
         _eventSourcingAggregateOfflineStorage = eventSourcingAggregateOfflineStorage ??
                                                 throw new ArgumentNullException(
                                                     nameof(eventSourcingAggregateOfflineStorage));
@@ -67,16 +69,6 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
         return await Task.FromResult(Get(aggregateIdentifier, version));
     }
 
-    public IEnumerable<string> GetExpired()
-    {
-        return _aggregateCache.GetMany((_, v) => v.IsDeleted)?.Select(v => v.AggregateIdentifier);
-    }
-
-    public async Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken)
-    {
-        return await Task.FromResult(GetExpired());
-    }
-
     public void Save(EventSourcingAggregateDataModel eventSourcingAggregate, IEnumerable<DomainEventDataModel> events)
     {
         IEnumerable<KeyValuePair<Guid, DomainEventDataModel>> domainEventDataModels =
@@ -94,37 +86,24 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
         await Task.CompletedTask;
     }
 
-    public void Box(string aggregateIdentifier)
-    {
-        BoxInternal(aggregateIdentifier, null);
-    }
-
     public void Box(string aggregateIdentifier, Encoding encoding)
     {
-        BoxInternal(aggregateIdentifier, encoding);
-    }
-
-    public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken)
-    {
-        await BoxInternalAsync(aggregateIdentifier, null, cancellationToken);
-    }
-
-    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken)
-    {
-        await BoxInternalAsync(aggregateIdentifier, encoding, cancellationToken);
-    }
-
-    private void BoxInternal(string aggregateIdentifier, Encoding encoding)
-    {
         EventSourcingAggregateDataModel eventSourcingAggregate = _aggregateCache.Get(aggregateIdentifier);
+
+        if (eventSourcingAggregate is null)
+        {
+            throw new AggregateNotFoundException(typeof(EventSourcingAggregateDataModel), aggregateIdentifier);
+        }
 
         IReadOnlyCollection<DomainEventDataModel> events =
             _eventsCache.GetMany((_, v) => v.AggregateIdentifier == aggregateIdentifier);
 
+        
+        
         _eventSourcingAggregateOfflineStorage.Save(eventSourcingAggregate, events, encoding ?? Encoding.Unicode);
     }
 
-    private async Task BoxInternalAsync(string aggregateIdentifier, Encoding encoding,
+    public async Task BoxAsync(string aggregateIdentifier, Encoding encoding,
         CancellationToken cancellationToken)
     {
         EventSourcingAggregateDataModel eventSourcingAggregate = _aggregateCache.Get(aggregateIdentifier);
@@ -134,5 +113,16 @@ internal sealed class DefaultEventSourcingAggregateStore : IEventSourcingAggrega
 
         await _eventSourcingAggregateOfflineStorage.SaveAsync(eventSourcingAggregate, events,
             encoding ?? Encoding.Unicode, cancellationToken);
+    }
+
+    public EventSourcingAggregateWithEventsModel Unbox(string aggregateIdentifier, Encoding encoding)
+    {
+        return _eventSourcingAggregateOfflineStorage.Get(aggregateIdentifier, encoding);
+    }
+
+    public async Task<EventSourcingAggregateWithEventsModel> UnboxAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken)
+    {
+        return await _eventSourcingAggregateOfflineStorage.GetAsync(aggregateIdentifier, encoding, cancellationToken);
     }
 }

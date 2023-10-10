@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Domain.Core.Aggregates;
+﻿using System.Text;
+using EssentialFrame.Domain.Core.Aggregates;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Serialization.Interfaces;
 
@@ -23,5 +24,18 @@ public interface IAggregateRepository<TAggregate, TAggregateIdentifier, TType>
 
     void Box(TAggregateIdentifier aggregateIdentifier);
 
+    void Box(TAggregateIdentifier aggregateIdentifier, Encoding encoding);
+
     Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken);
+
+    Task BoxAsync(TAggregateIdentifier aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken);
+
+    TAggregate Unbox(TAggregateIdentifier aggregateIdentifier);
+
+    TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, Encoding encoding);
+
+    Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken);
+
+    Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken);
 }

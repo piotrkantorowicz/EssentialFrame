@@ -13,19 +13,16 @@ public interface IAggregateStore
 
     Task<AggregateDataModel> GetAsync(string aggregateIdentifier, CancellationToken cancellationToke);
 
-    IEnumerable<string> GetExpired();
-
-    Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken);
-
     void Save(AggregateDataModel aggregate);
 
     Task SaveAsync(AggregateDataModel aggregate, CancellationToken cancellationToken);
 
-    void Box(string aggregateIdentifier);
-
     void Box(string aggregateIdentifier, Encoding encoding);
 
-    Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken);
-
     Task BoxAsync(string aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken);
+
+    AggregateDataModel Unbox(string aggregateIdentifier, Encoding encoding);
+
+    Task<AggregateDataModel> UnboxAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken);
 }

@@ -5,9 +5,15 @@ using EssentialFrame.Serialization.Interfaces;
 
 namespace EssentialFrame.Domain.Persistence.Mappers.Interfaces;
 
-public interface IAggregateMapper<TAggregateIdentifier, TType> where TAggregateIdentifier : TypedIdentifierBase<TType>
+public interface IAggregateMapper<TAggregateRoot, TAggregateIdentifier, TType>
+    where TAggregateRoot : class, IAggregateRoot<TAggregateIdentifier, TType>
+    where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
-    AggregateDataModel Map(IAggregateRoot<TAggregateIdentifier, TType> aggregate);
+    AggregateDataModel Map(TAggregateRoot aggregate);
 
-    AggregateDataModel Map(IAggregateRoot<TAggregateIdentifier, TType> aggregate, ISerializer serializer);
+    AggregateDataModel Map(TAggregateRoot aggregate, ISerializer serializer);
+
+    TAggregateRoot Map(AggregateDataModel aggregate);
+
+    TAggregateRoot Map(AggregateDataModel aggregate, ISerializer serializer);
 }

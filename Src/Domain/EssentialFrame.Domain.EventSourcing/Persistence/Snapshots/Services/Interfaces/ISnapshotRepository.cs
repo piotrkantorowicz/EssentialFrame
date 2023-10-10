@@ -1,3 +1,4 @@
+using System.Text;
 using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 using EssentialFrame.Domain.EventSourcing.Core.Aggregates;
@@ -30,11 +31,20 @@ public interface ISnapshotRepository<TAggregate, TAggregateIdentifier, TType>
 
     void Box(TAggregate aggregate, bool useSerializer);
 
+    void Box(TAggregate aggregate, Encoding encoding, bool useSerializer);
+    
     Task BoxAsync(TAggregate aggregate, bool useSerializer, CancellationToken cancellationToken);
 
+    Task BoxAsync(TAggregate aggregate, Encoding encoding, bool useSerializer, CancellationToken cancellationToken);
+    
     TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, bool useSerializer);
 
+    TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, Encoding encoding, bool useSerializer);
+
     Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, bool useSerializer,
+        CancellationToken cancellationToken);
+
+    Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, Encoding encoding, bool useSerializer,
         CancellationToken cancellationToken);
     
 }

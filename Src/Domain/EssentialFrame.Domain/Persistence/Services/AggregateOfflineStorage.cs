@@ -15,6 +15,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
     private const string StateFileName = "state.json";
     private const string MetadataFileName = "metadata.txt";
     private const string IndexFileName = "boxes.csv";
+    private const int MetaDataPropertiesLength = 6;
 
     private readonly IFileStorage _fileStorage;
     private readonly IFileSystem _fileSystem;
@@ -34,6 +35,107 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
             "EssentialFrame", "OfflineStorage", "Aggregates");
 
         _offlineStorageDirectory = offlineStorageDirectory;
+    }
+
+    public AggregateDataModel Get(string aggregateIdentifier, Encoding encoding)
+    {
+        try
+        {
+            string metaData = _fileStorage.Read(_fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier),
+                MetadataFileName, encoding);
+
+            if (metaData is null)
+            {
+                throw new AggregateUnboxingFailedException(aggregateIdentifier);
+            }
+
+            Dictionary<string, string> metaDataDictionary =
+                _serializer.Deserialize<Dictionary<string, string>>(metaData, typeof(Dictionary<string, string>));
+
+            if (metaDataDictionary.Count < MetaDataPropertiesLength)
+            {
+                throw new AggregateUnboxingFailedException(aggregateIdentifier);
+            }
+
+            string state = _fileStorage.Read(_fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier),
+                StateFileName, encoding);
+
+            if (state is null)
+            {
+                throw new AggregateUnboxingFailedException(aggregateIdentifier);
+            }
+
+            return new AggregateDataModel
+            {
+                AggregateIdentifier = metaDataDictionary["AggregateIdentifier"],
+                TenantIdentifier =
+                    Guid.TryParse(metaDataDictionary["TenantIdentifier"], out Guid tenantIdentifier)
+                        ? tenantIdentifier
+                        : Guid.Empty,
+                State = _serializer.Deserialize(state, typeof(object))
+            };
+        }
+        catch (Exception exception)
+        {
+            AggregateUnboxingFailedException aggregateBoxingException = new(aggregateIdentifier, exception);
+
+            _logger.LogError(aggregateBoxingException,
+                "Failed to save aggregate with id: {AggregateIdentifier} to offline storage", aggregateIdentifier);
+
+            throw aggregateBoxingException;
+        }
+    }
+
+    public async Task<AggregateDataModel> GetAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            string metaData = await _fileStorage.ReadAsync(
+                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), MetadataFileName, encoding,
+                cancellationToken);
+
+            if (metaData is null)
+            {
+                throw new AggregateUnboxingFailedException(aggregateIdentifier);
+            }
+
+            Dictionary<string, string> metaDataDictionary =
+                _serializer.Deserialize<Dictionary<string, string>>(metaData, typeof(Dictionary<string, string>));
+
+            if (metaDataDictionary.Count < MetaDataPropertiesLength)
+            {
+                throw new AggregateUnboxingFailedException(aggregateIdentifier);
+            }
+
+            string state = await _fileStorage.ReadAsync(
+                _fileSystem.Path.Combine(_offlineStorageDirectory, aggregateIdentifier), StateFileName, encoding,
+                cancellationToken);
+
+            if (state is null)
+            {
+                throw new AggregateUnboxingFailedException(aggregateIdentifier);
+            }
+
+            return new AggregateDataModel
+            {
+                AggregateIdentifier = metaDataDictionary["AggregateIdentifier"],
+                TenantIdentifier =
+                    Guid.TryParse(metaDataDictionary["TenantIdentifier"], out Guid tenantIdentifier)
+                        ? tenantIdentifier
+                        : Guid.Empty,
+                State = _serializer.Deserialize(state, typeof(object))
+            };
+        }
+        catch (Exception exception)
+        {
+            AggregateUnboxingFailedException aggregateBoxingException = new(aggregateIdentifier, exception);
+
+            _logger.LogError(aggregateBoxingException,
+                "Failed to save aggregate with id: {AggregateIdentifier} to offline storage", aggregateIdentifier);
+
+            throw aggregateBoxingException;
+        }
     }
 
     public void Save(AggregateDataModel aggregate, Encoding encoding)
@@ -77,8 +179,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
             (string stateContent, string metaDataContent) = CreateFileContents(aggregate);
 
             IFileInfo stateFileInfo = await _fileStorage.CreateAsync(aggregateDirectory, StateFileName, stateContent,
-                encoding,
-                cancellationToken: cancellationToken);
+                encoding, cancellationToken);
 
             await _fileStorage.CreateAsync(aggregateDirectory, MetadataFileName, metaDataContent, encoding,
                 cancellationToken: cancellationToken);
@@ -110,6 +211,7 @@ internal sealed class AggregateOfflineStorage : IAggregateOfflineStorage
             { "AggregateIdentifier", aggregate.AggregateIdentifier },
             { "AggregateType", aggregate.GetType().FullName },
             { "State", _serializer.Serialize(aggregateState) },
+            { "TenantIdentifier", aggregate.TenantIdentifier.ToString() },
             { "Local Date/Time Boxed", $"{SystemClock.Now:dddd, MMMM d, yyyy HH:mm} Local" },
             { "Utc Date/Time Boxed", $"{SystemClock.UtcNow:dddd, MMMM d, yyyy HH:mm}" }
         };

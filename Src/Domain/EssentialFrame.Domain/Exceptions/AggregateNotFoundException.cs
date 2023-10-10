@@ -3,9 +3,9 @@
 namespace EssentialFrame.Domain.Exceptions;
 
 [Serializable]
-public class AggregateHasNotFoundException : EssentialFrameException
+public class AggregateNotFoundException : EssentialFrameException
 {
-    public AggregateHasNotFoundException(Type aggregateType, string aggregateIdentifier) : base(
+    public AggregateNotFoundException(Type aggregateType, string aggregateIdentifier) : base(
         $"Aggregate ({aggregateType.FullName}) with identifier: ({aggregateIdentifier}) hasn't been found")
     {
     }

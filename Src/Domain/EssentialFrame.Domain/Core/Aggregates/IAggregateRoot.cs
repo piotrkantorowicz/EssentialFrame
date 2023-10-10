@@ -1,12 +1,10 @@
 ﻿using EssentialFrame.Domain.Core.Events.Interfaces;
-using EssentialFrame.Domain.Core.Shared;
 using EssentialFrame.Domain.Core.ValueObjects;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
 
 namespace EssentialFrame.Domain.Core.Aggregates;
 
-public interface IAggregateRoot<TAggregateIdentifier, TType> : IDeletableDomainObject
-    where TAggregateIdentifier : TypedIdentifierBase<TType>
+public interface IAggregateRoot<TAggregateIdentifier, TType> where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     TAggregateIdentifier AggregateIdentifier { get; }
 
