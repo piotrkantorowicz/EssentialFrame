@@ -38,6 +38,16 @@ internal sealed class PostRepository : IPostRepository
         await _aggregateRepository.SaveAsync(post, cancellationToken: cancellationToken);
     }
 
+    public Post Unbox(PostIdentifier postIdentifier)
+    {
+        return _aggregateRepository.Unbox(postIdentifier);
+    }
+
+    public async Task<Post> UnboxAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken)
+    {
+        return await _aggregateRepository.UnboxAsync(postIdentifier, cancellationToken);
+    }
+
     public void Box(PostIdentifier postIdentifier)
     {
         _aggregateRepository.Box(postIdentifier);

@@ -7,8 +7,4 @@ public class EventSourcingAggregateDataModel
     public virtual Guid? TenantIdentifier { get; set; }
 
     public virtual int AggregateVersion { get; set; }
-
-    public virtual DateTimeOffset? DeletedDate { get; set; }
-
-    public virtual bool IsDeleted { get; set; }
 }

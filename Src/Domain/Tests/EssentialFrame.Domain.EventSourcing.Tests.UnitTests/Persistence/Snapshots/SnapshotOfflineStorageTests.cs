@@ -329,7 +329,7 @@ public class SnapshotOfflineStorageTests
         _fileStorageMock.Setup(x => x.Read(directoryPath, It.IsAny<string>(), _encoding)).Returns(serializedState);
 
         // Act
-        SnapshotDataModel snapshot = snapShotOfflineStorage.Restore(_snapshotDataModel.AggregateIdentifier, _encoding);
+        SnapshotDataModel snapshot = snapShotOfflineStorage.Get(_snapshotDataModel.AggregateIdentifier, _encoding);
 
         // Assert
         snapshot.AggregateIdentifier.Should().Be(_snapshotDataModel.AggregateIdentifier);
@@ -355,7 +355,7 @@ public class SnapshotOfflineStorageTests
             .ReturnsAsync(serializedState);
 
         // Act
-        SnapshotDataModel snapshot = await snapShotOfflineStorage.RestoreAsync(_snapshotDataModel.AggregateIdentifier,
+        SnapshotDataModel snapshot = await snapShotOfflineStorage.GetAsync(_snapshotDataModel.AggregateIdentifier,
             _encoding, _cancellationToken);
 
         // Assert
@@ -383,7 +383,7 @@ public class SnapshotOfflineStorageTests
         _fileStorageMock.Setup(x => x.Read(directoryPath, It.IsAny<string>(), _encoding)).Returns(serializedState);
 
         // Act
-        SnapshotDataModel snapshot = snapShotOfflineStorage.Restore(_snapshotDataModel.AggregateIdentifier, _encoding);
+        SnapshotDataModel snapshot = snapShotOfflineStorage.Get(_snapshotDataModel.AggregateIdentifier, _encoding);
 
         // Assert
         snapshot.AggregateIdentifier.Should().Be(_snapshotDataModel.AggregateIdentifier);
@@ -412,7 +412,7 @@ public class SnapshotOfflineStorageTests
 
         // Act
         SnapshotDataModel snapshot = snapShotOfflineStorage
-            .RestoreAsync(_snapshotDataModel.AggregateIdentifier, _encoding, _cancellationToken)
+            .GetAsync(_snapshotDataModel.AggregateIdentifier, _encoding, _cancellationToken)
             .GetAwaiter().GetResult();
 
         // Assert
@@ -442,7 +442,7 @@ public class SnapshotOfflineStorageTests
         _fileStorageMock.Setup(x => x.Read(directoryPath, It.IsAny<string>(), _encoding)).Throws(fileNotFoundException);
 
         // Act
-        Action action = () => snapShotOfflineStorage.Restore(_snapshotDataModel.AggregateIdentifier, _encoding);
+        Action action = () => snapShotOfflineStorage.Get(_snapshotDataModel.AggregateIdentifier, _encoding);
 
         // Assert
         action.Should().ThrowExactly<SnapshotUnboxingFailedException>().WithMessage(
@@ -472,8 +472,8 @@ public class SnapshotOfflineStorageTests
             .Throws(fileNotFoundException);
 
         // Act
-        Func<Task> action = async () =>
-            await snapShotOfflineStorage.RestoreAsync(_snapshotDataModel.AggregateIdentifier, _encoding,
+        Func<Task> action = async () => await snapShotOfflineStorage.GetAsync(_snapshotDataModel.AggregateIdentifier,
+            _encoding,
                 _cancellationToken);
 
         // Assert
@@ -501,7 +501,7 @@ public class SnapshotOfflineStorageTests
             .Throws((Activator.CreateInstance(exception) as Exception)!);
 
         // Act
-        Action action = () => snapShotOfflineStorage.Restore(_snapshotDataModel.AggregateIdentifier, _encoding);
+        Action action = () => snapShotOfflineStorage.Get(_snapshotDataModel.AggregateIdentifier, _encoding);
 
         // Assert
         action.Should().ThrowExactly<SnapshotUnboxingFailedException>().WithMessage(
@@ -528,8 +528,8 @@ public class SnapshotOfflineStorageTests
             .Throws((Activator.CreateInstance(exception) as Exception)!);
 
         // Act
-        Func<Task> action = async () =>
-            await snapShotOfflineStorage.RestoreAsync(_snapshotDataModel.AggregateIdentifier, _encoding,
+        Func<Task> action = async () => await snapShotOfflineStorage.GetAsync(_snapshotDataModel.AggregateIdentifier,
+            _encoding,
                 _cancellationToken);
 
         // Assert

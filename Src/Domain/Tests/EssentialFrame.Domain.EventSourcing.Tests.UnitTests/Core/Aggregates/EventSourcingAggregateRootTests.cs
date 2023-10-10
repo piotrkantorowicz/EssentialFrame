@@ -548,44 +548,6 @@ public sealed class EventSourcingAggregateRootTests
                 $"Image with name {duplicateImageName.Value} has been already added into ({aggregate.GetTypeFullName()}) with identifier ({aggregateIdentifier})");
     }
 
-    [Test]
-    public void SafeDelete_Always_ShouldSetDeleteProperties()
-    {
-        // Arrange
-        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        const int aggregateVersion = 0;
-
-        Post aggregate = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
-            aggregateIdentifier,
-                aggregateVersion);
-
-        // Act
-        aggregate.SafeDelete();
-
-        // Assert
-        aggregate.IsDeleted.Should().BeTrue();
-        aggregate.DeletedDate.Should().BeCloseTo(SystemClock.Now, TimeSpan.FromMilliseconds(100));
-    }
-
-    [Test]
-    public void UnDelete_Always_ShouldSetDeleteProperties()
-    {
-        // Arrange
-        PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        const int aggregateVersion = 0;
-
-        Post aggregate = EventSourcingGenericAggregateFactory<Post, PostIdentifier, Guid>.CreateAggregate(
-            aggregateIdentifier,
-                aggregateVersion);
-
-        // Act
-        aggregate.UnDelete();
-
-        // Assert
-        aggregate.IsDeleted.Should().BeFalse();
-        aggregate.DeletedDate.Should().BeNull();
-    }
-
     private static void AssertState(PostState aggregateState, PostState expectedAggregateState)
     {
         aggregateState.Title.Should().Be(expectedAggregateState.Title);

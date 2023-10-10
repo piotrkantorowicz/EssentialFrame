@@ -17,8 +17,8 @@ public class EventSourcingAggregateMapperTests
 {
     private readonly Faker _faker = new();
 
-    private readonly IEventSourcingAggregateMapper<PostIdentifier, Guid> _eventSourcingAggregateMapper =
-        new EventSourcingAggregateMapper<PostIdentifier, Guid>();
+    private readonly IEventSourcingAggregateMapper<Post, PostIdentifier, Guid> _eventSourcingAggregateMapper =
+        new EventSourcingAggregateMapper<Post, PostIdentifier, Guid>();
 
     [Test]
     public void MapToAggregateDataModel_WhenCalledWithValidAggregateRoot_ReturnsAggregateDataModel()

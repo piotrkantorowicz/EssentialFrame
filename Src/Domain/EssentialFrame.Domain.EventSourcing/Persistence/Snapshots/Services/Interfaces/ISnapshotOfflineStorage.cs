@@ -5,12 +5,12 @@ namespace EssentialFrame.Domain.EventSourcing.Persistence.Snapshots.Services.Int
 
 internal interface ISnapshotOfflineStorage
 {
+    SnapshotDataModel Get(string aggregateIdentifier, Encoding encoding);
+
+    Task<SnapshotDataModel> GetAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken);
+    
     void Save(SnapshotDataModel snapshot, Encoding encoding);
 
     Task SaveAsync(SnapshotDataModel snapshot, Encoding encoding, CancellationToken cancellationToken);
-
-    SnapshotDataModel Restore(string aggregateIdentifier, Encoding encoding);
-
-    Task<SnapshotDataModel> RestoreAsync(string aggregateIdentifier, Encoding encoding,
-        CancellationToken cancellationToken);
 }

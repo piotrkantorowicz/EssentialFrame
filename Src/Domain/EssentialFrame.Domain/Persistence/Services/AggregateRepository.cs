@@ -1,4 +1,5 @@
-﻿using EssentialFrame.Domain.Core.Aggregates;
+﻿using System.Text;
+using EssentialFrame.Domain.Core.Aggregates;
 using EssentialFrame.Domain.Core.Events.Interfaces;
 using EssentialFrame.Domain.Core.Events.Services.Interfaces;
 using EssentialFrame.Domain.Core.ValueObjects.Core;
@@ -16,11 +17,11 @@ internal sealed class
     where TAggregateIdentifier : TypedIdentifierBase<TType>
 {
     private readonly IAggregateStore _aggregateStore;
-    private readonly IAggregateMapper<TAggregateIdentifier, TType> _aggregateMapper;
+    private readonly IAggregateMapper<TAggregate, TAggregateIdentifier, TType> _aggregateMapper;
     private readonly IDomainEventsPublisher<TAggregateIdentifier, TType> _domainEventsPublisher;
 
     public AggregateRepository(IAggregateStore aggregateStore,
-        IAggregateMapper<TAggregateIdentifier, TType> aggregateMapper,
+        IAggregateMapper<TAggregate, TAggregateIdentifier, TType> aggregateMapper,
         IDomainEventsPublisher<TAggregateIdentifier, TType> domainEventsPublisher)
     {
         _aggregateStore = aggregateStore ?? throw new ArgumentNullException(nameof(aggregateStore));
@@ -36,7 +37,7 @@ internal sealed class
 
         if (aggregateDataModel?.State is null)
         {
-            throw new AggregateHasNotFoundException(typeof(TAggregate), aggregateIdentifier.ToString());
+            throw new AggregateNotFoundException(typeof(TAggregate), aggregateIdentifier.ToString());
         }
 
         if (aggregateDataModel.State is TAggregate aggregate)
@@ -69,7 +70,7 @@ internal sealed class
 
         if (aggregateDataModel?.State is null)
         {
-            throw new AggregateHasNotFoundException(typeof(TAggregate), aggregateIdentifier.ToString());
+            throw new AggregateNotFoundException(typeof(TAggregate), aggregateIdentifier.ToString());
         }
 
         if (aggregateDataModel.State is TAggregate aggregate)
@@ -130,11 +131,58 @@ internal sealed class
 
     public void Box(TAggregateIdentifier aggregateIdentifier)
     {
-        _aggregateStore.Box(aggregateIdentifier);
+        _aggregateStore.Box(aggregateIdentifier, Encoding.Unicode);
+    }
+
+    public void Box(TAggregateIdentifier aggregateIdentifier, Encoding encoding)
+    {
+        _aggregateStore.Box(aggregateIdentifier, encoding);
     }
 
     public async Task BoxAsync(TAggregateIdentifier aggregateIdentifier, CancellationToken cancellationToken)
     {
-        await _aggregateStore.BoxAsync(aggregateIdentifier, cancellationToken);
+        await _aggregateStore.BoxAsync(aggregateIdentifier, Encoding.Unicode, cancellationToken);
+    }
+
+    public async Task BoxAsync(TAggregateIdentifier aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken)
+    {
+        await _aggregateStore.BoxAsync(aggregateIdentifier, encoding, cancellationToken);
+    }
+
+    public TAggregate Unbox(TAggregateIdentifier aggregateIdentifier)
+    {
+        AggregateDataModel aggregateDataModel = _aggregateStore.Unbox(aggregateIdentifier, Encoding.Unicode);
+        TAggregate aggregate = _aggregateMapper.Map(aggregateDataModel);
+
+        return aggregate;
+    }
+
+    public TAggregate Unbox(TAggregateIdentifier aggregateIdentifier, Encoding encoding)
+    {
+        AggregateDataModel aggregateDataModel = _aggregateStore.Unbox(aggregateIdentifier, encoding);
+        TAggregate aggregate = _aggregateMapper.Map(aggregateDataModel);
+
+        return aggregate;
+    }
+
+    public async Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier,
+        CancellationToken cancellationToken)
+    {
+        AggregateDataModel aggregateDataModel =
+            await _aggregateStore.UnboxAsync(aggregateIdentifier, Encoding.Unicode, cancellationToken);
+        TAggregate aggregate = _aggregateMapper.Map(aggregateDataModel);
+
+        return aggregate;
+    }
+
+    public async Task<TAggregate> UnboxAsync(TAggregateIdentifier aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken)
+    {
+        AggregateDataModel aggregateDataModel =
+            await _aggregateStore.UnboxAsync(aggregateIdentifier, encoding, cancellationToken);
+        TAggregate aggregate = _aggregateMapper.Map(aggregateDataModel);
+
+        return aggregate;
     }
 }

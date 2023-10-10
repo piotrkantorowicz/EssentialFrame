@@ -290,7 +290,7 @@ public class DefaultSnapshotStoreTests
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
-        _snapshotOfflineStorageMock.Setup(x => x.Restore(aggregateIdentifier, _encoding)).Returns(snapshotDataModel);
+        _snapshotOfflineStorageMock.Setup(x => x.Get(aggregateIdentifier, _encoding)).Returns(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
         // Act
@@ -298,7 +298,7 @@ public class DefaultSnapshotStoreTests
 
         // Assert
         result.Should().BeEquivalentTo(snapshotDataModel);
-        _snapshotOfflineStorageMock.Verify(x => x.Restore(aggregateIdentifier, _encoding), Times.Once);
+        _snapshotOfflineStorageMock.Verify(x => x.Get(aggregateIdentifier, _encoding), Times.Once);
     }
 
     [Test]
@@ -307,7 +307,7 @@ public class DefaultSnapshotStoreTests
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
         SnapshotDataModel snapshotDataModel = GetSnapshotDataModel(aggregateIdentifier);
-        _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, _encoding, _cancellationToken))
+        _snapshotOfflineStorageMock.Setup(x => x.GetAsync(aggregateIdentifier, _encoding, _cancellationToken))
             .ReturnsAsync(snapshotDataModel);
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
@@ -316,7 +316,7 @@ public class DefaultSnapshotStoreTests
 
         // Assert
         result.Should().BeEquivalentTo(snapshotDataModel);
-        _snapshotOfflineStorageMock.Verify(x => x.RestoreAsync(aggregateIdentifier, _encoding, _cancellationToken),
+        _snapshotOfflineStorageMock.Verify(x => x.GetAsync(aggregateIdentifier, _encoding, _cancellationToken),
             Times.Once);
     }
 
@@ -325,7 +325,7 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        _snapshotOfflineStorageMock.Setup(x => x.Restore(aggregateIdentifier, _encoding))
+        _snapshotOfflineStorageMock.Setup(x => x.Get(aggregateIdentifier, _encoding))
             .Throws(SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier));
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 
@@ -342,7 +342,7 @@ public class DefaultSnapshotStoreTests
     {
         // Arrange
         PostIdentifier aggregateIdentifier = PostIdentifier.New(_faker.Random.Guid());
-        _snapshotOfflineStorageMock.Setup(x => x.RestoreAsync(aggregateIdentifier, _encoding, _cancellationToken))
+        _snapshotOfflineStorageMock.Setup(x => x.GetAsync(aggregateIdentifier, _encoding, _cancellationToken))
             .Throws(SnapshotUnboxingFailedException.SnapshotNotFound(aggregateIdentifier));
         DefaultSnapshotStore snapshotStore = new(_snapshotCacheMock.Object, _snapshotOfflineStorageMock.Object);
 

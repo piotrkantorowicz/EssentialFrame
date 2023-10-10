@@ -39,16 +39,6 @@ internal sealed class DefaultAggregateStore : IAggregateStore
         return await Task.FromResult(Get(aggregateIdentifier));
     }
 
-    public IEnumerable<string> GetExpired()
-    {
-        return _aggregateCache.GetMany((_, v) => v.IsDeleted)?.Select(v => v.AggregateIdentifier);
-    }
-
-    public async Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken)
-    {
-        return await Task.FromResult(GetExpired());
-    }
-
     public void Save(AggregateDataModel aggregate)
     {
         _aggregateCache.Add(aggregate.AggregateIdentifier, aggregate);
@@ -61,25 +51,11 @@ internal sealed class DefaultAggregateStore : IAggregateStore
         await Task.CompletedTask;
     }
 
-    public void Box(string aggregateIdentifier)
-    {
-        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
-
-        _aggregateOfflineStorage.Save(aggregate, Encoding.Unicode);
-    }
-
     public void Box(string aggregateIdentifier, Encoding encoding)
     {
         AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
 
         _aggregateOfflineStorage.Save(aggregate, encoding);
-    }
-
-    public async Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken)
-    {
-        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
-
-        await _aggregateOfflineStorage.SaveAsync(aggregate, Encoding.Unicode, cancellationToken);
     }
 
     public async Task BoxAsync(string aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken)
@@ -89,19 +65,15 @@ internal sealed class DefaultAggregateStore : IAggregateStore
         await _aggregateOfflineStorage.SaveAsync(aggregate, encoding, cancellationToken);
     }
 
-    private void BoxInternal(string aggregateIdentifier, Encoding encoding)
+    public AggregateDataModel Unbox(string aggregateIdentifier, Encoding encoding)
     {
-        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
-
-        _aggregateOfflineStorage.Save(aggregate, encoding ?? Encoding.Unicode);
+        return _aggregateOfflineStorage.Get(aggregateIdentifier, encoding);
     }
 
-    private async Task BoxInternalAsync(string aggregateIdentifier, Encoding encoding,
+    public async Task<AggregateDataModel> UnboxAsync(string aggregateIdentifier, Encoding encoding,
         CancellationToken cancellationToken)
     {
-        AggregateDataModel aggregate = _aggregateCache.Get(aggregateIdentifier);
-
-        await _aggregateOfflineStorage.SaveAsync(aggregate, encoding ?? Encoding.Unicode, cancellationToken);
+        return await _aggregateOfflineStorage.GetAsync(aggregateIdentifier, encoding, cancellationToken);
     }
 }
     

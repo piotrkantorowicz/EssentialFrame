@@ -23,20 +23,17 @@ public interface IEventSourcingAggregateStore
     Task<IReadOnlyCollection<DomainEventDataModel>> GetAsync(string aggregateIdentifier, int version,
         CancellationToken cancellationToken);
 
-    IEnumerable<string> GetExpired();
-
-    Task<IEnumerable<string>> GetExpiredAsync(CancellationToken cancellationToken);
-
     void Save(EventSourcingAggregateDataModel eventSourcingAggregate, IEnumerable<DomainEventDataModel> events);
 
     Task SaveAsync(EventSourcingAggregateDataModel eventSourcingAggregate, IEnumerable<DomainEventDataModel> events,
         CancellationToken cancellationToken);
 
-    void Box(string aggregateIdentifier);
-
     void Box(string aggregateIdentifier, Encoding encoding);
 
-    Task BoxAsync(string aggregateIdentifier, CancellationToken cancellationToken);
-
     Task BoxAsync(string aggregateIdentifier, Encoding encoding, CancellationToken cancellationToken);
+
+    EventSourcingAggregateWithEventsModel Unbox(string aggregateIdentifier, Encoding encoding);
+
+    Task<EventSourcingAggregateWithEventsModel> UnboxAsync(string aggregateIdentifier, Encoding encoding,
+        CancellationToken cancellationToken);
 }

@@ -14,8 +14,12 @@ public interface IPostRepository
     void Save(Post post);
 
     Task SaveAsync(Post post, CancellationToken cancellationToken);
-
+    
     void Box(PostIdentifier postIdentifier);
 
     Task BoxAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken);
+
+    Post Unbox(PostIdentifier postIdentifier);
+
+    Task<Post> UnboxAsync(PostIdentifier postIdentifier, CancellationToken cancellationToken);
 }
